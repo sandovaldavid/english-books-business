@@ -1,0 +1,29 @@
+---
+import Button from "./Button.astro"
+import ArrowRight from "./icons/ArrowRight.astro"
+---
+
+<div
+	class='cta-banner rounded-2xl p-6 md:p-10 bg-gradient-to-r from-primary to-primary-dark text-white mb-12 shadow-xl'>
+	<div class='flex flex-col md:flex-row items-center justify-between'>
+		<div class='mb-6 md:mb-0 md:mr-8'>
+			<h3 class='text-2xl md:text-3xl font-bold mb-3'>
+				¿Listo para dominar el inglés?
+			</h3>
+			<p class='text-white/90 max-w-xl'>
+				Nuestro catálogo completo te ofrece recursos adaptados a todos
+				los niveles, desde principiantes hasta profesionales.
+			</p>
+		</div>
+		<Button
+			variant='secondary'
+			size='large'
+			href='/catalogo'
+			class='group shadow-lg hover:shadow-xl transform transition-all duration-300 whitespace-nowrap animated-cta'>
+			<span>Explorar Todos los Libros</span>
+			<ArrowRight
+				class='w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform'
+			/>
+		</Button>
+	</div>
+</div>
