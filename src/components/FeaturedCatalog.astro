@@ -1,0 +1,290 @@
+---
+import Card from './Card.astro';
+import SectionTitle from './SectionTitle.astro';
+import LoadingAnimation from './LoadingAnimation.astro';
+import CTABanner from './CTA-Banner.astro';
+import '../styles/FeaturedCatalog.css';
+
+// DataBase Xd
+import booksData from '../database/books.json';
+
+import { BookLevel, FormatTag, PopularityTag } from '../types/book';
+
+import type { Book } from '../types/book';
+
+const maxBooks = 3;
+const booksToShow = booksData.slice(0, maxBooks) as Partial<Book>[];
+
+// Calculate appropriate grid class based on number of books
+const getGridClass = (bookCount: number = maxBooks) => {
+	// For 1 book: center it
+	if (bookCount === 1) return 'grid-cols-1 max-w-sm mx-auto';
+	// For 2 books: 2 columns on desktop and tablet, 1 on mobile
+	else if (bookCount === 2)
+		return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 max-w-3xl mx-auto';
+	// For 3 books: 3 columns on desktop, 2 on tablet, 1 on mobile
+	else if (bookCount === 3)
+		return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto';
+	// For 4+ books: 4 columns on desktop, 2 on tablet, 1 on mobile
+	else return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4';
+};
+
+// Function to validate book level
+function validateBookLevel(level: string | undefined): BookLevel | undefined {
+	if (!level) return undefined;
+
+	return Object.values(BookLevel).includes(level as BookLevel)
+		? (level as BookLevel)
+		: undefined;
+}
+
+// Function to filter valid format tags
+function filterValidFormatTags(tags: string[] | undefined): FormatTag[] {
+	const validTags: FormatTag[] = [];
+
+	if (Array.isArray(tags)) {
+		tags.forEach((tag) => {
+			// Check if tag is a valid FormatTag using type information
+			if (Object.values(FormatTag).includes(tag as FormatTag)) {
+				validTags.push(tag as FormatTag);
+			}
+		});
+	}
+
+	return validTags;
+}
+
+// Function to filter valid popularity tags
+function filterValidPopularityTags(
+	tags: string[] | undefined
+): PopularityTag[] {
+	const validTags: PopularityTag[] = [];
+
+	if (Array.isArray(tags)) {
+		tags.forEach((tag) => {
+			if (Object.values(PopularityTag).includes(tag as PopularityTag)) {
+				validTags.push(tag as PopularityTag);
+			}
+		});
+	}
+
+	return validTags;
+}
+
+// Function to validate book data against the Book interface
+function validateBookData(book: Partial<Book>): Partial<Book> {
+	return {
+		...book,
+		level: validateBookLevel(book.level),
+		formatTags: filterValidFormatTags(book.formatTags),
+		popularityTags: filterValidPopularityTags(book.popularityTags),
+	};
+}
+
+// Get total count for display
+const totalBooks = booksData.length;
+
+// Control loading state (for demonstration)
+const isLoading = false;
+---
+
+<section class='featured-catalog py-16 mx-auto'>
+	<!-- Background elements -->
+	<div class='pattern-bg'></div>
+	<div class='accent-shape'></div>
+	<div class='floating-icons'>
+		<div class='floating-icon'>📚</div>
+		<div class='floating-icon delay-1'>🌟</div>
+		<div class='floating-icon delay-2'>🎓</div>
+		<div class='floating-icon delay-3'>✨</div>
+	</div>
+
+	<div class='container mx-auto px-4 relative z-10'>
+		<!-- Section header with enhanced title and description -->
+		<div class='text-center mb-12'>
+			<div class='flex justify-center flex-wrap flex-col items-center'>
+				<div class='section-badge mb-3'>
+					<span>Lo más destacado</span>
+				</div>
+				<SectionTitle class='featured-title'
+					>Libros Destacados</SectionTitle
+				>
+			</div>
+			<p
+				class='text-lg text-gray-600 max-w-3xl mx-auto mt-6 description-text'>
+				Descubre nuestra selección de libros más populares y materiales
+				educativos diseñados para ayudarte a dominar el inglés en tu
+				ámbito profesional.
+			</p>
+		</div>
+
+		<!-- Statistics bar -->
+		<div
+			class='statistics-bar mx-auto max-w-4xl mb-12 py-4 px-6 rounded-xl bg-white shadow-md flex flex-wrap justify-center gap-8 sm:gap-12'>
+			<div class='stat-item text-center'>
+				<div class='stat-value text-3xl font-bold text-primary'>
+					{totalBooks}+
+				</div>
+				<div class='stat-label text-sm text-gray-500'>
+					Libros disponibles
+				</div>
+			</div>
+			<div class='stat-item text-center'>
+				<div class='stat-value text-3xl font-bold text-primary'>
+					4.8
+				</div>
+				<div class='stat-label text-sm text-gray-500'>
+					Calificación promedio
+				</div>
+			</div>
+			<div class='stat-item text-center'>
+				<div class='stat-value text-3xl font-bold text-primary'>
+					24h
+				</div>
+				<div class='stat-label text-sm text-gray-500'>
+					Entrega inmediata
+				</div>
+			</div>
+			<div class='stat-item text-center'>
+				<div class='stat-value text-3xl font-bold text-primary'>
+					100%
+				</div>
+				<div class='stat-label text-sm text-gray-500'>
+					Satisfacción garantizada
+				</div>
+			</div>
+		</div>
+
+		<!-- Books grid with enhanced layout -->
+		<div
+			class={`grid ${getGridClass(maxBooks)} gap-6 md:gap-8 mb-12 books-grid relative min-h-[300px]`}>
+			{
+				isLoading ? (
+					<div class='absolute inset-0 flex items-center justify-center col-span-full'>
+						<LoadingAnimation
+							size='large'
+							text='Cargando libros...'
+						/>
+					</div>
+				) : booksToShow.length > 0 ? (
+					booksToShow.map((book, index) => {
+						const validatedBook = validateBookData(book);
+						return (
+							<div
+								class={`book-item flex appear-${index + 1} justify-center`}>
+								<Card
+									title={validatedBook.title || 'Sin título'}
+									description={
+										validatedBook.description || ''
+									}
+									price={validatedBook.price || 0}
+									coverImage={validatedBook.coverImage || ''}
+									altText={validatedBook.altText || ''}
+									includedItems={
+										validatedBook.includedItems || []
+									}
+									rating={
+										validatedBook.rating || {
+											score: 0,
+											reviewCount: 0,
+										}
+									}
+									buyLink={validatedBook.buyLink || '#'}
+									detailsLink={
+										validatedBook.detailsLink || '#'
+									}
+									discount={validatedBook.discount || 0}
+									level={validatedBook.level}
+									featured={validatedBook.featured || false}
+									formatTags={validatedBook.formatTags || []}
+									popularityTags={
+										validatedBook.popularityTags || []
+									}
+								/>
+							</div>
+						);
+					})
+				) : (
+					<div class='col-span-full text-center py-10'>
+						<p class='text-gray-500'>
+							No hay libros disponibles en este momento.
+						</p>
+					</div>
+				)
+			}
+		</div>
+
+		<!-- CTA banner -->
+		<CTABanner />
+	</div>
+</section>
+
+<script>
+	// Intersection Observer to trigger animations when elements enter viewport
+	document.addEventListener('DOMContentLoaded', () => {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting) {
+						entry.target.classList.add('in-view');
+						observer.unobserve(entry.target);
+					}
+				});
+			},
+			{
+				threshold: 0.1,
+				rootMargin: '0px 0px -100px 0px',
+			}
+		);
+
+		// Observe all animated elements
+		document
+			.querySelectorAll(
+				'.book-item, .section-badge, .description-text, .statistics-bar, .cta-banner, .testimonial-snippet'
+			)
+			.forEach((el) => {
+				observer.observe(el);
+			});
+	});
+
+	// Add countdown timer functionality
+	document.addEventListener('DOMContentLoaded', () => {
+		// Set countdown to 24 hours from now
+		const countDownDate = new Date().getTime() + 24 * 60 * 60 * 1000;
+
+		// Update the countdown every 1 second
+		const countdownTimer = setInterval(function () {
+			// Get current time
+			const now = new Date().getTime();
+
+			// Calculate the time remaining
+			const distance = countDownDate - now;
+
+			// Calculate hours, minutes, and seconds
+			const hours = Math.floor(distance / (1000 * 60 * 60));
+			const minutes = Math.floor(
+				(distance % (1000 * 60 * 60)) / (1000 * 60)
+			);
+			const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+			// Find the elements to update
+			const timeBlocks = document.querySelectorAll('.time-block');
+			if (timeBlocks.length >= 3) {
+				timeBlocks[0].textContent = hours.toString().padStart(2, '0');
+				timeBlocks[1].textContent = minutes.toString().padStart(2, '0');
+				timeBlocks[2].textContent = seconds.toString().padStart(2, '0');
+			}
+
+			// If the countdown is finished, clear interval
+			if (distance < 0) {
+				clearInterval(countdownTimer);
+				const offerElement = document.querySelector(
+					'.time-limited-offer'
+				);
+				if (offerElement && offerElement instanceof HTMLElement) {
+					offerElement.style.display = 'none';
+				}
+			}
+		}, 1000);
+	});
+</script>
