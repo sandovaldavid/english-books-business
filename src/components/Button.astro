@@ -1,0 +1,77 @@
+---
+export interface Props {
+	variant?: 'primary' | 'secondary' | 'accent' | 'outline' | 'ghost';
+	size?: 'small' | 'medium' | 'large';
+	href?: string;
+	fullWidth?: boolean;
+	disabled?: boolean;
+	type?: 'button' | 'submit' | 'reset';
+	class?: string;
+	[key: string]: any;
+}
+
+const {
+	variant = 'primary',
+	size = 'medium',
+	href,
+	fullWidth = false,
+	disabled = false,
+	type = 'button',
+	class: className = '',
+	...rest
+} = Astro.props;
+
+// Base classes that apply to all buttons
+const baseClasses =
+	'font-[Poppins] rounded-full transition-colors inline-flex items-center justify-center';
+
+// Size-specific classes
+const sizeClasses = {
+	small: 'px-3 py-1 text-sm',
+	medium: 'px-4 py-2',
+	large: 'px-6 py-3 text-lg',
+}[size];
+
+// Variant-specific classes
+const variantClasses = {
+	primary:
+		'bg-primary text-white hover:bg-primary-dark focus:ring-2 focus:ring-primary-light focus:ring-opacity-50',
+	secondary:
+		'bg-secondary text-black hover:bg-secondary-dark focus:ring-2 focus:ring-secondary-light focus:ring-opacity-50',
+	accent: 'bg-accent text-white hover:bg-accent-dark focus:ring-2 focus:ring-accent-light focus:ring-opacity-50',
+	outline:
+		'bg-transparent border-2 border-primary text-primary hover:bg-primary hover:text-white focus:ring-2 focus:ring-primary-light focus:ring-opacity-50',
+	ghost: 'bg-transparent text-primary hover:bg-neutral hover:text-primary-dark focus:ring-2 focus:ring-neutral focus:ring-opacity-50',
+}[variant];
+
+// Width classes
+const widthClasses = fullWidth ? 'w-full' : '';
+
+// Disabled classes
+const disabledClasses = disabled
+	? 'opacity-50 cursor-not-allowed pointer-events-none'
+	: '';
+
+// Combine all the classes
+const combinedClasses = [
+	baseClasses,
+	sizeClasses,
+	variantClasses,
+	widthClasses,
+	disabledClasses,
+	className,
+].join(' ');
+
+const isLink = typeof href !== 'undefined';
+const Element = isLink ? 'a' : 'button';
+const linkProps = isLink ? { href } : { type };
+---
+
+<Element
+	class={combinedClasses}
+	disabled={!isLink && disabled}
+	aria-disabled={disabled}
+	{...linkProps}
+	{...rest}>
+	<slot />
+</Element>
