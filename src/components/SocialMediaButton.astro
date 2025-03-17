@@ -1,0 +1,17 @@
+---
+interface Props {
+	network: string;
+	href: string;
+	class?: string;
+}
+
+const { network, href, class: className = '' } = Astro.props;
+---
+
+<a
+	href={href}
+	target='_blank'
+	aria-label={`Visit our ${network} page`}
+	class={`text-white hover:text-secondary transition-colors ${className}`}>
+	<slot />
+</a>
