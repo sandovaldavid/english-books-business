@@ -1,0 +1,135 @@
+---
+interface Offer {
+    title: string;
+    description: string;
+    image: string;
+    discount?: string;
+    expiration?: string;
+}
+
+interface Props {
+    title: string;
+    subtitle?: string;
+    ctaText?: string;
+    ctaLink?: string;
+    offers?: Offer[];
+    showCarousel?: boolean;
+}
+
+const { 
+    title, 
+    subtitle = "Tu fuente principal de recursos para aprender inglés",
+    ctaText = "Explorar Catálogo",
+    ctaLink = "/catalogo",
+    offers = [
+        {
+            title: "Oferta de Verano",
+            description: "20% de descuento en todos los libros de inglés para negocios",
+            image: "/images/libros-template.jpg",
+            discount: "20%",
+            expiration: "30 de agosto"
+        },
+        {
+            title: "Pack Emprendedor",
+            description: "Lleva 3 libros especializados y paga solo 2",
+            image: "/images/libros-template.jpg",
+            discount: "3x2",
+            expiration: "Tiempo limitado"
+        },
+        {
+            title: "Curso + Libro",
+            description: "Por la compra de cualquier libro, acceso gratis a un curso online",
+            image: "/images/libros-template.jpg",
+            discount: "GRATIS",
+            expiration: "Hasta agotar existencias"
+        }
+    ],
+    showCarousel = true
+} = Astro.props;
+
+import { fade } from 'astro:transitions';
+import '../styles/HeroBanner.css';
+import ArrowRightIcon from './icons/ArrowRight.astro';
+import CarruselButtonsIcon from './CarruselButtons.astro';
+---
+
+<section class="hero-banner bg-primary-dark text-white py-16 md:py-24 overflow-hidden relative">
+    <!-- Fondo con efecto de partículas animadas -->
+    <div class="particles-background absolute inset-0 opacity-20"></div>
+    
+    <div class="container mx-auto px-4 relative z-10">
+        <div class="max-w-5xl mx-auto text-center mb-12">
+            <h1 
+                class="text-4xl md:text-6xl font-bold mb-6 animate-title"
+                transition:animate={fade({ duration: '0.8s' })}
+            >
+                {title}
+            </h1>
+            <p 
+                class="text-xl md:text-2xl mb-10 text-secondary-light animate-subtitle"
+                transition:animate={fade({ duration: '0.8s' })}
+            >
+                {subtitle}
+            </p>
+            <a 
+                href={ctaLink} 
+                class="inline-block bg-secondary hover:bg-secondary-dark text-black font-semibold py-4 px-10 rounded-lg transition duration-300 transform hover:scale-105 animate-cta shadow-lg"
+            >
+                {ctaText}
+                <span class="ml-2">→</span>
+            </a>
+        </div>
+
+        {showCarousel && (
+            <div class="offers-carousel mt-12 relative">
+                <div class="carousel-container overflow-hidden rounded-xl shadow-2xl">
+                    <div class="carousel-track flex transition-transform duration-500">
+                        {offers.map((offer, index) => (
+                            <div class="carousel-slide w-full flex-shrink-0 p-6 md:p-8 bg-gradient-to-r from-primary to-primary-light rounded-xl overflow-hidden relative">
+                                <div class="flex flex-col md:flex-row items-center gap-8">
+                                    <div class="md:w-2/5 relative">
+                                        <div class="absolute -top-2 -left-2 bg-accent text-white px-4 py-1 rounded-lg font-bold z-20 animate-pulse">
+                                            {offer.discount}
+                                        </div>
+                                        <img 
+                                            src={offer.image} 
+                                            alt={offer.title} 
+                                            class="rounded-lg shadow-lg object-cover w-full h-60 md:h-80 transform transition-transform hover:scale-105"
+                                        />
+                                    </div>
+                                    <div class="md:w-3/5 text-left">
+                                        <h3 class="text-2xl md:text-3xl font-bold mb-4 text-secondary">{offer.title}</h3>
+                                        <p class="text-lg md:text-xl mb-6">{offer.description}</p>
+                                        <div class="flex flex-col md:flex-row gap-4 items-start md:items-center">
+                                            <a href="/promociones" class="bg-accent hover:bg-accent-dark text-white font-semibold py-3 px-6 rounded-lg transition duration-300 transform hover:scale-105 inline-flex items-center">
+                                                <span>Ver detalles</span>
+                                                <ArrowRightIcon class='h-5 w-5 ml-2'/>
+                                            </a>
+                                            <p class="text-sm opacity-80">Expira: {offer.expiration}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <!-- Controles del carrusel -->
+                <CarruselButtonsIcon/>
+
+                <!-- Indicadores -->
+                <div class="carousel-indicators flex justify-center gap-2 mt-6">
+                    {offers.map((_, index) => (
+                        <button 
+                            class="indicator-dot h-3 w-3 rounded-full bg-gray-400 hover:bg-secondary transition-colors duration-300" 
+                            data-index={index}
+                            aria-label={`Go to slide ${index + 1}`}
+                        ></button>
+                    ))}
+                </div>
+            </div>
+        )}
+    </div>
+</section>
+
+<script src="../scripts/HeroBanner.js"></script>
