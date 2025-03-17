@@ -27,3 +27,55 @@
 	--color-white: #f8fafc;
 	--color-black: #18181b;
 }
+
+/* Navbar */
+nav a {
+	position: relative;
+}
+
+/* Only show underline animation on desktop */
+@media (min-width: 768px) {
+	nav a::after {
+		content: '';
+		position: absolute;
+		bottom: 0;
+		left: 50%;
+		width: 0;
+		height: 2px;
+		background-color: var(--color-secondary);
+		transition: width 0.3s ease, left 0.3s ease;
+		transform: translateX(-50%);
+	}
+
+	nav a:hover::after {
+		width: 70%;
+	}
+
+	/* Special styling for active links */
+	nav a.active::after,
+	nav a[aria-current='page']::after {
+		width: 70%;
+		background-color: var(--color-secondary-dark);
+	}
+}
+
+/* Mobile specific styles */
+@media (max-width: 768px) {
+	.mobile-menu {
+		transform: translateY(-10px);
+		transition: opacity 0.3s ease, max-height 0.3s ease, transform 0.3s ease;
+	}
+
+	.mobile-menu.menu-open {
+		transform: translateY(0);
+	}
+
+	nav a {
+		margin: 0.25rem 0;
+		text-align: center;
+		&.active {
+			background-color: var(--color-primary-dark);
+			border-left: 3px solid var(--color-secondary);
+		}
+	}
+}
