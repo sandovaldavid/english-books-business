@@ -11,18 +11,18 @@ interface Props {
 }
 
 const {
-	title = "FluentReads",
-	description = "Tu fuente confiable de libros en inglés y materiales educativos para profesionales y estudiantes",
-	image = "/images/default-og.png",
+	title = 'FluentReads',
+	description = 'Tu fuente confiable de libros en inglés y materiales educativos para profesionales y estudiantes',
+	image = '/images/default-og.png',
 	canonicalURL,
 } = Astro.props;
 
 // Create a safe canonical URL
 let canonicalURLString: string;
 try {
-	canonicalURLString = canonicalURL 
-		? canonicalURL.toString() 
-		: Astro.site 
+	canonicalURLString = canonicalURL
+		? canonicalURL.toString()
+		: Astro.site
 			? new URL(Astro.url.pathname, Astro.site).toString()
 			: Astro.url.pathname;
 } catch (error) {
@@ -30,48 +30,66 @@ try {
 }
 
 // Build full metadata
-const siteTitle = title.includes("FluentReads") ? title : `${title} | FluentReads`;
+const siteTitle = title.includes('FluentReads')
+	? title
+	: `${title} | FluentReads`;
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang='es'>
 	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		
+		<meta charset='UTF-8' />
+		<meta name='viewport' content='width=device-width' />
+		<link rel='icon' type='image/svg+xml' href='/favicon.svg' />
+		<meta name='generator' content={Astro.generator} />
+
 		<!-- Fonts -->
-		<link rel="preconnect" href="https://fonts.googleapis.com">
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-		
+		<link rel='preconnect' href='https://fonts.googleapis.com' />
+		<link rel='preconnect' href='https://fonts.gstatic.com' crossorigin />
+		<link
+			href='https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap'
+			rel='stylesheet'
+		/>
+
 		<!-- SEO Meta Tags -->
 		<title>{siteTitle}</title>
-		<meta name="description" content={description} />
-		<link rel="canonical" href={canonicalURLString} />
-		
+		<meta name='description' content={description} />
+		<link rel='canonical' href={canonicalURLString} />
+
 		<!-- Open Graph / Facebook -->
-		<meta property="og:type" content="website" />
-		<meta property="og:url" content={canonicalURLString} />
-		<meta property="og:title" content={siteTitle} />
-		<meta property="og:description" content={description} />
-		<meta property="og:image" content={typeof image === 'string' && image.startsWith('/') ? Astro.url.origin + image : image} />
-		
+		<meta property='og:type' content='website' />
+		<meta property='og:url' content={canonicalURLString} />
+		<meta property='og:title' content={siteTitle} />
+		<meta property='og:description' content={description} />
+		<meta
+			property='og:image'
+			content={typeof image === 'string' && image.startsWith('/')
+				? Astro.url.origin + image
+				: image}
+		/>
+
 		<!-- Twitter -->
-		<meta property="twitter:card" content="summary_large_image" />
-		<meta property="twitter:url" content={canonicalURLString} />
-		<meta property="twitter:title" content={siteTitle} />
-		<meta property="twitter:description" content={description} />
-		<meta property="twitter:image" content={typeof image === 'string' && image.startsWith('/') ? Astro.url.origin + image : image} />
+		<meta property='twitter:card' content='summary_large_image' />
+		<meta property='twitter:url' content={canonicalURLString} />
+		<meta property='twitter:title' content={siteTitle} />
+		<meta property='twitter:description' content={description} />
+		<meta
+			property='twitter:image'
+			content={typeof image === 'string' && image.startsWith('/')
+				? Astro.url.origin + image
+				: image}
+		/>
 
 		<!-- Additional SEO tags for language learning books -->
-		<meta name="keywords" content="libros en inglés, aprender inglés, material educativo, inglés para negocios, FluentReads, libros para profesionales" />
-		<meta name="robots" content="index, follow" />
-		<meta name="language" content="Spanish" />
-		<meta name="revisit-after" content="7 days" />
+		<meta
+			name='keywords'
+			content='libros en inglés, aprender inglés, material educativo, inglés para negocios, FluentReads, libros para profesionales'
+		/>
+		<meta name='robots' content='index, follow' />
+		<meta name='language' content='Spanish' />
+		<meta name='revisit-after' content='7 days' />
 	</head>
-	<body class="font-poppins">
+	<body class='font-poppins'>
 		<Header />
 		<main>
 			<slot />
@@ -79,4 +97,3 @@ const siteTitle = title.includes("FluentReads") ? title : `${title} | FluentRead
 		<Footer />
 	</body>
 </html>
-
