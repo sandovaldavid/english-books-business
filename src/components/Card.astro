@@ -1,0 +1,394 @@
+---
+import Button from './Button.astro';
+import type { BookLevel, FormatTag, PopularityTag } from '../types/book';
+import '../styles/Card.css';
+
+interface Props {
+	title: string;
+	description: string;
+	price: number;
+	coverImage: string;
+	altText?: string;
+	includedItems: string[];
+	rating?: {
+		score: number;
+		reviewCount: number;
+	};
+	buyLink: string;
+	detailsLink: string;
+	discount?: number;
+	level?: BookLevel;
+	featured?: boolean;
+	formatTags?: FormatTag[];
+	popularityTags?: PopularityTag[];
+}
+
+const {
+	title,
+	description,
+	price,
+	coverImage,
+	altText = `${title} Book cover`,
+	includedItems = [],
+	rating,
+	buyLink = '#',
+	detailsLink = '#',
+	discount = 0,
+	level,
+	featured = false,
+	formatTags = [],
+	popularityTags = [],
+} = Astro.props;
+
+// Truncate description if too long
+const truncatedDescription =
+	description.length > 70
+		? `${description.substring(0, 70)}...`
+		: description;
+
+// Format price to display in soles
+const formattedPrice = `S/${price.toFixed(2)}`;
+
+// Calculate discounted price if applicable
+const hasDiscount = discount > 0;
+const originalPrice = price;
+const discountedPrice = hasDiscount ? price * (1 - discount / 100) : price;
+const formattedDiscountedPrice = `S/${discountedPrice.toFixed(2)}`;
+const formattedOriginalPrice = `S/${originalPrice.toFixed(2)}`;
+
+// Create stars based on rating
+const fullStars = rating ? Math.floor(rating.score) : 0;
+const hasHalfStar = rating ? rating.score % 1 >= 0.5 : false;
+const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+// Level tag colors and labels
+const levelConfig = {
+	basic: {
+		color: 'bg-blue-100 text-blue-800',
+		label: 'Básico',
+	},
+	intermediate: {
+		color: 'bg-green-100 text-green-800',
+		label: 'Intermedio',
+	},
+	advanced: {
+		color: 'bg-purple-100 text-purple-800',
+		label: 'Avanzado',
+	},
+	'all-levels': {
+		color: 'bg-amber-100 text-amber-800',
+		label: 'Todos los Niveles',
+	},
+	professional: {
+		color: 'bg-rose-100 text-rose-800',
+		label: 'Profesional',
+	},
+	'International Exam': {
+		color: 'bg-cyan-100 text-cyan-800',
+		label: 'Examen Internacional',
+	},
+};
+
+// Format tag configuration
+const formatConfig = {
+	pdf: {
+		icon: '📄',
+		label: 'PDF',
+		color: 'bg-blue-50 text-blue-600 border-blue-200',
+	},
+	workbook: {
+		icon: '📓',
+		label: 'Workbook',
+		color: 'bg-emerald-50 text-emerald-600 border-emerald-200',
+	},
+	audio: {
+		icon: '🎧',
+		label: 'Audios',
+		color: 'bg-purple-50 text-purple-600 border-purple-200',
+	},
+	video: {
+		icon: '📹',
+		label: 'Videos',
+		color: 'bg-red-50 text-red-600 border-red-200',
+	},
+	software: {
+		icon: '💻',
+		label: 'Software',
+		color: 'bg-slate-50 text-slate-600 border-slate-200',
+	},
+	exams: {
+		icon: '📝',
+		label: 'Exámenes',
+		color: 'bg-orange-50 text-orange-600 border-orange-200',
+	},
+};
+
+// Popularity tag configuration
+const popularityConfig = {
+	bestseller: {
+		icon: '🚀',
+		label: 'Más vendido',
+		color: 'bg-amber-50 text-amber-600 border-amber-200',
+	},
+	new: {
+		icon: '🆕',
+		label: 'Nuevo',
+		color: 'bg-green-50 text-green-600 border-green-200',
+	},
+	'special-offer': {
+		icon: '🏷',
+		label: 'Oferta especial',
+		color: 'bg-pink-50 text-pink-600 border-pink-200',
+	},
+	'complete-pack': {
+		icon: '🎁',
+		label: 'Pack Completo',
+		color: 'bg-indigo-50 text-indigo-600 border-indigo-200',
+	},
+	recommended: {
+		icon: '💯',
+		label: 'Recomendado',
+		color: 'bg-rose-50 text-rose-600 border-rose-200',
+	},
+};
+
+// Get level configuration or default
+const levelDisplay = level ? levelConfig[level] : null;
+
+// Check if the book has any special status to be highlighted
+const isSpecialOffer =
+	hasDiscount ||
+	(popularityTags &&
+		popularityTags.includes('special-offer' as PopularityTag));
+const isFeaturedOrBestseller =
+	featured ||
+	(popularityTags && popularityTags.includes('bestseller' as PopularityTag));
+---
+
+<div
+	class:list={[
+		'book-card bg-white rounded-xl overflow-hidden w-full max-w-sm flex flex-col h-full transform transition-all duration-500 book-card-tilt',
+		isFeaturedOrBestseller
+			? 'card-highlighted shadow-xl hover:shadow-2xl hover:-translate-y-2'
+			: 'shadow-md hover:shadow-xl hover:-translate-y-1',
+		isSpecialOffer && 'special-offer-card',
+	]}>
+	<!-- Book Cover Image with Badge -->
+	<div class='relative h-52 overflow-hidden book-cover-container'>
+		<img
+			src={coverImage}
+			alt={altText}
+			class='w-full h-full object-cover transition-transform duration-700 book-cover'
+		/>
+		<div
+			class='absolute inset-0 bg-gradient-to-b from-transparent to-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cover-overlay'>
+		</div>
+
+		<!-- Featured badge with animation-->
+		{
+			featured && (
+				<div class='absolute top-3 left-3 bg-secondary text-black font-bold py-1 px-3 rounded-full text-sm shadow-md animate-pulse-subtle'>
+					Recomendado
+				</div>
+			)
+		}
+
+		<!-- Level tag -->
+		{
+			levelDisplay && (
+				<div
+					class={`absolute top-3 ${featured ? 'right-3' : 'left-3'} ${levelDisplay.color} font-medium py-1 px-3 rounded-full text-xs shadow-sm`}>
+					{levelDisplay.label}
+				</div>
+			)
+		}
+
+		<!-- Discount badge with attention-grabbing animation -->
+		{
+			hasDiscount && (
+				<div class='absolute -right-12 top-7 bg-accent text-white font-bold py-1 px-10 shadow-md transform rotate-45 discount-badge'>
+					{discount}% OFF
+				</div>
+			)
+		}
+	</div>
+
+	<!-- Book Details -->
+	<div class='p-5 flex flex-col flex-grow card-content'>
+		<!-- Title -->
+		<h3
+			class='text-xl font-bold text-gray-800 mb-2 line-clamp-2 book-title'>
+			{title}
+		</h3>
+
+		<!-- Tags Section with improved visual appeal -->
+		<div class='mb-3 tag-container'>
+			{/* Format tags */}
+			{
+				formatTags && formatTags.length > 0 && (
+					<div class='mb-2'>
+						<div class='flex flex-wrap gap-1.5'>
+							{formatTags.map((tag) => {
+								const config = formatConfig[tag];
+								return (
+									<span
+										class={`inline-flex items-center text-xs px-2 py-1 rounded-md border ${config.color} format-tag`}>
+										<span class='mr-1'>{config.icon}</span>{' '}
+										{config.label}
+									</span>
+								);
+							})}
+						</div>
+					</div>
+				)
+			}
+
+			{/* Popularity tags */}
+			{
+				popularityTags && popularityTags.length > 0 && (
+					<div>
+						<div class='flex flex-wrap gap-1.5'>
+							{popularityTags.map((tag) => {
+								const config = popularityConfig[tag];
+								return (
+									<span
+										class={`inline-flex items-center text-xs px-2 py-1 rounded-md border ${config.color} popularity-tag`}>
+										<span class='mr-1'>{config.icon}</span>{' '}
+										{config.label}
+									</span>
+								);
+							})}
+						</div>
+					</div>
+				)
+			}
+		</div>
+
+		<!-- Description with better contrast -->
+		<p class='text-gray-700 text-sm mb-4 line-clamp-2 book-description'>
+			{truncatedDescription}
+		</p>
+
+		<!-- Price with attention-grabbing styling for discounts -->
+		<div class='mb-4 flex items-center price-display'>
+			{
+				hasDiscount ? (
+					<>
+						<span class='text-secondary-dark font-bold text-2xl discounted-price'>
+							{formattedDiscountedPrice}
+						</span>
+						<span class='ml-2 text-sm text-gray-500 line-through original-price'>
+							{formattedOriginalPrice}
+						</span>
+						<span class='ml-2 bg-accent/10 text-accent text-xs font-bold px-2 py-0.5 rounded-full discount-tag'>
+							{discount}% OFF
+						</span>
+					</>
+				) : (
+					<span class='text-secondary-dark font-bold text-2xl normal-price'>
+						{formattedPrice}
+					</span>
+				)
+			}
+		</div>
+
+		<!-- Additional Content with improved list styling -->
+		<div class='mb-5 flex-grow included-content'>
+			<p class='font-medium text-gray-700 mb-2'>Incluye:</p>
+			<ul class='text-sm space-y-1.5 included-list'>
+				{
+					includedItems.map((item) => (
+						<li class='flex items-start included-item'>
+							<span class='text-accent mr-1.5 mt-0.5'>✓</span>{' '}
+							{item}
+						</li>
+					))
+				}
+			</ul>
+		</div>
+
+		<!-- Rating (if available) with enhanced star display -->
+		{
+			rating && (
+				<div class='flex items-center mb-5 rating-display'>
+					<div class='flex text-yellow-400'>
+						{Array(fullStars)
+							.fill(0)
+							.map(() => (
+								<span class='text-lg star-icon'>⭐</span>
+							))}
+						{hasHalfStar && (
+							<span class='text-lg star-icon'>⭐</span>
+						)}
+						{Array(emptyStars)
+							.fill(0)
+							.map(() => (
+								<span class='text-lg text-gray-300 empty-star'>
+									☆
+								</span>
+							))}
+					</div>
+					<span class='text-sm text-gray-500 ml-2 review-count'>
+						{rating.score}/5 ({rating.reviewCount} reseñas)
+					</span>
+				</div>
+			)
+		}
+
+		<!-- Action Buttons with improved CTA -->
+		<div class='flex space-x-2 mt-auto action-buttons'>
+			<Button
+				variant='primary'
+				size='medium'
+				href={buyLink}
+				fullWidth={true}
+				class='group shadow-md hover:shadow-lg buy-button'>
+				<span>Comprar Ahora</span>
+				<svg
+					xmlns='http://www.w3.org/2000/svg'
+					class='h-5 w-5 ml-1 group-hover:translate-x-1 transition-transform'
+					fill='none'
+					viewBox='0 0 24 24'
+					stroke='currentColor'>
+					<path
+						stroke-linecap='round'
+						stroke-linejoin='round'
+						stroke-width='2'
+						d='M13 7l5 5m0 0l-5 5m5-5H6'></path>
+				</svg>
+			</Button>
+			<Button
+				variant='outline'
+				size='medium'
+				href={detailsLink}
+				class='min-w-[120px] details-button'>
+				Ver Detalles
+			</Button>
+		</div>
+	</div>
+</div>
+
+<script>
+	// Add click to expand functionality for mobile
+	document.addEventListener('DOMContentLoaded', () => {
+		const cards = document.querySelectorAll('.book-card');
+
+		cards.forEach((card) => {
+			// For mobile: tap to expand the description
+			card.addEventListener('click', (e) => {
+				// Only do this on mobile
+				if (window.innerWidth <= 768) {
+					// Don't activate if clicking on buttons or links
+					const target = e.target as Element;
+					if (
+						target &&
+						!target.closest('a') &&
+						!target.closest('button')
+					) {
+						card.classList.toggle('expanded');
+					}
+				}
+			});
+		});
+	});
+</script>
