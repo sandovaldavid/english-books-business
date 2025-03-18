@@ -1,0 +1,226 @@
+---
+import Button from '../Button.astro';
+import WhatsAppIcon from '../icons/WhatsApp.astro';
+import ArrowRightIcon from '../icons/ArrowRight.astro';
+import '../../styles/paymentMethods/CTA.css';
+import DollarIcon from '../icons/Dollar.astro';
+import SecurityIcon from '../icons/Security.astro';
+import ClockIcon from '../icons/Clock.astro';
+import CardIcon from '../icons/Card.astro';
+---
+
+<section class='py-16 bg-primary text-white relative overflow-hidden cta-payment-container'>
+	<!-- Animated background elements -->
+	<div class='cta-animated-bg'></div>
+
+	<!-- Decorative circles -->
+	<div class='cta-circle cta-circle-1'></div>
+	<div class='cta-circle cta-circle-2'></div>
+	<div class='cta-circle cta-circle-3'></div>
+
+	<div class='container mx-auto px-4 md:px-8 text-center relative z-10'>
+		<div class='max-w-5xl mx-auto'>
+			<div class='cta-payment-icon'>
+				<span class='cta-icon-pulse'>
+					<DollarIcon class='w-10 h-10' />
+				</span>
+			</div>
+
+			<h2 class='text-3xl md:text-4xl font-bold mb-6 cta-title'>
+				¿Listo para mejorar tu inglés?
+			</h2>
+
+			<!-- Fixed horizontal stars -->
+			<div class='flex justify-center items-center gap-1 mb-6'>
+				<div class='stars-container'>
+					<span class='star'>★</span>
+					<span class='star'>★</span>
+					<span class='star'>★</span>
+					<span class='star'>★</span>
+					<span class='star'>★</span>
+				</div>
+				<span class='rating-count'>(+2,500 clientes satisfechos)</span>
+			</div>
+
+			<p class='text-lg md:text-xl opacity-90 mb-8 max-w-3xl mx-auto leading-relaxed'>
+				Elige el material que necesitas, realiza el pago y comienza a
+				aprender hoy mismo. <span class='highlight pulse-text'>¡Tu futuro profesional te espera!</span>
+			</p>
+
+			<!-- Trust badges with improved layout -->
+			<div class='trust-badges-container'>
+				<div class='trust-badge'>
+					<div class='badge-icon'>
+						<SecurityIcon class='h-7 w-7' />
+					</div>
+					<span>Pago 100% Seguro</span>
+				</div>
+				<div class='trust-badge'>
+					<div class='badge-icon'>
+						<ClockIcon class='h-7 w-7' />
+					</div>
+					<span>Entrega Inmediata</span>
+				</div>
+				<div class='trust-badge'>
+					<div class='badge-icon'>
+						<CardIcon class='h-7 w-7' />
+					</div>
+					<span>Múltiples Métodos de Pago</span>
+				</div>
+			</div>
+
+			<!-- Enhanced countdown timer -->
+			<div class='countdown-container'>
+				<div class='countdown-header'>
+					<span class='flash-icon'>⚡</span> Oferta especial termina en:
+				</div>
+				<div class='countdown-display'>
+					<div class='countdown-unit'>
+						<div class='countdown-value' id='hours'>24</div>
+						<div class='countdown-label'>Horas</div>
+					</div>
+					<div class='countdown-separator'>:</div>
+					<div class='countdown-unit'>
+						<div class='countdown-value' id='minutes'>00</div>
+						<div class='countdown-label'>Minutos</div>
+					</div>
+					<div class='countdown-separator'>:</div>
+					<div class='countdown-unit'>
+						<div class='countdown-value' id='seconds'>00</div>
+						<div class='countdown-label'>Segundos</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Action buttons with better spacing and emphasis -->
+			<div class='cta-action-buttons'>
+				<Button
+					variant='secondary'
+					size='large'
+					href='/catalogo'
+					class='primary-cta-button'>
+					<span class='flex items-center'>
+						Ver Catálogo
+						<ArrowRightIcon class='ml-2 h-5 w-5 bounce-right' />
+					</span>
+				</Button>
+				<Button
+					variant='accent'
+					size='large'
+					href='https://wa.me/1234567890'
+					class='secondary-cta-button'>
+					<WhatsAppIcon class='h-5 w-5 mr-2' />
+					Contactar por WhatsApp
+				</Button>
+			</div>
+
+			<!-- Enhanced testimonial -->
+			<div class='testimonial-container'>
+				<div class='testimonial-avatar-container'>
+					<img
+						src='https://i.pravatar.cc/100?img=32'
+						alt='Cliente satisfecho'
+						class='testimonial-avatar-image'
+					/>
+				</div>
+				<div class='testimonial-quote'>
+					"Mejoré mi inglés en menos de 3 meses. La mejor inversión
+					que he hecho para mi carrera."
+					<div class='testimonial-author'>— María S., Lima</div>
+				</div>
+			</div>
+
+			<!-- Added satisfaction guarantee -->
+			<div class='satisfaction-guarantee'>
+				<div class='guarantee-icon'>✓</div>
+				<p>100% Garantía de satisfacción o te devolvemos tu dinero</p>
+			</div>
+		</div>
+	</div>
+</section>
+
+<script>
+	// Countdown timer functionality
+	document.addEventListener('DOMContentLoaded', () => {
+		function updateCountdown() {
+			// Set a 24-hour countdown from when the user first visits
+			const countdownEnd = localStorage.getItem('countdownEnd');
+
+			if (!countdownEnd) {
+				// Set end time to 24 hours from now
+				const end = new Date();
+				end.setHours(end.getHours() + 24);
+				localStorage.setItem('countdownEnd', end.getTime().toString());
+			}
+
+			const endTime = parseInt(
+				localStorage.getItem('countdownEnd') || '0'
+			);
+			const now = new Date().getTime();
+			const timeLeft = endTime - now;
+
+			if (timeLeft <= 0) {
+				// Reset the timer when it reaches zero
+				localStorage.removeItem('countdownEnd');
+				updateCountdown();
+				return;
+			}
+
+			// Calculate time units
+			const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+			const minutes = Math.floor(
+				(timeLeft % (1000 * 60 * 60)) / (1000 * 60)
+			);
+			const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+			// Update the HTML
+			document.getElementById('hours')!.textContent = hours
+				.toString()
+				.padStart(2, '0');
+			document.getElementById('minutes')!.textContent = minutes
+				.toString()
+				.padStart(2, '0');
+			document.getElementById('seconds')!.textContent = seconds
+				.toString()
+				.padStart(2, '0');
+		}
+
+		// Update the countdown immediately and then every second
+		updateCountdown();
+		setInterval(updateCountdown, 1000);
+
+		// Add entrance animations
+		const animateElements = document.querySelectorAll('.animate-on-scroll');
+		const observer = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting) {
+						entry.target.classList.add('animated');
+						observer.unobserve(entry.target);
+					}
+				});
+			},
+			{
+				threshold: 0.2,
+			}
+		);
+
+		animateElements.forEach((el) => {
+			observer.observe(el);
+		});
+
+		// Add pulse effect to CTA buttons
+		const ctaButtons = document.querySelectorAll('.primary-cta-button');
+		ctaButtons.forEach((button) => {
+			button.classList.add('pulse-animation');
+		});
+
+		// Add stars animation
+		const stars = document.querySelectorAll('.star');
+		stars.forEach((star, index) => {
+			setTimeout(() => {
+				star.classList.add('star-animated');
+			}, index * 150);
+		});
+	});
+</script>
