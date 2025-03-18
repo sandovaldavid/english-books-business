@@ -1,0 +1,38 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Hero from '../../components/paymentMethods/Hero.astro';
+import PaymentMethods from '../../components/paymentMethods/PaymentMethods.astro';
+import HowToPay from '../../components/paymentMethods/HowToPay.astro';
+import DeliveryTime from '../../components/paymentMethods/DeliveryTime.astro';
+import FAQ from '../../components/FAQ.astro';
+import CTA from '../../components/paymentMethods/CTA.astro';
+
+import '../../styles/paymentMethods.css';
+---
+
+<Layout
+	title='Métodos de Pago | FluentReads'
+	description='Conoce los diferentes métodos de pago que aceptamos en FluentReads para adquirir tus materiales educativos en inglés.'>
+	<!-- Hero Section -->
+	<Hero />
+
+	<!-- Payment Methods -->
+	<PaymentMethods />
+
+	<!-- How to Pay - Enhanced Version -->
+	<HowToPay />
+
+	<!-- Delivery Time -->
+	<DeliveryTime />
+
+	<!-- FAQ Section -->
+	<FAQ
+		className='pt-18'
+		jsonPath='/src/database/payment-faqs.json'
+		title='Preguntas frecuentes sobre pagos'
+		description='Resolvemos tus dudas sobre el proceso de pago y entrega de materiales.'
+	/>
+
+	<!-- CTA Section -->
+	<CTA />
+</Layout>
