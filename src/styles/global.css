@@ -1,7 +1,9 @@
 @import 'tailwindcss';
 
 @theme {
+	/* Font Type*/
 	--font-poppins: Poppins, sans-serif;
+	--font-lora: Lora, serif;
 
 	/* Pimary Color*/
 	--color-primary-light: #3b82f6;
@@ -28,7 +30,7 @@
 	--color-black: #18181b;
 }
 
-html{
+html {
 	scroll-behavior: smooth;
 	scrollbar-width: thin;
 }
