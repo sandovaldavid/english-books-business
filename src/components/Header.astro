@@ -1,17 +1,24 @@
 ---
-// import logoImage from '../assets/logo.svg';
 import WhatsAppIcon from '../components/icons/WhatsApp.astro';
 import SocialMediaButton from '../components/SocialMediaButton.astro';
 import MobileIcon from '../components/icons/Mobile.astro';
 import Navbar from '../components/Navbar.astro';
+const logoImage = '/assets/logo_v3.png';
 ---
 
 <header class='bg-primary text-white shadow-md fixed top-0 left-0 w-full z-50'>
 	<div
-		class='container mx-auto px-4 py-3 flex flex-wrap items-center justify-between'>
+		class='container mx-auto px-4 py-3 flex flex-wrap items-center justify-between md:justify-center lg:justify-between'>
 		<!-- Logo -->
 		<a href='/' class='flex items-center'>
-			<span class='text-2xl font-bold text-secondary'>FluentReads</span>
+			<img
+				src={logoImage}
+				alt='FluentReads'
+				class='size-12 rounded-full'
+			/>
+			<span class='font-lora ml-2 font-bold text-2xl md:text-3xl'
+				>FluentReads</span
+			>
 		</a>
 
 		<!-- Mobile menu button -->
