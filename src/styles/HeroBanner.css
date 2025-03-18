@@ -29,10 +29,6 @@
 	animation: fadeInUp 1s ease-out 0.3s both;
 }
 
-.animate-cta {
-	animation: bounceIn 1s ease-out 0.6s both;
-}
-
 @keyframes fadeInDown {
 	from {
 		opacity: 0;
