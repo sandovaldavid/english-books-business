@@ -1,0 +1,168 @@
+---
+import AccessIcon from '../icons/Access.astro';
+import MaterialIcon from '../icons/Material.astro';
+import SubscriptionIcon from '../icons/Subscription.astro';
+import PriceIcon from '../icons/Price.astro';
+import SupportIcon from '../icons/Support.astro';
+import SecurityIcon from '../icons/Security.astro';
+import SpecialOffersCard from './SpecialOffersCard.astro';
+import CheckIcon from '../icons/Check.astro';
+
+// Define benefits data
+const benefits = [
+	{
+		icon: AccessIcon,
+		title: 'Acceso inmediato',
+		description: 'Recibe los libros al instante después del pago.',
+		class: 'bg-secondary text-primary p-2 rounded-full',
+	},
+	{
+		icon: MaterialIcon,
+		title: 'Material completo',
+		description:
+			'Libros + Workbook + Audios + Videos + Software + Exámenes.',
+		class: 'bg-secondary text-black p-2 rounded-full',
+	},
+	{
+		icon: SubscriptionIcon,
+		title: 'Sin suscripción',
+		description: 'Compra única, sin pagos recurrentes.',
+		class: 'bg-secondary text-red-900 p-2 rounded-full',
+	},
+	{
+		icon: PriceIcon,
+		title: 'Precios accesibles',
+		description: 'Packs completos por solo S/10.00.',
+		class: 'bg-secondary text-accent p-2 rounded-full',
+	},
+	{
+		icon: SupportIcon,
+		title: 'Atención personalizada',
+		description: 'Resolvemos dudas en WhatsApp y Telegram.',
+		class: 'bg-secondary text-black p-2 rounded-full',
+	},
+	{
+		icon: SecurityIcon,
+		title: 'Seguridad',
+		description:
+			'Pagos 100% seguros con Yape, Plin, Transferencias y PayPal.',
+		class: 'bg-secondary text-black p-2 rounded-full',
+	},
+];
+---
+
+<div class='flex flex-col md:justify-between'>
+	<!-- Background gradient effect -->
+	<div
+		class='absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 opacity-50'>
+	</div>
+
+	<div
+		class='bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8 transform transition-all duration-500 hover:shadow-xl relative overflow-hidden'>
+		<!-- Content wrapper -->
+		<div class='z-10 relative'>
+			<h3
+				class='text-xl md:text-2xl font-bold text-primary-dark mb-5 md:mb-7 flex items-center'>
+				<span
+					class='bg-primary text-white p-2 rounded-full mr-3 shadow-md transform transition-all duration-300 hover:scale-110'>
+					<CheckIcon class='w-5 h-5 sm:w-6 sm:h-6' />
+				</span>
+				Beneficios de comprar aquí
+			</h3>
+
+			<!-- Benefits cards with improved grid -->
+			<div
+				class='grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 md:gap-10'>
+				{
+					benefits.map((benefit) => (
+						<div class='benefit-card transform transition-all duration-300 hover:-translate-y-1 hover:shadow-md p-3 sm:p-4 md:p-5 rounded-lg border border-neutral bg-white/80 hover:border-primary-light hover:bg-white group'>
+							<div class='flex items-start'>
+								<div
+									class={`${benefit.class} h-10 w-10 sm:h-11 sm:w-11 flex items-center justify-center shadow-sm group-hover:shadow benefit-icon mr-3 sm:mr-4 shrink-0`}>
+									<benefit.icon class='w-6 h-6' />
+								</div>
+								<div>
+									<h4 class='font-bold text-primary-dark text-base sm:text-lg mb-1 sm:mb-2 leading-tight'>
+										{benefit.title}
+									</h4>
+									<p class='text-gray-600 text-sm sm:text-base'>
+										{benefit.description}
+									</p>
+								</div>
+							</div>
+						</div>
+					))
+				}
+			</div>
+		</div>
+	</div>
+
+	<!-- Special Offers with animation -->
+	<div
+		class='lg:mb-10 transform transition-all duration-500 hover:scale-[1.01]'>
+		<SpecialOffersCard />
+	</div>
+</div>
+
+<style>
+	/* Subtle pulse animation for benefit icons on hover */
+	.benefit-card:hover .benefit-icon {
+		animation: subtle-pulse 2s infinite;
+	}
+
+	@keyframes subtle-pulse {
+		0% {
+			transform: scale(1);
+		}
+		50% {
+			transform: scale(1.05);
+		}
+		100% {
+			transform: scale(1);
+		}
+	}
+
+	/* Improve accessibility with focus styles */
+	.benefit-card:focus-within {
+		outline: 2px solid var(--color-primary);
+		outline-offset: 2px;
+	}
+
+	/* Add card entrance animations */
+	@media (prefers-reduced-motion: no-preference) {
+		.benefit-card {
+			opacity: 0;
+			animation: card-entrance 0.5s ease forwards;
+		}
+
+		.benefit-card:nth-child(1) {
+			animation-delay: 0.1s;
+		}
+		.benefit-card:nth-child(2) {
+			animation-delay: 0.2s;
+		}
+		.benefit-card:nth-child(3) {
+			animation-delay: 0.3s;
+		}
+		.benefit-card:nth-child(4) {
+			animation-delay: 0.4s;
+		}
+		.benefit-card:nth-child(5) {
+			animation-delay: 0.5s;
+		}
+		.benefit-card:nth-child(6) {
+			animation-delay: 0.6s;
+		}
+
+		@keyframes card-entrance {
+			from {
+				opacity: 0;
+				transform: translateY(20px);
+			}
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+	}
+</style>
