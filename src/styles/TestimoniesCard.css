@@ -48,3 +48,51 @@
 		transition: none !important;
 	}
 }
+
+.compact-testimonial {
+	transform: scale(1);
+	padding: 1rem !important;
+	margin-bottom: 0 !important;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05) !important;
+}
+
+.compact-testimonial .quote-icon {
+	font-size: 2rem !important;
+	margin-bottom: 0.5rem !important;
+}
+
+.compact-testimonial p {
+	font-size: 0.9rem !important;
+	line-height: 1.4 !important;
+	margin-bottom: 0.5rem !important;
+}
+
+.testimonial-snippet p {
+	opacity: 1 !important;
+	visibility: visible !important;
+}
+
+.fade-in-element {
+	opacity: 0;
+	transform: translateY(10px);
+	transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.fade-in-visible {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.shine-effect {
+		animation: none !important;
+	}
+
+	.testimonial-snippet {
+		transition: none !important;
+	}
+
+	.compact-testimonial:hover {
+		transform: none;
+	}
+}
