@@ -1,0 +1,86 @@
+---
+import '../../styles/benefits/statisticsCard.css';
+
+// Stats for customer satisfaction section
+const stats = {
+	customers: '5,000+',
+	books: '10,000+',
+	satisfaction: '98%',
+};
+---
+
+<div class='flex flex-col'>
+	<!-- Stats Cards -->
+	<div
+		class='grid grid-cols-1 xs:grid-cols-3 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6 mb-4'>
+		<div
+			class='stat-item bg-primary-dark/30 rounded-lg p-3 sm:p-4 transform transition-all duration-300 hover:scale-105 hover:bg-primary-dark/40'>
+			<div class='text-center'>
+				<div
+					class='text-2xl sm:text-3xl md:text-3xl font-bold text-secondary mb-1 sm:mb-2 counter-animation'>
+					{stats.customers}
+				</div>
+				<div class='text-xs sm:text-sm text-white/90'>
+					Clientes Satisfechos
+				</div>
+			</div>
+		</div>
+
+		<div
+			class='stat-item bg-primary-dark/30 rounded-lg p-3 sm:p-4 transform transition-all duration-300 hover:scale-105 hover:bg-primary-dark/40'>
+			<div class='text-center'>
+				<div
+					class='text-2xl sm:text-3xl md:text-4xl font-bold text-secondary mb-1 sm:mb-2 counter-animation'>
+					{stats.books}
+				</div>
+				<div class='text-xs sm:text-sm text-white/90'>
+					Libros Vendidos
+				</div>
+			</div>
+		</div>
+
+		<div
+			class='stat-item bg-primary-dark/30 rounded-lg p-3 sm:p-4 transform transition-all duration-300 hover:scale-105 hover:bg-primary-dark/40'>
+			<div class='text-center'>
+				<div
+					class='text-2xl sm:text-3xl md:text-4xl font-bold text-secondary mb-1 sm:mb-2 counter-animation'>
+					{stats.satisfaction}
+				</div>
+				<div class='text-xs sm:text-sm text-white/90'>Satisfacción</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Trust Banner -->
+	<div
+		class='p-3 sm:p-4 md:p-5 bg-primary-dark/50 rounded-lg shadow-md transform transition-all duration-300 hover:shadow-lg hover:bg-primary-dark/60 trust-banner'>
+		<p class='text-xs sm:text-sm md:text-base text-white/90 text-center'>
+			Únete a miles de estudiantes y profesionales que confían en nosotros
+			para su formación en inglés.
+		</p>
+
+		<div
+			class='flex justify-center mt-2 sm:mt-3 space-x-1 sm:space-x-2 star-rating'>
+			<span
+				class='text-yellow-400 text-sm sm:text-base md:text-lg shine-effect'
+				>★</span
+			>
+			<span
+				class='text-yellow-400 text-sm sm:text-base md:text-lg shine-effect'
+				>★</span
+			>
+			<span
+				class='text-yellow-400 text-sm sm:text-base md:text-lg shine-effect'
+				>★</span
+			>
+			<span
+				class='text-yellow-400 text-sm sm:text-base md:text-lg shine-effect'
+				>★</span
+			>
+			<span
+				class='text-yellow-400 text-sm sm:text-base md:text-lg shine-effect'
+				>★</span
+			>
+		</div>
+	</div>
+</div>
