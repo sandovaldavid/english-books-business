@@ -1,0 +1,110 @@
+---
+import '../styles/TestimoniesCard.css';
+
+// Define the interface for testimonial data
+interface Props {
+	quote: string;
+	author: string;
+	position: string;
+	avatarUrl?: string;
+	rating?: number;
+}
+
+// Receive props with defaults
+const {
+	quote = 'Estos libros transformaron mi carrera. Pude mejorar mi inglés de negocios y conseguir un ascenso en menos de 6 meses.',
+	author = 'María Rodríguez',
+	position = 'Ejecutiva de Marketing',
+	avatarUrl = 'https://i.pravatar.cc/100',
+	rating = 5,
+} = Astro.props;
+
+// Create stars based on rating
+const fullStars = Math.floor(rating);
+const hasHalfStar = rating % 1 >= 0.5;
+const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+---
+
+<!-- Enhanced Testimonial Card -->
+<div
+	class='testimonial-snippet text-center mb-12 py-8 px-6 rounded-xl bg-white border border-neutral shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group'>
+	<!-- Background accent -->
+	<div
+		class='absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500'>
+	</div>
+
+	<!-- Avatar image -->
+	<div class='mb-6 relative z-10'>
+		<div
+			class='w-20 h-20 mx-auto rounded-full overflow-hidden border-2 border-secondary shadow-md transform transition-transform duration-300 group-hover:scale-105'>
+			<img
+				src={avatarUrl}
+				alt={`Foto de ${author}`}
+				class='w-full h-full object-cover'
+			/>
+		</div>
+	</div>
+
+	<!-- Quote icon with animation -->
+	<div
+		class='quote-icon mb-4 text-5xl text-secondary opacity-80 leading-none relative z-10 transform transition-transform duration-300 group-hover:scale-110'>
+		❝
+	</div>
+
+	<!-- Testimonial text -->
+	<p
+		class='text-lg italic text-gray-700 max-w-3xl mx-auto mb-4 relative z-10'>
+		{quote}
+	</p>
+
+	<!-- Star rating -->
+	<div class='flex justify-center mb-3 star-rating'>
+		{
+			Array(fullStars)
+				.fill(0)
+				.map(() => (
+					<span class='text-yellow-400 text-lg shine-effect'>★</span>
+				))
+		}
+		{
+			hasHalfStar && (
+				<span class='text-yellow-400 text-lg shine-effect'>★</span>
+			)
+		}
+		{
+			Array(emptyStars)
+				.fill(0)
+				.map(() => <span class='text-gray-300 text-lg'>☆</span>)
+		}
+	</div>
+
+	<!-- Author information -->
+	<div class='text-primary font-medium relative z-10'>
+		<span class='font-bold'>{author}</span>, <span class='text-gray-600'
+			>{position}</span
+		>
+	</div>
+</div>
+
+<script>
+	// Add scroll animations using Intersection Observer
+	document.addEventListener('DOMContentLoaded', () => {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting) {
+						entry.target.classList.add('fade-in-visible');
+						observer.unobserve(entry.target);
+					}
+				});
+			},
+			{ threshold: 0.1 }
+		);
+
+		// Observe testimonial cards for fade-in animation
+		document.querySelectorAll('.testimonial-snippet').forEach((el) => {
+			el.classList.add('fade-in-element');
+			observer.observe(el);
+		});
+	});
+</script>
