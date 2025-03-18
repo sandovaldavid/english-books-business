@@ -1,0 +1,208 @@
+---
+import SectionTitle from '../SectionTitle.astro';
+import WhatsAppIcon from '../icons/WhatsApp.astro';
+import TelegramIcon from '../icons/Telegram.astro';
+import SocialSharing from '../SocialSharing.astro';
+
+// Import payment method icons
+import BcpIcon from '../icons/payments/Bcp.astro';
+import BbvaIcon from '../icons/payments/Bbva.astro';
+import ScotiabankIcon from '../icons/payments/Scotiabank.astro';
+import PayPalIcon from '../icons/payments/PayPal.astro';
+import TrustIndicator from '../TrustIndicator.astro';
+
+import '../../styles/paymentMethods/HowToPay.css';
+
+// Define payment methods for visual display
+const paymentMethods = [
+	{ icon: BcpIcon, name: 'BCP', color: 'bg-blue-50' },
+	{ icon: BbvaIcon, name: 'BBVA', color: 'bg-cyan-50' },
+	{ icon: ScotiabankIcon, name: 'Scotiabank', color: 'bg-red-50' },
+	{ icon: PayPalIcon, name: 'PayPal', color: 'bg-blue-100' },
+];
+
+// Define social sharing options
+const socialOptions = [
+	{
+		name: 'WhatsApp',
+		icon: WhatsAppIcon,
+		url: 'https://wa.me/1234567890?text=Hola,%20adjunto%20mi%20comprobante%20de%20pago%20para%20mi%20pedido%20en%20FluentReads.',
+		color: 'accent',
+		description: 'Respuesta más rápida',
+	},
+	{
+		name: 'Telegram',
+		icon: TelegramIcon,
+		url: 'https://t.me/FluentReads',
+		color: 'primary',
+		description: 'Envío de archivos grandes',
+	},
+];
+---
+
+<section class='py-16 how-to-pay-section relative overflow-hidden'>
+	<!-- Floating decoration elements -->
+	<div class='floating-element elem-1'></div>
+	<div class='floating-element elem-2'></div>
+	<div class='floating-element elem-3'></div>
+
+	<div class='container mx-auto px-4'>
+		<div class='max-w-5xl mx-auto'>
+			<div class='text-center mb-12 fade-in-element'>
+				<SectionTitle class='mb-4'>¿Cómo realizar el pago?</SectionTitle
+				>
+				<p class='mt-4 text-gray-600 max-w-2xl mx-auto text-lg'>
+					Sigue estos <span class='text-accent font-semibold'
+						>sencillos pasos</span
+					> para completar tu compra y recibir tu material <span
+						class='text-primary font-semibold'>inmediatamente</span
+					>.
+				</p>
+			</div>
+
+			<!-- Payment methods visualization -->
+			<div class='mb-14 payment-methods-showcase'>
+				<div class='text-center mb-6'>
+					<h3 class='text-xl font-semibold text-primary-dark'>
+						Métodos de Pago Aceptados
+					</h3>
+				</div>
+
+				<div class='payment-methods-carousel'>
+					{
+						paymentMethods.map((method, index) => (
+							<div
+								class={`payment-method-card ${method.color}`}
+								style={`animation-delay: ${index * 150}ms`}>
+								<method.icon class='payment-method-icon' />
+								<span class='payment-method-name'>
+									{method.name}
+								</span>
+							</div>
+						))
+					}
+				</div>
+			</div>
+
+			<!-- Steps flow -->
+			<div class='payment-steps-container'>
+				<!-- Step 1 -->
+				<div class='payment-step step-1'>
+					<div class='step-number-container'>
+						<div class='step-number'>1</div>
+						<div class='step-connector'></div>
+					</div>
+					<div class='step-content'>
+						<h3 class='step-title'>Elige y realiza el pago</h3>
+						<p class='step-description'>
+							Selecciona el método que prefieras y realiza la
+							transferencia del importe a cualquiera de nuestras
+							cuentas.
+						</p>
+					</div>
+				</div>
+
+				<!-- Step 2 -->
+				<div class='payment-step step-2'>
+					<div class='step-number-container'>
+						<div class='step-number'>2</div>
+						<div class='step-connector'></div>
+					</div>
+					<div class='step-content'>
+						<h3 class='step-title'>Guarda el comprobante</h3>
+						<p class='step-description'>
+							Toma una captura de pantalla o guarda el comprobante
+							de tu pago para verificación.
+						</p>
+					</div>
+				</div>
+
+				<!-- Step 3 -->
+				<div class='payment-step step-3'>
+					<div class='step-number-container'>
+						<div class='step-number'>3</div>
+					</div>
+					<div class='step-content'>
+						<h3 class='step-title'>Envíanos el comprobante</h3>
+						<p class='step-description'>
+							Comparte el comprobante vía WhatsApp o Telegram para
+							recibir tu material inmediatamente.
+						</p>
+					</div>
+				</div>
+			</div>
+
+			<!-- Social sharing options with enhanced visual appeal -->
+			<SocialSharing />
+
+			<!-- Trust indicators and guarantees -->
+			<div class='trust-guarantee-container'>
+				<div class='guarantee-badge'>
+					<TrustIndicator />
+					<p>
+						Respuesta en menos de <span class='highlight'
+							>15 minutos</span
+						> en horario de atención
+					</p>
+				</div>
+
+				<div class='guarantee-badge'>
+					<TrustIndicator />
+					<p>
+						Material <span class='highlight'
+							>completo y actualizado</span
+						> garantizado
+					</p>
+				</div>
+
+				<div class='guarantee-badge'>
+					<TrustIndicator />
+					<p>
+						Soporte <span class='highlight'>post-venta</span> incluido
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<script>
+	// Add intersection observer to create scroll animations
+	document.addEventListener('DOMContentLoaded', function () {
+		const fadeElements = document.querySelectorAll('.fade-in-element');
+		const paymentSteps = document.querySelectorAll('.payment-step');
+
+		const appearOptions = {
+			threshold: 0.25,
+			rootMargin: '0px 0px -100px 0px',
+		};
+
+		const appearOnScroll = new IntersectionObserver(function (
+			entries,
+			appearOnScroll
+		) {
+			entries.forEach((entry) => {
+				if (!entry.isIntersecting) return;
+				entry.target.classList.add('appear');
+				appearOnScroll.unobserve(entry.target);
+			});
+		}, appearOptions);
+
+		fadeElements.forEach((element) => {
+			appearOnScroll.observe(element);
+		});
+
+		paymentSteps.forEach((step) => {
+			appearOnScroll.observe(step);
+		});
+
+		// Add hover effect to payment method cards
+		const paymentCards = document.querySelectorAll('.payment-method-card');
+		paymentCards.forEach((card) => {
+			card.addEventListener('mouseenter', function (this: HTMLElement) {
+				paymentCards.forEach((c) => c.classList.remove('active'));
+				this.classList.add('active');
+			});
+		});
+	});
+</script>
