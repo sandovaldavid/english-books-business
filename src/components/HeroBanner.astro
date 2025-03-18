@@ -76,10 +76,10 @@ import Button from './Button.astro';
                 href={ctaLink} 
                 variant="secondary"
                 size="large"
-                class="text-primary-dark font-extrabold"
+                class="text-primary-dark font-extrabold animate-button-bounce"
             >
                 {ctaText}
-                <ArrowRightIcon class='h-5 w-5 ml-2'/>
+                <ArrowRightIcon class='h-5 w-5 ml-2 animate-arrow'/>
             </Button>
         </div>
 
@@ -104,10 +104,14 @@ import Button from './Button.astro';
                                         <h3 class="text-2xl md:text-3xl font-bold mb-4 text-secondary">{offer.title}</h3>
                                         <p class="text-lg md:text-xl mb-6">{offer.description}</p>
                                         <div class="flex flex-col md:flex-row gap-4 items-start md:items-center">
-                                            <a href="/promociones" class="bg-accent hover:bg-accent-dark text-white font-semibold py-3 px-6 rounded-lg transition duration-300 transform hover:scale-105 inline-flex items-center">
+                                            <Button 
+                                                variant="accent"
+                                                size="medium"
+                                                href="/promociones"
+                                                class="animate-button-slide">
                                                 <span>Ver detalles</span>
-                                                <ArrowRightIcon class='h-5 w-5 ml-2'/>
-                                            </a>
+                                                <ArrowRightIcon class='h-5 w-5 ml-2 animate-arrow'/>
+                                            </Button>
                                             <p class="text-sm opacity-80">Expira: {offer.expiration}</p>
                                         </div>
                                     </div>
