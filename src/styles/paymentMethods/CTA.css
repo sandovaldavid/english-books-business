@@ -364,66 +364,6 @@
 	}
 }
 
-/* Testimonial */
-.testimonial-container {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	background: linear-gradient(
-		135deg,
-		rgba(255, 255, 255, 0.1) 0%,
-		rgba(255, 255, 255, 0.05) 100%
-	);
-	border-radius: 1rem;
-	padding: 1.5rem;
-	max-width: 600px;
-	margin: 0 auto 2rem;
-	font-style: italic;
-	text-align: center;
-	backdrop-filter: blur(5px);
-	border: 1px solid rgba(255, 255, 255, 0.1);
-	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-@media (min-width: 640px) {
-	.testimonial-container {
-		flex-direction: row;
-		text-align: left;
-	}
-}
-
-.testimonial-avatar-container {
-	margin-bottom: 1rem;
-	position: relative;
-}
-
-@media (min-width: 640px) {
-	.testimonial-avatar-container {
-		margin-right: 1.5rem;
-		margin-bottom: 0;
-	}
-}
-
-.testimonial-avatar-image {
-	border-radius: 50%;
-	border: 3px solid var(--color-secondary);
-	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-.testimonial-quote {
-	font-size: 1rem;
-	line-height: 1.5;
-	color: rgba(255, 255, 255, 0.95);
-}
-
-.testimonial-author {
-	font-size: 0.9rem;
-	color: var(--color-secondary);
-	margin-top: 0.75rem;
-	font-style: normal;
-	font-weight: bold;
-}
-
 /* Satisfaction guarantee */
 .satisfaction-guarantee {
 	display: flex;
