@@ -4,13 +4,19 @@ import QuestionCard from './QuestionCard.astro';
 
 import '../styles/FAQ.css';
 
+// Import FAQ data directly
+import generalFaqs from '../database/general-faqs.json';
+import paymentFaqs from '../database/payment-faqs.json';
+
 interface FAQItem {
 	question: string;
 	answer: string;
 }
 
 interface Props {
-	jsonPath: string;
+	jsonPath?: string; // Keep for backward compatibility but not used anymore
+	dataset?: 'general' | 'payment' | 'custom';
+	customFAQs?: FAQItem[];
 	title: string;
 	description?: string;
 	contactLink?: string;
@@ -20,24 +26,24 @@ interface Props {
 }
 
 const {
-	jsonPath,
+	dataset = 'general',
+	customFAQs = [],
 	title,
 	description = '',
 	contactLink = '/contacto',
 	contactText = 'Contáctanos directamente',
 	className = '',
-	expanded = 0,
+	expanded = -1,
 } = Astro.props;
 
-// Fix the dynamic import to properly resolve paths
+// Determine which FAQ dataset to use
 let faqItems: FAQItem[] = [];
-
-try {
-	// Try to load the JSON data
-	const module = await import(/* @vite-ignore */ jsonPath);
-	faqItems = module.default || [];
-} catch (error) {
-	console.error(`Error loading FAQ data from ${jsonPath}:`, error);
+if (dataset === 'general') {
+	faqItems = generalFaqs;
+} else if (dataset === 'payment') {
+	faqItems = paymentFaqs;
+} else if (dataset === 'custom' && customFAQs.length > 0) {
+	faqItems = customFAQs;
 }
 ---
 
