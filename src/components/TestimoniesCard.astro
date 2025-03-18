@@ -8,6 +8,7 @@ interface Props {
 	position: string;
 	avatarUrl?: string;
 	rating?: number;
+	compact?: boolean;
 }
 
 // Receive props with defaults
@@ -17,26 +18,35 @@ const {
 	position = 'Ejecutiva de Marketing',
 	avatarUrl = 'https://i.pravatar.cc/100',
 	rating = 5,
+	compact = false,
 } = Astro.props;
 
 // Create stars based on rating
 const fullStars = Math.floor(rating);
 const hasHalfStar = rating % 1 >= 0.5;
 const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+// Adjust classes based on compact mode
+const containerClasses = `testimonial-snippet text-center ${compact ? 'p-4' : 'mb-12 py-8 px-6'} rounded-xl bg-white border border-neutral shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group ${compact ? 'compact-testimonial' : ''}`;
+const avatarSize = compact ? 'w-14 h-14' : 'w-20 h-20';
+const quoteSize = compact ? 'text-3xl' : 'text-5xl';
+const textSize = compact ? 'text-sm' : 'text-lg';
+const marginBottom = compact ? 'mb-2' : 'mb-4';
+const avatarMargin = compact ? 'mb-3' : 'mb-6';
+const starSize = compact ? 'text-sm' : 'text-lg';
 ---
 
 <!-- Enhanced Testimonial Card -->
-<div
-	class='testimonial-snippet text-center mb-12 py-8 px-6 rounded-xl bg-white border border-neutral shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group'>
+<div class={containerClasses}>
 	<!-- Background accent -->
 	<div
 		class='absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500'>
 	</div>
 
 	<!-- Avatar image -->
-	<div class='mb-6 relative z-10'>
+	<div class={`${avatarMargin} relative z-10`}>
 		<div
-			class='w-20 h-20 mx-auto rounded-full overflow-hidden border-2 border-secondary shadow-md transform transition-transform duration-300 group-hover:scale-105'>
+			class={`${avatarSize} mx-auto rounded-full overflow-hidden border-2 border-secondary shadow-md transform transition-transform duration-300 group-hover:scale-105`}>
 			<img
 				src={avatarUrl}
 				alt={`Foto de ${author}`}
@@ -47,13 +57,13 @@ const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
 
 	<!-- Quote icon with animation -->
 	<div
-		class='quote-icon mb-4 text-5xl text-secondary opacity-80 leading-none relative z-10 transform transition-transform duration-300 group-hover:scale-110'>
+		class={`quote-icon ${marginBottom} ${quoteSize} text-secondary opacity-80 leading-none relative z-10 transform transition-transform duration-300 group-hover:scale-110`}>
 		❝
 	</div>
 
 	<!-- Testimonial text -->
 	<p
-		class='text-lg italic text-gray-700 max-w-3xl mx-auto mb-4 relative z-10'>
+		class={`${textSize} italic text-gray-700 max-w-3xl mx-auto ${marginBottom} relative z-10`}>
 		{quote}
 	</p>
 
@@ -63,18 +73,22 @@ const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
 			Array(fullStars)
 				.fill(0)
 				.map(() => (
-					<span class='text-yellow-400 text-lg shine-effect'>★</span>
+					<span class={`text-yellow-400 ${starSize} shine-effect`}>
+						★
+					</span>
 				))
 		}
 		{
 			hasHalfStar && (
-				<span class='text-yellow-400 text-lg shine-effect'>★</span>
+				<span class={`text-yellow-400 ${starSize} shine-effect`}>
+					★
+				</span>
 			)
 		}
 		{
 			Array(emptyStars)
 				.fill(0)
-				.map(() => <span class='text-gray-300 text-lg'>☆</span>)
+				.map(() => <span class={`text-gray-300 ${starSize}`}>☆</span>)
 		}
 	</div>
 
