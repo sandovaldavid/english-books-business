@@ -1,299 +1,65 @@
-/* Background pattern styling */
+/* Background pattern for benefits section */
 .bg-pattern {
-	background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231e3a8a' fill-opacity='0.2'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+	background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231e3a8a' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 }
 
-/* Decorative background shapes */
+/* Decorative shapes */
 .decorative-shape {
 	position: absolute;
-	z-index: 0;
 	border-radius: 50%;
-	opacity: 0.15;
+	opacity: 0.1;
+	z-index: 0;
 }
 
 .shape-1 {
-	top: -100px;
-	right: -50px;
-	width: 400px;
-	height: 400px;
-	background: radial-gradient(
-		circle,
-		var(--color-primary-light) 0%,
-		transparent 70%
+	top: -10%;
+	right: -5%;
+	width: 300px;
+	height: 300px;
+	background: linear-gradient(
+		45deg,
+		var(--color-primary-light),
+		var(--color-primary)
 	);
-	animation: float 15s infinite alternate ease-in-out;
 }
 
 .shape-2 {
-	bottom: -150px;
-	left: -100px;
-	width: 500px;
-	height: 500px;
-	background: radial-gradient(
-		circle,
-		var(--color-secondary-light) 0%,
-		transparent 70%
+	bottom: -5%;
+	left: -5%;
+	width: 250px;
+	height: 250px;
+	background: linear-gradient(
+		45deg,
+		var(--color-secondary),
+		var(--color-accent)
 	);
-	animation: float 20s infinite alternate-reverse ease-in-out;
-}
-
-@keyframes float {
-	0% {
-		transform: translate(0, 0);
-	}
-	50% {
-		transform: translate(20px, -20px);
-	}
-	100% {
-		transform: translate(-20px, 20px);
-	}
-}
-
-/* Benefits cards styling */
-.benefits-container,
-.steps-container,
-.stats-container {
-	transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-	will-change: transform;
-	backface-visibility: hidden;
-}
-
-.benefits-container:hover,
-.steps-container:hover {
-	transform: translateY(-5px);
-}
-
-.benefit-card {
-	position: relative;
-	background: linear-gradient(to bottom right, #ffffff, #f8fafc);
-	overflow: hidden;
-	transition: all 0.3s ease;
-	border-width: 1px;
-	border-style: solid;
-}
-
-.benefit-card:hover {
-	background: linear-gradient(to bottom right, #ffffff, #f0f9ff);
-	border-color: var(--color-primary-light);
-	transform: translateY(-8px) !important;
-	box-shadow: 0 10px 15px -3px rgba(var(--color-primary), 0.1),
-		0 4px 6px -2px rgba(var(--color-primary), 0.05);
-}
-
-/* Icon animations */
-.benefit-icon {
-	transition: transform 0.3s ease;
-	display: inline-block;
-}
-
-.benefit-icon-container {
-	transition: transform 0.3s ease, background-color 0.3s ease;
-}
-
-.benefit-card:hover .benefit-icon {
-	transform: scale(1.2);
-}
-
-.special-offer-banner {
-	position: relative;
-	overflow: hidden;
-	transition: transform 0.3s ease;
-	animation: pulse-subtle 3s infinite alternate;
-}
-
-.special-offer-banner:hover {
-	transform: translateY(-5px);
-}
-
-@keyframes pulse-subtle {
-	0%,
-	100% {
-		box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-	}
-	50% {
-		box-shadow: 0 6px 12px -1px rgba(0, 0, 0, 0.15);
-	}
-}
-
-@keyframes bounce-subtle {
-	0%,
-	100% {
-		transform: translateY(0);
-	}
-	50% {
-		transform: translateY(-5px);
-	}
-}
-
-.animate-bounce-subtle {
-	animation: bounce-subtle 2s infinite ease-in-out;
-}
-
-/* Step process enhancements */
-.step-container {
-	position: relative;
-	padding-bottom: 1.5rem;
-	transition: transform 0.3s ease;
-}
-
-.step-container:hover {
-	transform: translateX(5px);
-}
-
-.step-icon-container {
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	z-index: 1;
-}
-
-.step-number {
-	transition: transform 0.3s ease, box-shadow 0.3s ease;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.step-container:hover .step-number {
-	transform: scale(1.1);
-	box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-}
-
-.step-emoji {
-	transform: scale(1);
-	transition: transform 0.3s ease;
-}
-
-.step-container:hover .step-emoji {
-	transform: scale(1.3);
-	animation: wiggle 0.5s ease;
-}
-
-.step-content {
-	transition: transform 0.2s ease;
-}
-
-.step-container:hover .step-content h4 {
-	color: var(--color-primary);
 }
 
 /* Statistics section enhancements */
-.stats-container {
-	background: linear-gradient(
-		135deg,
-		var(--color-primary),
-		var(--color-primary-dark)
-	);
+.stats-grid {
 	position: relative;
 	overflow: hidden;
-}
-
-.stats-container::before {
-	content: '';
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-	opacity: 0.1;
 }
 
 .stat-item {
-	transition: transform 0.3s ease;
-}
-
-.stat-item:hover {
-	transform: translateY(-5px);
-}
-
-.counter-animation {
-	display: inline-block;
-	position: relative;
-}
-
-.shine-effect {
 	position: relative;
 	overflow: hidden;
-}
-
-.shine-effect::after {
-	content: '';
-	position: absolute;
-	top: -50%;
-	left: -50%;
-	width: 200%;
-	height: 200%;
-	background: linear-gradient(
-		to right,
-		rgba(255, 255, 255, 0) 0%,
-		rgba(255, 255, 255, 0.3) 50%,
-		rgba(255, 255, 255, 0) 100%
-	);
-	transform: rotate(30deg);
-	animation: shine 3s infinite;
-}
-
-@keyframes shine {
-	from {
-		transform: rotate(30deg) translateX(-100%);
-	}
-	to {
-		transform: rotate(30deg) translateX(100%);
-	}
+	backdrop-filter: blur(5px);
+	-webkit-backdrop-filter: blur(5px);
 }
 
 .trust-banner {
-	transition: transform 0.3s ease, background-color 0.3s ease;
-}
-
-.trust-banner:hover {
-	transform: scale(1.02);
-	background-color: rgba(30, 64, 175, 0.9);
-}
-
-/* CTA button pulse animation */
-.pulse-animation {
 	position: relative;
+	overflow: hidden;
+	backdrop-filter: blur(4px);
+	-webkit-backdrop-filter: blur(4px);
 }
 
-.pulse-animation::after {
-	content: '';
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	border-radius: 9999px;
-	box-shadow: 0 0 0 0 rgba(var(--color-primary), 0.7);
-	animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-	0% {
-		box-shadow: 0 0 0 0 rgba(30, 58, 138, 0.7);
-	}
-	70% {
-		box-shadow: 0 0 0 10px rgba(30, 58, 138, 0);
-	}
-	100% {
-		box-shadow: 0 0 0 0 rgba(30, 58, 138, 0);
-	}
-}
-
-/* Testimonial styling */
-.testimonial-container {
-	transition: transform 0.3s ease;
-}
-
-.testimonial-container:hover {
-	transform: translateY(-5px);
-}
-
-/* Fade-in animations for scroll */
+/* Fade-in animations for elements */
 .fade-in-element {
 	opacity: 0;
 	transform: translateY(20px);
-	transition: opacity 0.6s ease, transform 0.6s ease;
+	transition: opacity 0.8s ease, transform 0.8s ease;
 }
 
 .fade-in-visible {
@@ -301,125 +67,19 @@
 	transform: translateY(0);
 }
 
-/* Wiggle animation for icons */
-@keyframes wiggle {
-	0%,
+/* Pulse animation for CTA buttons */
+.pulse-animation {
+	animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+	0% {
+		box-shadow: 0 0 0 0 rgba(26, 86, 219, 0.4);
+	}
+	70% {
+		box-shadow: 0 0 0 10px rgba(26, 86, 219, 0);
+	}
 	100% {
-		transform: rotate(0);
-	}
-	25% {
-		transform: rotate(-10deg);
-	}
-	50% {
-		transform: rotate(0);
-	}
-	75% {
-		transform: rotate(10deg);
-	}
-}
-
-.animate-wiggle {
-	animation: wiggle 0.5s ease;
-}
-
-/* Responsive adjustments */
-@media (max-width: 640px) {
-	.special-offer-banner {
-		padding: 1rem;
-	}
-
-	.benefits-container,
-	.steps-container,
-	.stats-container {
-		padding: 1.25rem;
-	}
-
-	.step-number {
-		width: 3rem;
-		height: 3rem;
-	}
-
-	.step-emoji {
-		font-size: 1.5rem;
-	}
-
-	.counter-animation {
-		font-size: 1.75rem;
-	}
-}
-
-/* New tablet-specific styles */
-@media (min-width: 641px) and (max-width: 768px) {
-	.stats-grid {
-		grid-template-columns: repeat(3, 1fr);
-		gap: 0.75rem;
-	}
-
-	.stat-item::after {
-		right: -8px; /* Adjust divider line position */
-	}
-
-	.benefit-card {
-		display: flex;
-		flex-direction: column;
-	}
-
-	.special-offer-banner {
-		margin-top: 1.5rem;
-	}
-
-	/* Improved vertical connector line for steps on tablets */
-	.step-container:not(:last-child)::after {
-		height: calc(100% - 4rem);
-		top: 4.5rem;
-	}
-
-	/* Ensure proper alignment of step content */
-	.step-content {
-		width: 100%;
-		padding-left: 0.5rem;
-	}
-
-	/* Add extra class for better xs breakpoint support */
-	@media (min-width: 480px) and (max-width: 640px) {
-		.xs\:grid-cols-2 {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-		}
-	}
-}
-
-/* Fix for specific iPad sizes in portrait mode */
-@media only screen and (min-width: 768px) and (max-width: 820px) and (orientation: portrait) {
-	.md\:grid-cols-2 {
-		grid-template-columns: 1fr; /* Force stacked layout on iPad portrait */
-	}
-
-	.step-container:not(:last-child)::after {
-		left: 6px;
-	}
-
-	.benefits-container,
-	.steps-container {
-		max-width: 650px;
-		margin-left: auto;
-		margin-right: auto;
-	}
-
-	.stats-container {
-		max-width: 650px;
-		margin-left: auto;
-		margin-right: auto;
-		margin-top: 1.5rem;
-	}
-}
-
-/* Large tablets in landscape mode */
-@media only screen and (min-width: 1024px) and (max-width: 1180px) {
-	.lg\:gap-8 {
-		gap: 1.5rem; /* Reduce gap on large tablets */
-	}
-
-	.benefit-card {
-		padding: 1rem;
+		box-shadow: 0 0 0 0 rgba(26, 86, 219, 0);
 	}
 }
