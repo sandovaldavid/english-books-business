@@ -28,6 +28,11 @@
 	--color-black: #18181b;
 }
 
+html{
+	scroll-behavior: smooth;
+	scrollbar-width: thin;
+}
+
 /* Navbar */
 nav a {
 	position: relative;
