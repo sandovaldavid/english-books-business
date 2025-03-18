@@ -1,6 +1,7 @@
 ---
 import Button from './Button.astro';
 import type { BookLevel, FormatTag, PopularityTag } from '../types/book';
+import ArrowRightIcon from './icons/ArrowRight.astro';
 import '../styles/Card.css';
 
 interface Props {
@@ -339,27 +340,16 @@ const isFeaturedOrBestseller =
 		<div class='flex space-x-2 mt-auto action-buttons'>
 			<Button
 				variant='primary'
-				size='medium'
+				size='small'
 				href={buyLink}
 				fullWidth={true}
 				class='group shadow-md hover:shadow-lg buy-button'>
-				<span>Comprar Ahora</span>
-				<svg
-					xmlns='http://www.w3.org/2000/svg'
-					class='h-5 w-5 ml-1 group-hover:translate-x-1 transition-transform'
-					fill='none'
-					viewBox='0 0 24 24'
-					stroke='currentColor'>
-					<path
-						stroke-linecap='round'
-						stroke-linejoin='round'
-						stroke-width='2'
-						d='M13 7l5 5m0 0l-5 5m5-5H6'></path>
-				</svg>
+				<span>Comprar</span>
+				<ArrowRightIcon class='w-6 h-6 ml' />
 			</Button>
 			<Button
 				variant='outline'
-				size='medium'
+				size='small'
 				href={detailsLink}
 				class='min-w-[120px] details-button'>
 				Ver Detalles
