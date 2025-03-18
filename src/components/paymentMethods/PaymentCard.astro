@@ -78,7 +78,7 @@ const paymentId = `payment-${Math.random().toString(36).substring(2, 9)}`;
 			</div>
 
 			<button
-				class='copy-button absolute right-3 top-1/2 transform -translate-y-1/2 bg-primary text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 group-payment-hover:opacity-100 transition-all duration-300 hover:bg-primary-dark'
+				class='copy-button absolute right-3 top-1/2 transform -translate-y-1/2 bg-primary text-white p-1.5 rounded-full lg:opacity-0 group-hover:opacity-100 group-payment-hover:opacity-100 transition-all duration-300 hover:bg-primary-dark'
 				data-clipboard-target={`#${paymentId}`}
 				aria-label='Copiar número'>
 				<Copy class='w-4 h-4' />
