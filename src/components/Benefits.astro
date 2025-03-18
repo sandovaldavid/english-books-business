@@ -3,6 +3,8 @@ import SectionTitle from './SectionTitle.astro';
 import '../styles/Benefits.css';
 import BenefitsCard from './benefits/BenefitsCard.astro';
 import PurchaseStepsCard from './benefits/PurchaseStepsCard.astro';
+import SpecialOffersCard from './benefits/SpecialOffersCard.astro';
+import Statistics from './benefits/StatisticsCard.astro';
 ---
 
 <section
@@ -23,12 +25,20 @@ import PurchaseStepsCard from './benefits/PurchaseStepsCard.astro';
 		</div>
 
 		<!-- Grid layout for tablets -->
-		<div
-			class='grid sm:grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 lg:gap-12'>
-			<!-- Benefits Column -->
-			<BenefitsCard />
-			<!-- Purchase Steps Column -->
-			<PurchaseStepsCard />
+		<div class='grid grid-rows-1'>
+			<div class='grid sm:grid-cols-1 md:grid-cols-2 gap-6 md:gap-8'>
+				<!-- Benefits Column -->
+				<BenefitsCard />
+				<!-- Purchase Steps Column -->
+				<PurchaseStepsCard />
+			</div>
+
+			<!-- Customer Stats -->
+			<Statistics className='my-10' />
+		</div>
+		<div>
+			<!-- Special Offers Card -->
+			<SpecialOffersCard />
 		</div>
 	</div>
 </section>
