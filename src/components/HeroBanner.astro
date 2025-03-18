@@ -51,6 +51,7 @@ import { fade } from 'astro:transitions';
 import '../styles/HeroBanner.css';
 import ArrowRightIcon from './icons/ArrowRight.astro';
 import CarruselButtonsIcon from './CarruselButtons.astro';
+import Button from './Button.astro';
 ---
 
 <section class="hero-banner bg-primary-dark text-white py-6 md:py-18 lg:py-10 overflow-hidden relative">
@@ -71,13 +72,15 @@ import CarruselButtonsIcon from './CarruselButtons.astro';
             >
                 {subtitle}
             </p>
-            <a 
+            <Button 
                 href={ctaLink} 
-                class="inline-block bg-secondary hover:bg-secondary-dark text-black font-semibold py-4 px-10 rounded-lg transition duration-300 transform hover:scale-105 animate-cta shadow-lg"
+                variant="secondary"
+                size="large"
+                class="text-primary-dark font-extrabold"
             >
                 {ctaText}
-                <span class="ml-2">→</span>
-            </a>
+                <ArrowRightIcon class='h-5 w-5 ml-2'/>
+            </Button>
         </div>
 
         {showCarousel && (
