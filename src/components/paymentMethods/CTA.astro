@@ -7,9 +7,11 @@ import DollarIcon from '../icons/Dollar.astro';
 import SecurityIcon from '../icons/Security.astro';
 import ClockIcon from '../icons/Clock.astro';
 import CardIcon from '../icons/Card.astro';
+import TrustIndicator from '../TrustIndicator.astro';
 ---
 
-<section class='py-16 bg-primary text-white relative overflow-hidden cta-payment-container'>
+<section
+	class='py-16 bg-primary text-white relative overflow-hidden cta-payment-container'>
 	<!-- Animated background elements -->
 	<div class='cta-animated-bg'></div>
 
@@ -42,9 +44,12 @@ import CardIcon from '../icons/Card.astro';
 				<span class='rating-count'>(+2,500 clientes satisfechos)</span>
 			</div>
 
-			<p class='text-lg md:text-xl opacity-90 mb-8 max-w-3xl mx-auto leading-relaxed'>
+			<p
+				class='text-lg md:text-xl opacity-90 mb-8 max-w-3xl mx-auto leading-relaxed'>
 				Elige el material que necesitas, realiza el pago y comienza a
-				aprender hoy mismo. <span class='highlight pulse-text'>¡Tu futuro profesional te espera!</span>
+				aprender hoy mismo. <span class='highlight pulse-text'
+					>¡Tu futuro profesional te espera!</span
+				>
 			</p>
 
 			<!-- Trust badges with improved layout -->
@@ -132,7 +137,7 @@ import CardIcon from '../icons/Card.astro';
 
 			<!-- Added satisfaction guarantee -->
 			<div class='satisfaction-guarantee'>
-				<div class='guarantee-icon'>✓</div>
+				<TrustIndicator />
 				<p>100% Garantía de satisfacción o te devolvemos tu dinero</p>
 			</div>
 		</div>
