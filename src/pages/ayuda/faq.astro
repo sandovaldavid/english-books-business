@@ -1,0 +1,22 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import FAQ from '../../components/FAQ.astro';
+
+const pageTitle = 'Preguntas Frecuentes | FluentReads';
+const pageDescription =
+	'Encuentra respuestas a las preguntas más comunes sobre nuestros materiales, entregas y políticas.';
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+	<div class='pt-16 bg-neutral-light pb-20'>
+		<div class='flex flex-col justify-around'>
+			<!-- FAQ Section -->
+			<FAQ
+				jsonPath='/src/database/general-faqs.json'
+				title='Preguntas Frecuentes'
+				description='Información sobre nuestros servicios y materiales'
+				expanded={0}
+			/>
+		</div>
+	</div>
+</Layout>
