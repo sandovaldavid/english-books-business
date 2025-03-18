@@ -25,7 +25,7 @@ const {
 
 // Base classes that apply to all buttons
 const baseClasses =
-	'font-[Poppins] rounded-full transition-colors inline-flex items-center justify-center focus:outline-none focus:ring-2';
+	'font-[Poppins] rounded-full transition-all duration-300 ease-out inline-flex items-center justify-center focus:outline-none focus:ring-2';
 
 // Size-specific classes with improved responsive sizing
 const sizeClasses = {
@@ -37,12 +37,12 @@ const sizeClasses = {
 // Variant-specific classes
 const variantClasses = {
 	primary:
-		'bg-primary text-white hover:bg-primary-dark focus:ring-primary-light focus:ring-opacity-50',
+		'bg-primary text-white hover:bg-primary-dark focus:ring-primary-light focus:ring-opacity-50 hover:shadow-md',
 	secondary:
-		'bg-secondary text-black hover:bg-secondary-dark focus:ring-secondary-light focus:ring-opacity-50 transition delay-100 duration-300 ease-in-out ', 
-	accent: 'bg-accent text-white hover:bg-accent-dark focus:ring-accent-light focus:ring-opacity-50',
+		'bg-secondary text-black hover:bg-secondary-dark focus:ring-secondary-light focus:ring-opacity-50 transition-all duration-300 ease-out hover:shadow-md',
+	accent: 'bg-accent text-white hover:bg-accent-dark focus:ring-accent-light focus:ring-opacity-50 transition-all duration-300 ease-out hover:shadow-md',
 	outline:
-		'bg-transparent border-2 border-primary text-primary hover:bg-primary hover:text-white focus:ring-primary-light focus:ring-opacity-50',
+		'bg-transparent border-2 border-primary text-primary hover:bg-primary hover:text-white focus:ring-primary-light focus:ring-opacity-50 hover:shadow-md',
 	ghost: 'bg-transparent text-primary hover:bg-neutral hover:text-primary-dark focus:ring-neutral focus:ring-opacity-50',
 }[variant];
 
