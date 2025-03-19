@@ -1,0 +1,140 @@
+---
+import EmailIcon from '../icons/Email.astro';
+import WhatsAppIcon from '../icons/WhatsApp.astro';
+import TelegramIcon from '../icons/Telegram.astro';
+import LocationIcon from '../icons/Location.astro';
+import ClockIcon from '../icons/Clock.astro';
+import Button from '../Button.astro';
+import '../../styles/contact/contactInfo.css';
+
+// Contact data
+const contactData = {
+	email: 'support@fluentreads.com',
+	whatsapp: '1234567890',
+	telegram: 'FluentReads',
+	supportHours:
+		'Lunes a Viernes: 9:00 AM - 6:00 PM | Sábados: 9:00 AM - 1:00 PM',
+};
+---
+
+<section
+	class='contact-info-section bg-white p-6 md:p-8 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 my-4 md:my-8 lg:mx-10'>
+	<h2 class='text-2xl font-bold text-primary-dark mb-6 flex items-center'>
+		<span class='bg-primary text-white p-2 rounded-full mr-3'>
+			<LocationIcon class='h-6 w-6' />
+		</span>
+		Información de Contacto
+	</h2>
+
+	<!-- Virtual Location & Business Hours -->
+	<div
+		class='mb-8 bg-neutral-light rounded-lg p-4 md:p-5 border-l-4 border-primary'>
+		<h3 class='font-bold text-lg text-primary-dark mb-2'>
+			Ubicación virtual
+		</h3>
+		<p class='text-gray-600 mb-4'>
+			FluentReads es una tienda completamente digital. Ofrecemos todos
+			nuestros materiales en formato electrónico con entrega inmediata.
+		</p>
+
+		<div class='flex items-start mt-4'>
+			<ClockIcon class='text-primary w-5 h-5 mt-0.5 mr-2 flex-shrink-0' />
+			<div>
+				<h4 class='font-medium text-gray-700'>Horario de atención:</h4>
+				<p class='text-gray-600'>{contactData.supportHours}</p>
+			</div>
+		</div>
+	</div>
+
+	<!-- Contact Methods Grid -->
+	<div class='grid md:grid-cols-2 gap-6'>
+		<!-- Email Contact -->
+		<div
+			class='contact-method-card bg-white rounded-lg p-5 border border-neutral hover:border-primary-light transition-all duration-300 hover:shadow-md group'>
+			<div class='flex items-center mb-4'>
+				<div
+					class='w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mr-4 group-hover:bg-primary/20 transition-colors duration-300'>
+					<EmailIcon class='w-6 h-6 text-primary' />
+				</div>
+				<h3 class='text-lg font-semibold text-primary-dark'>
+					Correo electrónico
+				</h3>
+			</div>
+
+			<p class='text-gray-600 mb-4'>
+				Para consultas, soporte o cualquier información adicional,
+				escríbenos a:
+			</p>
+
+			<a
+				href={`mailto:${contactData.email}`}
+				class='inline-flex items-center text-primary hover:text-primary-dark font-medium transition-colors duration-200 underline decoration-2 underline-offset-4'>
+				{contactData.email}
+			</a>
+		</div>
+
+		<!-- Direct Messaging -->
+		<div
+			class='contact-method-card bg-white rounded-lg p-5 border border-neutral hover:border-primary-light transition-all duration-300 hover:shadow-md'>
+			<h3 class='text-lg font-semibold text-primary-dark mb-4'>
+				Mensajería directa
+			</h3>
+			<p class='text-gray-600 mb-5'>
+				Contacta con nuestro equipo de soporte instantáneo a través de:
+			</p>
+
+			<div class='flex flex-col sm:flex-row gap-4'>
+				<Button
+					variant='accent'
+					href={`https://wa.me/${contactData.whatsapp}`}
+					class='flex-1 flex items-center justify-center shadow-md hover:shadow-lg'>
+					<WhatsAppIcon class='w-5 h-5 mr-2' />
+					WhatsApp
+				</Button>
+
+				<Button
+					variant='primary'
+					href={`https://t.me/${contactData.telegram}`}
+					class='flex-1 flex items-center justify-center shadow-md hover:shadow-lg'>
+					<TelegramIcon class='w-5 h-5 mr-2' />
+					Telegram
+				</Button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Trust Message -->
+	<div
+		class='mt-8 text-center bg-primary/5 rounded-lg p-4 border border-primary/10'>
+		<p class='text-gray-600'>
+			Nos esforzamos por responder a todas las consultas lo más rápido
+			posible, generalmente en menos de 24 horas durante días laborables.
+		</p>
+	</div>
+</section>
+
+<script>
+	// Add entrance animations
+	document.addEventListener('DOMContentLoaded', () => {
+		const cards = document.querySelectorAll('.contact-method-card');
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting) {
+						entry.target.classList.add('animated');
+						observer.unobserve(entry.target);
+					}
+				});
+			},
+			{ threshold: 0.1 }
+		);
+
+		cards.forEach((card, index) => {
+			// Add a small delay between each card animation
+			setTimeout(() => {
+				observer.observe(card);
+			}, index * 150);
+		});
+	});
+</script>
