@@ -1,5 +1,11 @@
 ---
 import SocialMediaContent from './SocialMediaContent.astro';
+import HomeIcon from './icons/Home.astro';
+import BookIcon from './icons/Book.astro';
+import TestimonialIcon from './icons/Testimonial.astro';
+import BlogIcon from './icons/Blog.astro';
+import ContactIcon from './icons/Contact.astro';
+import CreditCardIcon from './icons/CreditCard.astro';
 
 // Helper to determine current page for active state
 const { pathname } = Astro.url;
@@ -13,56 +19,68 @@ const isActive = (path: string) =>
 		<a
 			href='/'
 			class:list={[
-				'px-4 py-2 font-medium text-lg rounded-md transition-colors',
+				'px-4 py-2 font-medium text-lg rounded-md transition-colors flex items-center',
 				isActive('/')
 					? 'text-secondary bg-primary-dark active'
 					: 'hover:text-secondary hover:bg-primary-dark/20',
-			]}>Inicio</a
+			]}>
+			<HomeIcon class='w-5 h-5 mr-2' />
+			Inicio</a
 		>
 		<a
 			href='/catalogo'
 			class:list={[
-				'px-4 py-2 font-medium text-lg rounded-md transition-colors',
+				'px-4 py-2 font-medium text-lg rounded-md transition-colors flex items-center',
 				isActive('/catalogo')
 					? 'text-secondary bg-primary-dark active'
 					: 'hover:text-secondary hover:bg-primary-dark/20',
-			]}>Catálogo</a
+			]}>
+			<BookIcon class='w-5 h-5 mr-2' />
+			Catálogo</a
 		>
 		<a
 			href='/testimonios'
 			class:list={[
-				'px-4 py-2 font-medium text-lg rounded-md transition-colors',
+				'px-4 py-2 font-medium text-lg rounded-md transition-colors flex items-center',
 				isActive('/testimonios')
 					? 'text-secondary bg-primary-dark active'
 					: 'hover:text-secondary hover:bg-primary-dark/20',
-			]}>Testimonios</a
+			]}>
+			<TestimonialIcon class='w-5 h-5 mr-2' />
+			Testimonios</a
 		>
 		<a
 			href='/blog'
 			class:list={[
-				'px-4 py-2 font-medium text-lg rounded-md transition-colors',
+				'px-4 py-2 font-medium text-lg rounded-md transition-colors flex items-center',
 				isActive('/blog')
 					? 'text-secondary bg-primary-dark active'
 					: 'hover:text-secondary hover:bg-primary-dark/20',
-			]}>Blog</a
+			]}>
+			<BlogIcon class='w-5 h-5 mr-2' />
+			Blog</a
 		>
 		<a
 			href='/contacto'
 			class:list={[
-				'px-4 py-2 font-medium text-lg rounded-md transition-colors',
+				'px-4 py-2 font-medium text-lg rounded-md transition-colors flex items-center',
 				isActive('/contacto')
 					? 'text-secondary bg-primary-dark active'
 					: 'hover:text-secondary hover:bg-primary-dark/20',
-			]}>Contacto</a
+			]}>
+			<ContactIcon class='w-5 h-5 mr-2' />
+			Contacto</a
 		>
 		<a
 			href='/paymentMethods'
 			class:list={[
-				'px-4 py-2 font-medium text-lg rounded-md transition-colors',
+				'px-4 py-2 font-medium text-lg rounded-md transition-colors flex items-center',
 				isActive('/paymentMethods')
 					? 'text-secondary bg-primary-dark active'
 					: 'hover:text-secondary hover:bg-primary-dark/20',
-			]}>Pagos</a
+			]}>
+			<CreditCardIcon class='w-6 h-6 mr-2' />
+			Pagos</a
 		>
 	</div>
 
