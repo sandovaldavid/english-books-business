@@ -33,7 +33,7 @@ const enableRecaptcha = import.meta.env.ENABLE_RECAPTCHA !== 'false';
 // Configure form with environment variables
 const contactForm = {
 	// Use the PAGECLIP_KEY from environment variables
-	action: `https://send.pageclip.co/${import.meta.env.PAGECLIP_KEY || process.env.PAGECLIP_KEY}/contact-form`,
+	action: `https://send.pageclip.co/${import.meta.env.PAGECLIP_KEY || process.env.PAGECLIP_KEY}/FluentReads-form`,
 	// Recaptcha configuration
 	recaptcha: {
 		enabled: enableRecaptcha,
