@@ -8,6 +8,7 @@ import SecurityIcon from '../icons/Security.astro';
 import ClockIcon from '../icons/Clock.astro';
 import CardIcon from '../icons/Card.astro';
 import TrustIndicator from '../TrustIndicator.astro';
+import TestimoniesCard from '../TestimoniesCard.astro';
 ---
 
 <section
@@ -120,19 +121,15 @@ import TrustIndicator from '../TrustIndicator.astro';
 			</div>
 
 			<!-- Enhanced testimonial -->
-			<div class='testimonial-container'>
-				<div class='testimonial-avatar-container'>
-					<img
-						src='https://i.pravatar.cc/100?img=32'
-						alt='Cliente satisfecho'
-						class='testimonial-avatar-image'
-					/>
-				</div>
-				<div class='testimonial-quote'>
-					"Mejoré mi inglés en menos de 3 meses. La mejor inversión
-					que he hecho para mi carrera."
-					<div class='testimonial-author'>— María S., Lima</div>
-				</div>
+			<div class='animate-on-scroll lg:max-w-xl lg:mx-auto'>
+				<TestimoniesCard
+					quote='FluentReads me ayudó a mejorar mi inglés de forma rápida y sencilla. ¡Lo recomiendo!'
+					author='María Fernández'
+					position='Estudiante de Medicina'
+					avatarUrl='https://i.pravatar.cc/100?img=40'
+					rating={4.5}
+					compact
+				/>
 			</div>
 
 			<!-- Added satisfaction guarantee -->

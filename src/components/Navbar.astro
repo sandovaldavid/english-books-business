@@ -1,7 +1,11 @@
 ---
-import Button from './Button.astro';
 import SocialMediaContent from './SocialMediaContent.astro';
-import OfferIcon from './icons/Offer.astro';
+import HomeIcon from './icons/Home.astro';
+import BookIcon from './icons/Book.astro';
+import TestimonialIcon from './icons/Testimonial.astro';
+import BlogIcon from './icons/Blog.astro';
+import ContactIcon from './icons/Contact.astro';
+import CreditCardIcon from './icons/CreditCard.astro';
 
 // Helper to determine current page for active state
 const { pathname } = Astro.url;
@@ -9,69 +13,78 @@ const isActive = (path: string) =>
 	pathname === path || (path !== '/' && pathname.startsWith(path));
 ---
 
-<nav class='flex flex-col md:flex-row md:items-center md:justify-between py-2'>
+<nav class=`flex flex-col md:flex-row md:items-center md:justify-between py-2`>
 	<!-- Navigation links -->
-	<div class='flex flex-col md:flex-row md:items-center'>
+	<div class='flex flex-col md:flex-row md:items-center lg:mr-4'>
 		<a
 			href='/'
 			class:list={[
-				'px-4 py-2 font-medium text-lg rounded-md transition-colors',
+				'px-4 py-2 font-medium text-lg rounded-md transition-colors flex items-center',
 				isActive('/')
 					? 'text-secondary bg-primary-dark active'
 					: 'hover:text-secondary hover:bg-primary-dark/20',
-			]}>Inicio</a
+			]}>
+			<HomeIcon class='w-5 h-5 mr-2' />
+			Inicio</a
 		>
 		<a
 			href='/catalogo'
 			class:list={[
-				'px-4 py-2 font-medium text-lg rounded-md transition-colors',
+				'px-4 py-2 font-medium text-lg rounded-md transition-colors flex items-center',
 				isActive('/catalogo')
 					? 'text-secondary bg-primary-dark active'
 					: 'hover:text-secondary hover:bg-primary-dark/20',
-			]}>Catálogo</a
+			]}>
+			<BookIcon class='w-5 h-5 mr-2' />
+			Catálogo</a
 		>
 		<a
 			href='/testimonios'
 			class:list={[
-				'px-4 py-2 font-medium text-lg rounded-md transition-colors',
+				'px-4 py-2 font-medium text-lg rounded-md transition-colors flex items-center',
 				isActive('/testimonios')
 					? 'text-secondary bg-primary-dark active'
 					: 'hover:text-secondary hover:bg-primary-dark/20',
-			]}>Testimonios</a
+			]}>
+			<TestimonialIcon class='w-5 h-5 mr-2' />
+			Testimonios</a
 		>
 		<a
 			href='/blog'
 			class:list={[
-				'px-4 py-2 font-medium text-lg rounded-md transition-colors',
+				'px-4 py-2 font-medium text-lg rounded-md transition-colors flex items-center',
 				isActive('/blog')
 					? 'text-secondary bg-primary-dark active'
 					: 'hover:text-secondary hover:bg-primary-dark/20',
-			]}>Blog</a
+			]}>
+			<BlogIcon class='w-5 h-5 mr-2' />
+			Blog</a
 		>
 		<a
 			href='/contacto'
 			class:list={[
-				'px-4 py-2 font-medium text-lg rounded-md transition-colors',
+				'px-4 py-2 font-medium text-lg rounded-md transition-colors flex items-center',
 				isActive('/contacto')
 					? 'text-secondary bg-primary-dark active'
 					: 'hover:text-secondary hover:bg-primary-dark/20',
-			]}>Contacto</a
+			]}>
+			<ContactIcon class='w-5 h-5 mr-2' />
+			Contacto</a
+		>
+		<a
+			href='/paymentMethods'
+			class:list={[
+				'px-4 py-2 font-medium text-lg rounded-md transition-colors flex items-center',
+				isActive('/paymentMethods')
+					? 'text-secondary bg-primary-dark active'
+					: 'hover:text-secondary hover:bg-primary-dark/20',
+			]}>
+			<CreditCardIcon class='w-6 h-6 mr-2' />
+			Pagos</a
 		>
 	</div>
 
 	<div class='flex flex-col md:flex-row md:items-center md:space-x-3'>
-		<!-- Offers button -->
-		<Button
-			variant='accent'
-			size='small'
-			href='/ofertas'
-			class='mt-4 md:mt-0 shadow-md hover:shadow-lg transform transition-all duration-300 md:hidden lg:block py-2'>
-			<span class='flex items-center'>
-				<OfferIcon class='h-5 w-5 mr-1' />
-				Ver Ofertas
-			</span>
-		</Button>
-
 		<!-- Social Icons -->
 		<div class='mt-4 md:mt-0'>
 			<SocialMediaContent

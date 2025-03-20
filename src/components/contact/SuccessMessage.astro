@@ -1,0 +1,114 @@
+---
+import SuccessIcon from '../icons/Success.astro';
+
+interface Props {
+	id?: string;
+	class?: string;
+}
+
+const { id, class: className = '' } = Astro.props;
+---
+
+<div
+	id={id}
+	class={`success-message bg-green-50 border-l-4 border-accent p-6 rounded-lg ${className}`}>
+	<div class='flex items-center'>
+		<!-- Success icon -->
+		<div
+			class='success-icon flex-shrink-0 w-12 h-12 bg-accent rounded-full flex items-center justify-center text-white'>
+			<SuccessIcon class='h-6 w-6' />
+		</div>
+
+		<div class='ml-4'>
+			<h3 class='text-lg font-medium text-accent-dark'>
+				¡Mensaje enviado con éxito!
+			</h3>
+			<p class='text-accent-dark mt-1'>
+				Gracias por contactarnos. Hemos recibido tu mensaje y te
+				responderemos lo antes posible.
+			</p>
+		</div>
+	</div>
+
+	<!-- Additional information -->
+	<div class='mt-4 text-gray-600'>
+		<p>Mientras tanto, puedes:</p>
+		<ul class='list-disc pl-5 mt-2 space-y-1'>
+			<li>
+				Explorar nuestro <a
+					href='/catalogo'
+					class='text-primary hover:underline'>catálogo</a
+				> de libros
+			</li>
+			<li>
+				Leer nuestro <a
+					href='/blog'
+					class='text-primary hover:underline'>blog</a
+				> con consejos para aprender inglés
+			</li>
+			<li>
+				Seguirnos en nuestras <a
+					href='#'
+					class='text-primary hover:underline'>redes sociales</a
+				> para contenido exclusivo
+			</li>
+		</ul>
+	</div>
+
+	<!-- Back to home button -->
+	<div class='mt-6'>
+		<a
+			href='/'
+			class='inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition duration-300'>
+			<svg
+				xmlns='http://www.w3.org/2000/svg'
+				class='h-5 w-5 mr-2'
+				fill='none'
+				viewBox='0 0 24 24'
+				stroke='currentColor'>
+				<path
+					stroke-linecap='round'
+					stroke-linejoin='round'
+					stroke-width='2'
+					d='M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'
+				></path>
+			</svg>
+			Volver a la página principal
+		</a>
+	</div>
+</div>
+
+<style>
+	/* Add entrance animation for success message */
+	.success-message {
+		animation: slideDown 0.5s ease forwards;
+	}
+
+	@keyframes slideDown {
+		from {
+			opacity: 0;
+			transform: translateY(-20px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	/* Pulsing animation for success icon */
+	.success-icon {
+		animation: pulse 2s infinite;
+	}
+
+	@keyframes pulse {
+		0% {
+			box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4);
+		}
+		70% {
+			box-shadow: 0 0 0 10px rgba(22, 163, 74, 0);
+		}
+		100% {
+			box-shadow: 0 0 0 0 rgba(22, 163, 74, 0);
+		}
+	}
+</style>
