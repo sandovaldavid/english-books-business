@@ -1,0 +1,125 @@
+/* Form styling */
+
+/* Form groups */
+.form-group {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+/* Input focus styles */
+.form-input:focus, .form-textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.2);
+}
+
+/* Validation icon positioning */
+.form-validation-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: none;
+}
+
+/* Valid state */
+.form-group.valid .form-input,
+.form-group.valid .form-textarea {
+  border-color: var(--color-accent);
+  padding-right: 30px; /* Make room for the icon */
+}
+
+.form-group.valid .form-validation-icon {
+  display: block;
+}
+
+.form-group.valid .form-validation-icon::before {
+  content: '✓';
+  color: var(--color-accent);
+  font-size: 1rem;
+}
+
+/* Invalid state */
+.form-group.invalid .form-input,
+.form-group.invalid .form-textarea {
+  border-color: #ef4444;
+  padding-right: 30px; /* Make room for the icon */
+}
+
+.form-group.invalid .form-validation-icon {
+  display: block;
+}
+
+.form-group.invalid .form-validation-icon::before {
+  content: '✗';
+  color: #ef4444;
+  font-size: 1rem;
+}
+
+/* Textarea special styles for validation icon */
+.form-group .form-textarea + .form-validation-icon {
+  top: 15px;
+  transform: none;
+}
+
+/* Button loading state */
+.pageclip-form__submit.pageclip-form__submit--loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+.pageclip-form__submit.pageclip-form__submit--loading::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: translateY(-50%) rotate(360deg);
+  }
+}
+
+/* Form entrance animation */
+#contact-form {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .form-group .form-input, 
+  .form-group .form-textarea {
+    font-size: 16px; /* Prevent zoom on iOS devices */
+  }
+}
+
+/* Make sure the recaptcha is responsive */
+.g-recaptcha {
+  transform-origin: left top;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 400px) {
+  .g-recaptcha {
+    transform: scale(0.85);
+  }
+}
