@@ -59,7 +59,7 @@ const { className = '' } = Astro.props;
 	</div>
 
 	<div
-		class='bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8 transform transition-all duration-500 hover:shadow-xl relative overflow-hidden h-full'>
+		class='bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8 lg:transform lg:transition-all lg:duration-500 lg:hover:shadow-xl relative overflow-hidden h-full'>
 		<!-- Content wrapper -->
 		<div class='z-10 relative'>
 			<h3
@@ -76,10 +76,10 @@ const { className = '' } = Astro.props;
 				class='grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 md:gap-10 h-full'>
 				{
 					benefits.map((benefit) => (
-						<div class='benefit-card transform transition-all duration-300 hover:-translate-y-1 hover:shadow-md p-3 sm:p-4 md:p-5 rounded-lg border border-neutral bg-white/80 hover:border-primary-light hover:bg-white group'>
+						<div class='p-3 sm:p-4 md:p-5 rounded-lg border border-neutral bg-white/80 lg:hover:border-primary-light lg:hover:bg-white group lg:transition-all lg:duration-300 cursor-default'>
 							<div class='flex items-start'>
 								<div
-									class={`${benefit.class} h-10 w-10 sm:h-11 sm:w-11 flex items-center justify-center shadow-sm group-hover:shadow benefit-icon mr-3 sm:mr-4 shrink-0`}>
+									class={`${benefit.class} h-10 w-10 sm:h-11 sm:w-11 flex items-center justify-center shadow-sm mr-3 sm:mr-4 shrink-0`}>
 									<benefit.icon class='w-6 h-6' />
 								</div>
 								<div>
@@ -100,64 +100,36 @@ const { className = '' } = Astro.props;
 </div>
 
 <style>
-	/* Subtle pulse animation for benefit icons on hover */
-	.benefit-card:hover .benefit-icon {
-		animation: subtle-pulse 2s infinite;
+	.benefit-item-container {
+		position: relative;
+		transition: all 0.3s ease;
 	}
 
-	@keyframes subtle-pulse {
-		0% {
-			transform: scale(1);
-		}
-		50% {
-			transform: scale(1.05);
-		}
-		100% {
-			transform: scale(1);
-		}
-	}
-
-	/* Improve accessibility with focus styles */
-	.benefit-card:focus-within {
-		outline: 2px solid var(--color-primary);
-		outline-offset: 2px;
-	}
-
-	/* Add card entrance animations */
-	@media (prefers-reduced-motion: no-preference) {
-		.benefit-card {
-			opacity: 0;
-			animation: card-entrance 0.5s ease forwards;
+	/* Improved mobile experience */
+	@media (max-width: 640px) {
+		.benefit-item-container {
+			position: relative;
+			padding-bottom: 1.5rem;
 		}
 
-		.benefit-card:nth-child(1) {
-			animation-delay: 0.1s;
-		}
-		.benefit-card:nth-child(2) {
-			animation-delay: 0.2s;
-		}
-		.benefit-card:nth-child(3) {
-			animation-delay: 0.3s;
-		}
-		.benefit-card:nth-child(4) {
-			animation-delay: 0.4s;
-		}
-		.benefit-card:nth-child(5) {
-			animation-delay: 0.5s;
-		}
-		.benefit-card:nth-child(6) {
-			animation-delay: 0.6s;
+		.benefit-item-container::after {
+			content: '';
+			position: absolute;
+			bottom: 0;
+			left: 50%;
+			transform: translateX(-50%);
+			width: 30%;
+			height: 1px;
+			background: linear-gradient(
+				90deg,
+				transparent,
+				var(--color-primary-light),
+				transparent
+			);
 		}
 
-		@keyframes card-entrance {
-			from {
-				opacity: 0;
-				transform: translateY(20px);
-			}
-			to {
-				opacity: 1;
-				transform: translateY(0);
-			}
+		.benefit-item-container:last-child::after {
+			display: none;
 		}
 	}
 </style>
