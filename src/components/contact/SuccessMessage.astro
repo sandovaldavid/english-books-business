@@ -11,19 +11,19 @@ const { id, class: className = '' } = Astro.props;
 
 <div
 	id={id}
-	class={`success-message bg-green-50 border-l-4 border-accent p-6 rounded-lg ${className}`}>
+	class={`success-message bg-gradient-to-br from-accent-light/30 to-accent/20 border-l-4 border-accent p-6 rounded-lg shadow-md ${className}`}>
 	<div class='flex items-center'>
 		<!-- Success icon -->
 		<div
-			class='success-icon flex-shrink-0 w-12 h-12 bg-accent rounded-full flex items-center justify-center text-white'>
-			<SuccessIcon class='h-6 w-6' />
+			class='success-icon flex-shrink-0 w-14 h-14 bg-gradient-to-br from-accent to-accent-dark rounded-full flex items-center justify-center text-white shadow-accent/30 shadow-md'>
+			<SuccessIcon class='h-7 w-7' />
 		</div>
 
-		<div class='ml-4'>
-			<h3 class='text-lg font-medium text-accent-dark'>
+		<div class='ml-5'>
+			<h3 class='text-xl font-semibold text-accent-dark'>
 				¡Mensaje enviado con éxito!
 			</h3>
-			<p class='text-accent-dark mt-1'>
+			<p class='text-accent-dark/80 mt-1'>
 				Gracias por contactarnos. Hemos recibido tu mensaje y te
 				responderemos lo antes posible.
 			</p>
@@ -31,26 +31,42 @@ const { id, class: className = '' } = Astro.props;
 	</div>
 
 	<!-- Additional information -->
-	<div class='mt-4 text-gray-600'>
-		<p>Mientras tanto, puedes:</p>
-		<ul class='list-disc pl-5 mt-2 space-y-1'>
-			<li>
-				Explorar nuestro <a
-					href='/catalogo'
-					class='text-primary hover:underline'>catálogo</a
-				> de libros
+	<div
+		class='mt-6 text-gray-700 bg-white/60 p-4 rounded-lg border border-accent/20'>
+		<p class='font-medium'>Mientras tanto, puedes:</p>
+		<ul class='list-none pl-1 mt-3 space-y-2.5'>
+			<li class='flex items-center'>
+				<span class='inline-block w-2 h-2 bg-primary rounded-full mr-2'
+				></span>
+				<span
+					>Explorar nuestro <a
+						href='/catalogo'
+						class='text-primary font-medium hover:underline transition-all duration-200 hover:text-primary-dark'
+						>catálogo</a
+					> de libros</span
+				>
 			</li>
-			<li>
-				Leer nuestro <a
-					href='/blog'
-					class='text-primary hover:underline'>blog</a
-				> con consejos para aprender inglés
+			<li class='flex items-center'>
+				<span class='inline-block w-2 h-2 bg-primary rounded-full mr-2'
+				></span>
+				<span
+					>Leer nuestro <a
+						href='/blog'
+						class='text-primary font-medium hover:underline transition-all duration-200 hover:text-primary-dark'
+						>blog</a
+					> con consejos para aprender inglés</span
+				>
 			</li>
-			<li>
-				Seguirnos en nuestras <a
-					href='#'
-					class='text-primary hover:underline'>redes sociales</a
-				> para contenido exclusivo
+			<li class='flex items-center'>
+				<span class='inline-block w-2 h-2 bg-primary rounded-full mr-2'
+				></span>
+				<span
+					>Seguirnos en nuestras <a
+						href='#'
+						class='text-primary font-medium hover:underline transition-all duration-200 hover:text-primary-dark'
+						>redes sociales</a
+					> para contenido exclusivo</span
+				>
 			</li>
 		</ul>
 	</div>
@@ -59,10 +75,10 @@ const { id, class: className = '' } = Astro.props;
 	<div class='mt-6'>
 		<a
 			href='/'
-			class='inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition duration-300'>
+			class='inline-flex items-center px-5 py-2.5 bg-primary text-white rounded-lg hover:bg-primary-dark transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg group'>
 			<svg
 				xmlns='http://www.w3.org/2000/svg'
-				class='h-5 w-5 mr-2'
+				class='h-5 w-5 mr-2 group-hover:animate-pulse'
 				fill='none'
 				viewBox='0 0 24 24'
 				stroke='currentColor'>
@@ -81,34 +97,63 @@ const { id, class: className = '' } = Astro.props;
 <style>
 	/* Add entrance animation for success message */
 	.success-message {
-		animation: slideDown 0.5s ease forwards;
+		animation: slideInAndScale 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+		transform-origin: center;
 	}
 
-	@keyframes slideDown {
-		from {
+	@keyframes slideInAndScale {
+		0% {
 			opacity: 0;
-			transform: translateY(-20px);
+			transform: translateY(-20px) scale(0.95);
 		}
-		to {
+		70% {
+			transform: translateY(5px) scale(1.02);
+		}
+		100% {
 			opacity: 1;
-			transform: translateY(0);
+			transform: translateY(0) scale(1);
 		}
 	}
 
 	/* Pulsing animation for success icon */
 	.success-icon {
-		animation: pulse 2s infinite;
+		animation: pulseAndSpin 2s infinite;
 	}
 
-	@keyframes pulse {
+	@keyframes pulseAndSpin {
 		0% {
-			box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4);
+			box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.6);
+			transform: rotate(0deg);
 		}
-		70% {
-			box-shadow: 0 0 0 10px rgba(22, 163, 74, 0);
+		20% {
+			transform: rotate(5deg);
+		}
+		40% {
+			transform: rotate(-5deg);
+		}
+		50% {
+			box-shadow: 0 0 0 12px rgba(22, 163, 74, 0);
 		}
 		100% {
 			box-shadow: 0 0 0 0 rgba(22, 163, 74, 0);
+			transform: rotate(0deg);
+		}
+	}
+
+	/* link effects */
+	.success-message a:not(:hover) {
+		text-decoration: none;
+	}
+
+	/* Responsive adjustments */
+	@media (max-width: 640px) {
+		.success-message {
+			padding: 1.25rem;
+		}
+
+		.success-icon {
+			width: 3rem;
+			height: 3rem;
 		}
 	}
 </style>
