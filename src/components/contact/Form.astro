@@ -28,19 +28,23 @@ interface FormField {
 	errorMessage: string;
 }
 
-// Determine if reCAPTCHA should be enabled based on environment
-const enableRecaptcha = import.meta.env.ENABLE_RECAPTCHA !== 'false';
+// Environment variables configuration with improved development mode handling
+const pageclipKey = import.meta.env.PAGECLIP_KEY;
+const isDevelopment = import.meta.env.IS_DEVELOPMENT === 'true';
+
+// In development mode, always disable reCAPTCHA to avoid COEP errors
+const enableRecaptcha = isDevelopment ? false : import.meta.env.ENABLE_RECAPTCHA !== 'false';
+const recaptchaSiteKey = import.meta.env.RECAPTCHA_SITE_KEY || process.env.RECAPTCHA_SITE_KEY;
 
 // Configure form with environment variables
 const contactForm = {
 	// Use the PAGECLIP_KEY from environment variables
-	action: `https://send.pageclip.co/${import.meta.env.PAGECLIP_KEY || process.env.PAGECLIP_KEY}/FluentReads-form`,
+	action: `https://send.pageclip.co/${pageclipKey}/FluentReads-form`,
 	// Recaptcha configuration
 	recaptcha: {
 		enabled: enableRecaptcha,
-		siteKey:
-			import.meta.env.RECAPTCHA_SITE_KEY ||
-			process.env.RECAPTCHA_SITE_KEY,
+		siteKey: recaptchaSiteKey,
+		isDevelopment: isDevelopment
 	},
 	// Form field configuration
 	fields: [
@@ -95,7 +99,27 @@ const contactForm = {
 	<!-- Form container -->
 	<div id='form-container'>
 		{
-			contactForm.recaptcha.enabled === false && (
+			contactForm.recaptcha.isDevelopment && (
+				<div class='bg-blue-50 border-l-4 border-blue-400 p-4 mb-6'>
+					<div class='flex'>
+						<div class='flex-shrink-0'>
+							<WarningIcon class='h-5 w-5 text-blue-500' />
+						</div>
+						<div class='ml-3'>
+							<p class='text-sm text-blue-700 font-medium'>
+								Modo Desarrollo Local
+							</p>
+							<p class='text-sm text-blue-700'>
+								reCAPTCHA desactivado para evitar errores COEP en localhost
+							</p>
+						</div>
+					</div>
+				</div>
+			)
+		}
+
+		{
+			!contactForm.recaptcha.isDevelopment && contactForm.recaptcha.enabled === false && (
 				<div class='bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6'>
 					<div class='flex'>
 						<div class='flex-shrink-0'>
@@ -215,13 +239,35 @@ const contactForm = {
 				</span>
 			</div>
 
-			<!-- reCAPTCHA -->
+			<!-- Development Mode Anti-Spam Fallback -->
+			{contactForm.recaptcha.isDevelopment && (
+				<div class="dev-spam-check p-3 border border-gray-300 rounded-lg bg-gray-50">
+					<label for="dev-human-check" class="flex items-center cursor-pointer">
+						<input 
+							type="checkbox" 
+							id="dev-human-check" 
+							class="mr-2 h-5 w-5 text-primary focus:ring-primary border-gray-300 rounded"
+							required
+						/>
+						<span class="text-gray-700">Confirmo que no soy un robot (verificación solo en desarrollo)</span>
+					</label>
+				</div>
+			)}
+
+			<!-- Only load reCAPTCHA if not in development mode -->
 			{
-				contactForm.recaptcha.enabled && (
-					<div
-						class='g-recaptcha'
-						data-sitekey={contactForm.recaptcha.siteKey}
-					/>
+				!contactForm.recaptcha.isDevelopment && contactForm.recaptcha.enabled && (
+					<div class="recaptcha-container my-4 p-3 border border-gray-300 rounded-lg bg-gray-50">
+						<p class="mb-2 text-sm text-gray-600">Por favor completa el captcha:</p>
+						<div
+							id="recaptcha-widget"
+							class="g-recaptcha"
+							data-sitekey={contactForm.recaptcha.siteKey}
+						></div>
+						<div id="recaptcha-error" class="text-red-500 text-sm mt-2 hidden">
+							Error al cargar reCAPTCHA. Por favor recarga la página.
+						</div>
+					</div>
 				)
 			}
 
@@ -257,30 +303,60 @@ const contactForm = {
 	</div>
 </section>
 
-<!-- Add reCAPTCHA script -->
-{
-	contactForm.recaptcha.enabled && (
-		<script src='https://www.google.com/recaptcha/api.js' async defer />
-	)
-}
+<!-- Only load reCAPTCHA script if enabled and not in development mode -->
+{!contactForm.recaptcha.isDevelopment && contactForm.recaptcha.enabled && (
+	<script is:inline define:vars={{ siteKey: contactForm.recaptcha.siteKey }}>
+		// Log reCAPTCHA parameters to console
+		console.log("Client-side reCAPTCHA check - Site key:", siteKey);
+		
+		// Function to initialize reCAPTCHA
+		function initRecaptcha() {
+			if (typeof grecaptcha !== 'undefined' && grecaptcha) {
+				console.log("reCAPTCHA API loaded successfully");
+				// Nothing needed here - the API will render automatically with the widget div
+			} else {
+				console.error("reCAPTCHA API not available");
+				document.getElementById('recaptcha-error')?.classList.remove('hidden');
+			}
+		}
+		
+		// Check if reCAPTCHA is already loaded
+		if (typeof grecaptcha === 'undefined') {
+			// Create and load the reCAPTCHA script if it's not already loaded
+			const script = document.createElement('script');
+			script.src = `https://www.google.com/recaptcha/api.js`;
+			script.async = true;
+			script.defer = true;
+			script.onload = initRecaptcha;
+			script.onerror = function() {
+				console.error("Failed to load reCAPTCHA script");
+				document.getElementById('recaptcha-error')?.classList.remove('hidden');
+			};
+			document.head.appendChild(script);
+		} else {
+			// If already loaded, just initialize it
+			initRecaptcha();
+		}
+	</script>
+)}
 
 <script define:vars={{ contactForm }}>
 	document.addEventListener('DOMContentLoaded', () => {
+		// Debug logging for client-side
+		console.log("Form initialized, reCAPTCHA enabled:", contactForm.recaptcha.enabled);
+		console.log("Development mode:", contactForm.recaptcha.isDevelopment);
+		if (contactForm.recaptcha.enabled) {
+			console.log("Using reCAPTCHA site key:", contactForm.recaptcha.siteKey);
+		}
+		
 		const form = document.getElementById('contactForm');
 		const formContainer = document.getElementById('form-container');
-		const responseContainer = document.getElementById(
-			'form-response-container'
-		);
+		const responseContainer = document.getElementById('form-response-container');
 		const successMessage = document.getElementById('success-message');
 		const submitButton = document.getElementById('submit-button');
-		const submitButtonContent = submitButton.querySelector(
-			'.submit-button-content'
-		);
-		const submitButtonLoading = submitButton.querySelector(
-			'.submit-button-loading'
-		);
+		const submitButtonContent = submitButton.querySelector('.submit-button-content');
+		const submitButtonLoading = submitButton.querySelector('.submit-button-loading');
 		const formGroups = document.querySelectorAll('.form-group');
-		const formConfig = contactForm;
 
 		// Hide default Pageclip thank you page
 		// Esto asegura que el mensaje predeterminado de Pageclip se elimine del DOM
@@ -348,12 +424,28 @@ const contactForm = {
 				}
 			});
 
-			// Check reCAPTCHA if enabled
-			if (formConfig.recaptcha.enabled) {
-				const recaptchaResponse = grecaptcha?.getResponse();
-				if (!recaptchaResponse) {
+			// reCAPTCHA validation - Skip in development mode
+			if (!contactForm.recaptcha.isDevelopment && contactForm.recaptcha.enabled) {
+				try {
+					// Check if grecaptcha is available
+					if (typeof grecaptcha === 'undefined') {
+						console.error("reCAPTCHA not loaded");
+						alert('Error: reCAPTCHA no ha cargado correctamente. Por favor, recarga la página.');
+						isFormValid = false;
+					} else {
+						// Get the response
+						const recaptchaResponse = grecaptcha.getResponse();
+						console.log("reCAPTCHA response length:", recaptchaResponse?.length);
+						
+						if (!recaptchaResponse || recaptchaResponse.length === 0) {
+							alert('Por favor, complete el captcha para continuar');
+							isFormValid = false;
+						}
+					}
+				} catch (error) {
+					console.error("Error checking reCAPTCHA:", error);
+					alert('Error al verificar reCAPTCHA. Por favor, recarga la página e intenta de nuevo.');
 					isFormValid = false;
-					alert('Por favor, complete el captcha para continuar');
 				}
 			}
 
@@ -461,6 +553,17 @@ const contactForm = {
 			// Observar cambios en el DOM para eliminar el mensaje de agradecimiento de Pageclip
 			const observer = new MutationObserver(hideDefaultPageclipMessage);
 			observer.observe(document.body, { childList: true, subtree: true });
+		}
+
+		// Only perform reCAPTCHA checks if not in development mode
+		if (!contactForm.recaptcha.isDevelopment && contactForm.recaptcha.enabled && window.grecaptcha) {
+			try {
+				window.grecaptcha.ready(function() {
+					console.log('reCAPTCHA is ready');
+				});
+			} catch (error) {
+				console.error("Error initializing reCAPTCHA:", error);
+			}
 		}
 
 		// Asegurarnos de que el botón de envío se muestre correctamente al cargar la página
