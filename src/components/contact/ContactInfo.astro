@@ -2,9 +2,7 @@
 import EmailIcon from '../icons/Email.astro';
 import WhatsAppIcon from '../icons/WhatsApp.astro';
 import TelegramIcon from '../icons/Telegram.astro';
-import LocationIcon from '../icons/Location.astro';
-import ContactV2Icon from '../icons/Contact_v2.astro';
-import ClockIcon from '../icons/Clock.astro';
+import SmartPhoneIcon from '../icons/SmartPhone.astro';
 import Button from '../Button.astro';
 import '../../styles/contact/contactInfo.css';
 
@@ -20,20 +18,24 @@ const contactData = {
 
 <section
 	class='contact-info-section bg-white p-6 md:p-8 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 my-4 md:my-8 lg:mx-10'>
-
 	<!-- Contact Methods Grid -->
 	<div class='grid md:grid-cols-2 gap-6'>
 		<!-- Email Contact -->
 		<div
 			class='contact-method-card bg-white rounded-lg p-5 border border-neutral hover:border-primary-light transition-all duration-300 hover:shadow-md group'>
-			<div class='flex items-center mb-4'>
-				<div
-					class='w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mr-4 group-hover:bg-primary/20 transition-colors duration-300'>
-					<EmailIcon class='w-6 h-6 text-primary' />
+			<div class='flex flex-col md:flex-row items-center gap-4'>
+				<div class='flex-1 flex flex-col space-y-3'>
+					<div class='flex items-center mb-4'>
+						<span
+							class='bg-primary text-white p-2 rounded-full mr-3'>
+							<EmailIcon class='w-5 h-5' />
+						</span>
+						<h3
+							class='font-bold text-lg md:text-xl lg:text-2xl text-primary-dark'>
+							Correo Electrónico
+						</h3>
+					</div>
 				</div>
-				<h3 class='text-lg font-semibold text-primary-dark'>
-					Correo electrónico
-				</h3>
 			</div>
 
 			<p class='text-gray-600 mb-4'>
@@ -51,9 +53,20 @@ const contactData = {
 		<!-- Direct Messaging -->
 		<div
 			class='contact-method-card bg-white rounded-lg p-5 border border-neutral hover:border-primary-light transition-all duration-300 hover:shadow-md'>
-			<h3 class='text-lg font-semibold text-primary-dark mb-4'>
-				Mensajería directa
-			</h3>
+			<div class='flex flex-col md:flex-row items-center gap-4'>
+				<div class='flex-1 flex flex-col space-y-3'>
+					<div class='flex items-center mb-4'>
+						<span
+							class='bg-primary text-white p-2 rounded-full mr-3'>
+							<SmartPhoneIcon class='w-5 h-5' />
+						</span>
+						<h3
+							class='font-bold text-lg md:text-xl lg:text-2xl text-primary-dark'>
+							Mensajería Directa
+						</h3>
+					</div>
+				</div>
+			</div>
 			<p class='text-gray-600 mb-5'>
 				Contacta con nuestro equipo de soporte instantáneo a través de:
 			</p>

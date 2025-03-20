@@ -15,7 +15,7 @@ import Statistics from './benefits/StatisticsCard.astro';
 	<div class='decorative-shape shape-2'></div>
 
 	<div class='container mx-auto px-4 relative z-10'>
-		<div class='text-center mb-8 md:mb-12'>
+		<div class='text-center mb-8 md:mb-12 fade-in-element'>
 			<SectionTitle>¿Por qué elegirnos?</SectionTitle>
 			<p class='text-gray-600 mt-4 max-w-2xl mx-auto'>
 				En FluentReads nos enfocamos en ofrecerte la mejor experiencia
@@ -28,13 +28,13 @@ import Statistics from './benefits/StatisticsCard.astro';
 		<div class='grid grid-rows-1'>
 			<div class='grid sm:grid-cols-1 md:grid-cols-2 gap-6 md:gap-8'>
 				<!-- Benefits Column -->
-				<BenefitsCard />
+				<BenefitsCard className='fade-in-element' />
 				<!-- Purchase Steps Column -->
-				<PurchaseStepsCard />
+				<PurchaseStepsCard className='fade-in-element' />
 			</div>
 
 			<!-- Customer Stats -->
-			<Statistics className='my-10' />
+			<Statistics className='my-10 fade-in-element' />
 		</div>
 		<div>
 			<!-- Special Offers Card -->
@@ -62,26 +62,54 @@ import Statistics from './benefits/StatisticsCard.astro';
 
 	// Scroll animations using Intersection Observer
 	document.addEventListener('DOMContentLoaded', () => {
-		const observer = new IntersectionObserver(
+		// Observer for regular fade-in elements
+		const fadeObserver = new IntersectionObserver(
 			(entries) => {
 				entries.forEach((entry) => {
 					if (entry.isIntersecting) {
 						entry.target.classList.add('fade-in-visible');
-						observer.unobserve(entry.target);
+						fadeObserver.unobserve(entry.target);
 					}
 				});
 			},
-			{ threshold: 0.1 }
+			{ threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
 		);
 
-		// Observe elements for fade-in
+		// Observer specifically for benefit items with staggered animation
+		const benefitObserver = new IntersectionObserver(
+			(entries) => {
+				if (entries[0].isIntersecting) {
+					const benefits = document.querySelectorAll('.benefit-item');
+					benefits.forEach((benefit, index) => {
+						// Add slight delay between each item appearing
+						setTimeout(() => {
+							benefit.classList.add('visible');
+						}, 100 * index);
+					});
+					benefitObserver.unobserve(entries[0].target);
+				}
+			},
+			{ threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+		);
+
+		// Observe elements for standard fade-in
+		document.querySelectorAll('.fade-in-element').forEach((el) => {
+			fadeObserver.observe(el);
+		});
+
+		// Observe the benefits grid container
+		const benefitsGrid = document.querySelector('.benefits-grid');
+		if (benefitsGrid) {
+			benefitObserver.observe(benefitsGrid);
+		}
+
+		// Observe special elements for custom animations if needed
 		document
 			.querySelectorAll(
-				'.benefit-card, .step-container, .special-offer-banner, .testimonial-container'
+				'.step-container, .special-offer-banner, .testimonial-container'
 			)
 			.forEach((el) => {
-				el.classList.add('fade-in-element');
-				observer.observe(el);
+				fadeObserver.observe(el);
 			});
 	});
 </script>

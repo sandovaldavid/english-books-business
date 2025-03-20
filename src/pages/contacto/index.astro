@@ -14,7 +14,7 @@ import LocationCard from '../../components/contact/LocationCard.astro';
 	description='¿Tienes alguna duda o comentario? ¡Contáctanos!'>
 	<div class='px-4 py-4 md:py-12'>
 		<div class='flex flex-col items-center'>
-			<SectionTitle tag='h1' class='mb-8'>
+			<SectionTitle tag='h1' class='mb-8 text-center'>
 				Contacta con Nosotros
 			</SectionTitle>
 			<p class='text-gray-600 max-w-3xl mx-auto text-center mb-2'>
@@ -25,12 +25,12 @@ import LocationCard from '../../components/contact/LocationCard.astro';
 		</div>
 
 		<div class='grid grid-cols-1 lg:grid-cols-2 gap-2'>
-			<div class='my-4 md:my-8 lg:mx-6'>
+			<div class='flex flex-col gap-8 my-4 md:my-8 lg:mx-6'>
 				<!--Location Section -->
-				<LocationCard class='mb-8' />
+				<LocationCard />
 
 				<!-- Schedule section -->
-				<Schedule class='mb-8' />
+				<Schedule />
 
 				<!-- Social Network section -->
 				<SocialNetwork

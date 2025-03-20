@@ -2,6 +2,25 @@
 .step-container {
 	position: relative;
 	transition: all 0.3s ease;
+	opacity: 0;
+	transform: translateY(30px);
+	transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.step-container.visible {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+/* Staggered delays for steps */
+.step-container:nth-child(1) {
+	transition-delay: 0.1s;
+}
+.step-container:nth-child(2) {
+	transition-delay: 0.3s;
+}
+.step-container:nth-child(3) {
+	transition-delay: 0.5s;
 }
 
 /* Improved mobile experience */
@@ -62,4 +81,13 @@
 
 .animate-pulse {
 	animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Respect user preferences for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+	.step-container {
+		transition: none !important;
+		opacity: 1 !important;
+		transform: translateY(0) !important;
+	}
 }
