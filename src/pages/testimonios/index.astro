@@ -1,0 +1,32 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import SectionTitle from '../../components/SectionTitle.astro';
+import TestimonyCard from '../../components/TestimoniesCard.astro';
+
+// Import testimonies data
+import testimonies from '../../database/testimonies.json';
+---
+
+<Layout
+	title='Testimonios'
+	description='Conoce lo que nuestros clientes opinan de nuestros servicios'>
+	<div class='px-4 py-4 md:py-12'>
+		<div class='flex flex-col items-center'>
+			<SectionTitle tag='h1' class='mb-8 text-center'>
+				Testimonios
+			</SectionTitle>
+			<p class='text-gray-600 max-w-3xl mx-auto text-center mb-2'>
+				Estas son las opiniones de nuestros clientes. ¡Gracias por
+				confiar en nosotros!
+			</p>
+		</div>
+	</div>
+    <!-- TODO: Implement Testimonies grid and mopdificate TestimonyCard component to pass testimonies data as a parameter -->
+	<div class='grid grid-cols-1 lg:grid-cols-2 gap-2'>
+		{
+			testimonies.map((testimony, index) => (
+				<TestimonyCard Testimony={testimony} index={index} />
+			))
+		}
+	</div>
+</Layout>
