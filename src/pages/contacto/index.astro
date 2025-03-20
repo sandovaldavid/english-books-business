@@ -3,28 +3,47 @@ import Layout from '../../layouts/Layout.astro';
 import ContactInfo from '../../components/contact/ContactInfo.astro';
 import Form from '../../components/contact/Form.astro';
 import SectionTitle from '../../components/SectionTitle.astro';
+import ContactV2Icon from '../../components/icons/Contact_v2.astro';
+import Schedule from '../../components/contact/Schedule.astro';
+import SocialNetwork from '../../components/contact/SocialNetwork.astro';
+import LocationCard from '../../components/contact/LocationCard.astro';
 ---
 
 <Layout
 	title='Contacto'
 	description='¿Tienes alguna duda o comentario? ¡Contáctanos!'>
-	<div class='container mx-auto px-4 py-4 md:py-12'>
+	<div class='px-4 py-4 md:py-12'>
 		<div class='flex flex-col items-center'>
 			<SectionTitle tag='h1' class='mb-8'>
 				Contacta con Nosotros
 			</SectionTitle>
-			<p class='text-gray-600 max-w-3xl mx-auto text-center mb-12'>
+			<p class='text-gray-600 max-w-3xl mx-auto text-center mb-2'>
 				Estamos aquí para ayudarte. Completa el formulario a
 				continuación o utiliza nuestras otras vías de contacto para
 				comunicarte con el equipo de FluentReads.
 			</p>
 		</div>
 
-		<!-- Contact information section -->
-		<ContactInfo />
-		<div class='grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12'>
+		<div class='grid grid-cols-1 lg:grid-cols-2 gap-2'>
+			<div class='my-4 md:my-8 lg:mx-6'>
+				<!--Location Section -->
+				<LocationCard class='mb-8' />
+
+				<!-- Schedule section -->
+				<Schedule class='mb-8' />
+
+				<!-- Social Network section -->
+				<SocialNetwork
+					facebookUrl='https://facebook.com/fluentreads'
+					instagramUrl='https://instagram.com/fluentreads'
+					tiktokUrl='https://tiktok.com/@fluentreads'
+				/>
+			</div>
 			<!-- Contact form section -->
 			<Form />
 		</div>
+
+		<!-- Contact information section -->
+		<ContactInfo />
 	</div>
 </Layout>
