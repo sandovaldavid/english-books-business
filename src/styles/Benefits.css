@@ -62,6 +62,38 @@
 	transform: translateY(0);
 }
 
+/* Benefit items specific animations */
+.benefit-item {
+	opacity: 0;
+	transform: translateY(30px);
+	transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.benefit-item.visible {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+/* Add staggered delays for benefits */
+.benefit-item-1 {
+	transition-delay: 0.1s;
+}
+.benefit-item-2 {
+	transition-delay: 0.2s;
+}
+.benefit-item-3 {
+	transition-delay: 0.3s;
+}
+.benefit-item-4 {
+	transition-delay: 0.4s;
+}
+.benefit-item-5 {
+	transition-delay: 0.5s;
+}
+.benefit-item-6 {
+	transition-delay: 0.6s;
+}
+
 /* Pulse animation for CTA buttons */
 .pulse-animation {
 	animation: pulse 2s infinite;
@@ -76,5 +108,15 @@
 	}
 	100% {
 		box-shadow: 0 0 0 0 rgba(26, 86, 219, 0);
+	}
+}
+
+/* Respect user preferences for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+	.benefit-item,
+	.fade-in-element {
+		transition: none !important;
+		opacity: 1 !important;
+		transform: translateY(0) !important;
 	}
 }
