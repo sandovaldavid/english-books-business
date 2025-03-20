@@ -73,10 +73,11 @@ const { className = '' } = Astro.props;
 
 			<!-- Benefits cards with improved grid -->
 			<div
-				class='grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 md:gap-10 h-full'>
+				class='grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 md:gap-10 h-full benefits-grid'>
 				{
-					benefits.map((benefit) => (
-						<div class='p-3 sm:p-4 md:p-5 rounded-lg border border-neutral bg-white/80 lg:hover:border-primary-light lg:hover:bg-white group lg:transition-all lg:duration-300 cursor-default'>
+					benefits.map((benefit, index) => (
+						<div
+							class={`benefit-item benefit-item-${index + 1} p-3 sm:p-4 md:p-5 rounded-lg border border-neutral bg-white/80 lg:hover:border-primary-light lg:hover:bg-white group lg:transition-all lg:duration-300 cursor-default`}>
 							<div class='flex items-start'>
 								<div
 									class={`${benefit.class} h-10 w-10 sm:h-11 sm:w-11 flex items-center justify-center shadow-sm mr-3 sm:mr-4 shrink-0`}>
