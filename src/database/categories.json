@@ -1,0 +1,30 @@
+[
+	{
+		"name": "Inglés empresarial",
+		"description": "Materiales específicos para negocios y entornos corporativos",
+		"icon": "💼",
+		"image": "/images/libros-template.jpg",
+		"link": "/catalogo/negocios"
+	},
+	{
+		"name": "Gramática y vocabulario",
+		"description": "Fundamentos esenciales del idioma inglés",
+		"icon": "📝",
+		"image": "/images/libros-template.jpg",
+		"link": "/catalogo/gramatica"
+	},
+	{
+		"name": "Certificaciones",
+		"description": "Preparación para exámenes oficiales de inglés",
+		"icon": "🎓",
+		"image": "/images/libros-template.jpg",
+		"link": "/catalogo/certificaciones"
+	},
+	{
+		"name": "Inglés profesional",
+		"description": "Especializado por sectores: tecnología, medicina, legal",
+		"icon": "👨‍💻",
+		"image": "/images/libros-template.jpg",
+		"link": "/catalogo/profesional"
+	}
+]
