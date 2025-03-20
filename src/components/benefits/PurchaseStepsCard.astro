@@ -51,13 +51,13 @@ const {className= ''} = Astro.props;
 		</h3>
 
 		<!-- Purchase steps -->
-		<div class='relative space-y-8 sm:space-y-10 lg:w-3/4 mx-auto'>
+		<div class='relative space-y-8 sm:space-y-10 lg:w-3/4 mx-auto steps-list'>
 			<!-- Step connector line -->
 			<div class='absolute left-6 sm:left-7 top-2 bottom-2 w-0.5 bg-gray-200 hidden sm:block md:hidden'></div>
 			
 			{
 				purchaseSteps.map((step, index) => (
-					<div class='step-container group'>
+					<div class={`step-container group benefit-item benefit-item-${index + 1}`}>
 						<div class='flex flex-col sm:flex-row items-center sm:items-start relative'>
 							<div class='step-icon-container mb-4 sm:mb-0 flex-shrink-0 relative z-10'>
 								<!-- Numbered circle with improved visibility -->
@@ -102,5 +102,32 @@ const {className= ''} = Astro.props;
 		</div>
 	</div>
 </div>
+
+<script>
+	document.addEventListener('DOMContentLoaded', () => {
+		// Observer for purchase steps with staggered animation
+		const stepsObserver = new IntersectionObserver(
+			(entries) => {
+				if (entries[0].isIntersecting) {
+					const steps = document.querySelectorAll('.steps-list .step-container');
+					steps.forEach((step, index) => {
+						// Add slight delay between each step appearing
+						setTimeout(() => {
+							step.classList.add('visible');
+						}, 150 * index);
+					});
+					stepsObserver.unobserve(entries[0].target);
+				}
+			},
+			{ threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+		);
+
+		// Observe the steps list container
+		const stepsList = document.querySelector('.steps-list');
+		if (stepsList) {
+			stepsObserver.observe(stepsList);
+		}
+	});
+</script>
 
 
