@@ -3,6 +3,7 @@ import EmailIcon from '../icons/Email.astro';
 import WhatsAppIcon from '../icons/WhatsApp.astro';
 import TelegramIcon from '../icons/Telegram.astro';
 import LocationIcon from '../icons/Location.astro';
+import ContactV2Icon from '../icons/Contact_v2.astro';
 import ClockIcon from '../icons/Clock.astro';
 import Button from '../Button.astro';
 import '../../styles/contact/contactInfo.css';
@@ -19,32 +20,6 @@ const contactData = {
 
 <section
 	class='contact-info-section bg-white p-6 md:p-8 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 my-4 md:my-8 lg:mx-10'>
-	<h2 class='text-2xl font-bold text-primary-dark mb-6 flex items-center'>
-		<span class='bg-primary text-white p-2 rounded-full mr-3'>
-			<LocationIcon class='h-6 w-6' />
-		</span>
-		Información de Contacto
-	</h2>
-
-	<!-- Virtual Location & Business Hours -->
-	<div
-		class='mb-8 bg-neutral-light rounded-lg p-4 md:p-5 border-l-4 border-primary'>
-		<h3 class='font-bold text-lg text-primary-dark mb-2'>
-			Ubicación virtual
-		</h3>
-		<p class='text-gray-600 mb-4'>
-			FluentReads es una tienda completamente digital. Ofrecemos todos
-			nuestros materiales en formato electrónico con entrega inmediata.
-		</p>
-
-		<div class='flex items-start mt-4'>
-			<ClockIcon class='text-primary w-5 h-5 mt-0.5 mr-2 flex-shrink-0' />
-			<div>
-				<h4 class='font-medium text-gray-700'>Horario de atención:</h4>
-				<p class='text-gray-600'>{contactData.supportHours}</p>
-			</div>
-		</div>
-	</div>
 
 	<!-- Contact Methods Grid -->
 	<div class='grid md:grid-cols-2 gap-6'>
