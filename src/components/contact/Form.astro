@@ -3,6 +3,7 @@ import Button from '../Button.astro';
 import SuccessMessage from './SuccessMessage.astro';
 import ArrowRightIcon from '../icons/ArrowRight.astro';
 import WarningIcon from '../icons/Warning.astro';
+import LoadingIcon from '../icons/Loading.astro';
 
 import '../../styles/contact/form.css';
 
@@ -27,19 +28,23 @@ interface FormField {
 	errorMessage: string;
 }
 
-// Determine if reCAPTCHA should be enabled based on environment
-const enableRecaptcha = import.meta.env.ENABLE_RECAPTCHA !== 'false';
+// Environment variables configuration with improved development mode handling
+const pageclipKey = import.meta.env.PAGECLIP_KEY;
+const isDevelopment = import.meta.env.IS_DEVELOPMENT === 'true';
+
+// In development mode, always disable reCAPTCHA to avoid COEP errors
+const enableRecaptcha = isDevelopment ? false : import.meta.env.ENABLE_RECAPTCHA !== 'false';
+const recaptchaSiteKey = import.meta.env.RECAPTCHA_SITE_KEY || process.env.RECAPTCHA_SITE_KEY;
 
 // Configure form with environment variables
 const contactForm = {
 	// Use the PAGECLIP_KEY from environment variables
-	action: `https://send.pageclip.co/${import.meta.env.PAGECLIP_KEY || process.env.PAGECLIP_KEY}/contact-form`,
+	action: `https://send.pageclip.co/${pageclipKey}/FluentReads-form`,
 	// Recaptcha configuration
 	recaptcha: {
 		enabled: enableRecaptcha,
-		siteKey:
-			import.meta.env.RECAPTCHA_SITE_KEY ||
-			process.env.RECAPTCHA_SITE_KEY,
+		siteKey: recaptchaSiteKey,
+		isDevelopment: isDevelopment
 	},
 	// Form field configuration
 	fields: [
@@ -86,175 +91,299 @@ const contactForm = {
 		Envíanos un mensaje
 	</h2>
 
-	<!-- Hidden success message, shown after form submission -->
-	<SuccessMessage id='success-message' class='hidden' />
+	<!-- Success message container, initially hidden -->
+	<div id='form-response-container' class='transition-all duration-500'>
+		<SuccessMessage id='success-message' class='hidden' />
+	</div>
 
-	{
-		contactForm.recaptcha.enabled === false && (
-			<div class='bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6'>
-				<div class='flex'>
-					<div class='flex-shrink-0'>
-						<WarningIcon class='h-5 w-5 text-yellow-400' />
-					</div>
-					<div class='ml-3'>
-						<p class='text-sm text-yellow-700'>
-							Modo desarrollo: reCAPTCHA desactivado
-						</p>
+	<!-- Form container -->
+	<div id='form-container'>
+		{
+			contactForm.recaptcha.isDevelopment && (
+				<div class='bg-blue-50 border-l-4 border-blue-400 p-4 mb-6'>
+					<div class='flex'>
+						<div class='flex-shrink-0'>
+							<WarningIcon class='h-5 w-5 text-blue-500' />
+						</div>
+						<div class='ml-3'>
+							<p class='text-sm text-blue-700 font-medium'>
+								Modo Desarrollo Local
+							</p>
+							<p class='text-sm text-blue-700'>
+								reCAPTCHA desactivado para evitar errores COEP en localhost
+							</p>
+						</div>
 					</div>
 				</div>
-			</div>
-		)
-	}
+			)
+		}
 
-	<form
-		id='contactForm'
-		action={contactForm.action}
-		method='post'
-		class='pageclip-form space-y-6'>
-		<!-- Form grid layout -->
-		<div class='grid grid-cols-1 md:grid-cols-2 gap-6'>
-			<!-- Name Field -->
+		{
+			!contactForm.recaptcha.isDevelopment && contactForm.recaptcha.enabled === false && (
+				<div class='bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6'>
+					<div class='flex'>
+						<div class='flex-shrink-0'>
+							<WarningIcon class='h-5 w-5 text-yellow-400' />
+						</div>
+						<div class='ml-3'>
+							<p class='text-sm text-yellow-700'>
+								Modo desarrollo: reCAPTCHA desactivado
+							</p>
+						</div>
+					</div>
+				</div>
+			)
+		}
+
+		<form
+			id='contactForm'
+			action={contactForm.action}
+			method='post'
+			class='pageclip-form space-y-6'>
+			<!-- Form grid layout -->
+			<div class='grid grid-cols-1 md:grid-cols-2 gap-6'>
+				<!-- Name Field -->
+				<div class='form-group'>
+					<label
+						for='name'
+						class='block text-sm font-medium text-gray-700 mb-1'
+						>{contactForm.fields[0].label}
+						<span class='text-accent'>*</span></label
+					>
+					<div class='relative'>
+						<input
+							type='text'
+							id='name'
+							name='name'
+							required
+							class='form-input w-full py-2 px-4 border border-neutral rounded-lg focus:ring-2 focus:ring-primary-light focus:border-primary transition duration-200 placeholder-gray-400'
+							placeholder={contactForm.fields[0].placeholder}
+						/>
+						<span class='form-validation-icon'></span>
+					</div>
+					<span class='error-message text-sm text-red-500 hidden'>
+						{contactForm.fields[0].errorMessage}
+					</span>
+				</div>
+
+				<!-- Email Field -->
+				<div class='form-group'>
+					<label
+						for='email'
+						class='block text-sm font-medium text-gray-700 mb-1'
+						>{contactForm.fields[1].label}
+						<span class='text-accent'>*</span></label
+					>
+					<div class='relative'>
+						<input
+							type='email'
+							id='email'
+							name='email'
+							required
+							class='form-input w-full py-2 px-4 border border-neutral rounded-lg focus:ring-2 focus:ring-primary-light focus:border-primary transition duration-200 placeholder-gray-400'
+							placeholder={contactForm.fields[1].placeholder}
+						/>
+						<span class='form-validation-icon'></span>
+					</div>
+					<span class='error-message text-sm text-red-500 hidden'>
+						{contactForm.fields[1].errorMessage}
+					</span>
+				</div>
+			</div>
+
+			<!-- Subject Field -->
 			<div class='form-group'>
 				<label
-					for='name'
+					for='subject'
 					class='block text-sm font-medium text-gray-700 mb-1'
-					>{contactForm.fields[0].label}
+					>{contactForm.fields[2].label}
 					<span class='text-accent'>*</span></label
 				>
 				<div class='relative'>
 					<input
 						type='text'
-						id='name'
-						name='name'
+						id='subject'
+						name='subject'
 						required
 						class='form-input w-full py-2 px-4 border border-neutral rounded-lg focus:ring-2 focus:ring-primary-light focus:border-primary transition duration-200 placeholder-gray-400'
-						placeholder={contactForm.fields[0].placeholder}
+						placeholder={contactForm.fields[2].placeholder}
 					/>
 					<span class='form-validation-icon'></span>
 				</div>
 				<span class='error-message text-sm text-red-500 hidden'>
-					{contactForm.fields[0].errorMessage}
+					{contactForm.fields[2].errorMessage}
 				</span>
 			</div>
 
-			<!-- Email Field - IMPORTANT: must have name="email" for Pageclip reply-to field -->
+			<!-- Message Field -->
 			<div class='form-group'>
 				<label
-					for='email'
+					for='body'
 					class='block text-sm font-medium text-gray-700 mb-1'
-					>{contactForm.fields[1].label}
+					>{contactForm.fields[3].label}
 					<span class='text-accent'>*</span></label
 				>
 				<div class='relative'>
-					<input
-						type='email'
-						id='email'
-						name='email'
+					<textarea
+						id='body'
+						name='body'
+						rows='6'
 						required
-						class='form-input w-full py-2 px-4 border border-neutral rounded-lg focus:ring-2 focus:ring-primary-light focus:border-primary transition duration-200 placeholder-gray-400'
-						placeholder={contactForm.fields[1].placeholder}
-					/>
+						class='form-textarea w-full py-2 px-4 border border-neutral rounded-lg focus:ring-2 focus:ring-primary-light focus:border-primary transition duration-200 placeholder-gray-400'
+						placeholder={contactForm.fields[3].placeholder}
+					></textarea>
 					<span class='form-validation-icon'></span>
 				</div>
 				<span class='error-message text-sm text-red-500 hidden'>
-					{contactForm.fields[1].errorMessage}
+					{contactForm.fields[3].errorMessage}
 				</span>
 			</div>
-		</div>
 
-		<!-- Subject Field - IMPORTANT: must have name="subject" for Pageclip email subject -->
-		<div class='form-group'>
-			<label
-				for='subject'
-				class='block text-sm font-medium text-gray-700 mb-1'
-				>{contactForm.fields[2].label}
-				<span class='text-accent'>*</span></label
-			>
-			<div class='relative'>
-				<input
-					type='text'
-					id='subject'
-					name='subject'
-					required
-					class='form-input w-full py-2 px-4 border border-neutral rounded-lg focus:ring-2 focus:ring-primary-light focus:border-primary transition duration-200 placeholder-gray-400'
-					placeholder={contactForm.fields[2].placeholder}
-				/>
-				<span class='form-validation-icon'></span>
+			<!-- Development Mode Anti-Spam Fallback -->
+			{contactForm.recaptcha.isDevelopment && (
+				<div class="dev-spam-check p-3 border border-gray-300 rounded-lg bg-gray-50">
+					<label for="dev-human-check" class="flex items-center cursor-pointer">
+						<input 
+							type="checkbox" 
+							id="dev-human-check" 
+							class="mr-2 h-5 w-5 text-primary focus:ring-primary border-gray-300 rounded"
+							required
+						/>
+						<span class="text-gray-700">Confirmo que no soy un robot (verificación solo en desarrollo)</span>
+					</label>
+				</div>
+			)}
+
+			<!-- Only load reCAPTCHA if not in development mode -->
+			{
+				!contactForm.recaptcha.isDevelopment && contactForm.recaptcha.enabled && (
+					<div class="recaptcha-container my-4 p-3 border border-gray-300 rounded-lg bg-gray-50">
+						<p class="mb-2 text-sm text-gray-600">Por favor completa el captcha:</p>
+						<div
+							id="recaptcha-widget"
+							class="g-recaptcha"
+							data-sitekey={contactForm.recaptcha.siteKey}
+						></div>
+						<div id="recaptcha-error" class="text-red-500 text-sm mt-2 hidden">
+							Error al cargar reCAPTCHA. Por favor recarga la página.
+						</div>
+					</div>
+				)
+			}
+
+			<!-- Submit Button with loading state -->
+			<div class='flex justify-end'>
+				<!-- Corregido: Estructura del botón para mostrar correctamente el texto -->
+				<Button
+					type='submit'
+					variant='primary'
+					size='large'
+					id='submit-button'
+					class='group relative pageclip-form__submit shadow-md hover:shadow-lg transform transition-all duration-300 active:scale-95'>
+					<span class='submit-button-content flex items-center'>
+						<span class='mr-2'>Enviar mensaje</span>
+						<ArrowRightIcon
+							class='size-5 transition-transform duration-300 group-hover:translate-x-1'
+						/>
+					</span>
+					<span class='submit-button-loading hidden items-center'>
+						<LoadingIcon class='animate-spin mr-2 h-5 w-5' />
+						<span>Enviando...</span>
+					</span>
+				</Button>
 			</div>
-			<span class='error-message text-sm text-red-500 hidden'>
-				{contactForm.fields[2].errorMessage}
-			</span>
+		</form>
+
+		<div class='mt-6 text-center text-sm text-gray-500'>
+			<p>
+				Todos los campos marcados con <span class='text-accent'>*</span>
+				son obligatorios
+			</p>
 		</div>
-
-		<!-- Message Field - IMPORTANT: must have name="body" for Pageclip email body -->
-		<div class='form-group'>
-			<label
-				for='body'
-				class='block text-sm font-medium text-gray-700 mb-1'
-				>{contactForm.fields[3].label}
-				<span class='text-accent'>*</span></label
-			>
-			<div class='relative'>
-				<textarea
-					id='body'
-					name='body'
-					rows='6'
-					required
-					class='form-textarea w-full py-2 px-4 border border-neutral rounded-lg focus:ring-2 focus:ring-primary-light focus:border-primary transition duration-200 placeholder-gray-400'
-					placeholder={contactForm.fields[3].placeholder}></textarea>
-				<span class='form-validation-icon'></span>
-			</div>
-			<span class='error-message text-sm text-red-500 hidden'>
-				{contactForm.fields[3].errorMessage}
-			</span>
-		</div>
-
-		<!-- reCAPTCHA -->
-		{
-			contactForm.recaptcha.enabled && (
-				<div
-					class='g-recaptcha'
-					data-sitekey={contactForm.recaptcha.siteKey}
-				/>
-			)
-		}
-
-		<!-- Submit Button - IMPORTANT: must have class="pageclip-form__submit" -->
-		<div class='flex justify-end'>
-			<Button
-				type='submit'
-				variant='primary'
-				size='large'
-				class='group relative pageclip-form__submit shadow-md hover:shadow-lg transform transition-all duration-300 active:scale-95'>
-				<span class='flex items-center'>
-					<span class='mr-2'>Enviar mensaje</span>
-					<ArrowRightIcon class='size-5' />
-				</span>
-			</Button>
-		</div>
-	</form>
-
-	<div class='mt-6 text-center text-sm text-gray-500'>
-		<p>
-			Todos los campos marcados con <span class='text-accent'>*</span> son
-			obligatorios
-		</p>
 	</div>
 </section>
 
-<!-- Add reCAPTCHA script -->
-{
-	contactForm.recaptcha.enabled && (
-		<script src='https://www.google.com/recaptcha/api.js' async defer />
-	)
-}
+<!-- Only load reCAPTCHA script if enabled and not in development mode -->
+{!contactForm.recaptcha.isDevelopment && contactForm.recaptcha.enabled && (
+	<script is:inline define:vars={{ siteKey: contactForm.recaptcha.siteKey }}>
+		// Log reCAPTCHA parameters to console
+		console.log("Client-side reCAPTCHA check - Site key:", siteKey);
+		
+		// Function to initialize reCAPTCHA
+		function initRecaptcha() {
+			if (typeof grecaptcha !== 'undefined' && grecaptcha) {
+				console.log("reCAPTCHA API loaded successfully");
+				// Nothing needed here - the API will render automatically with the widget div
+			} else {
+				console.error("reCAPTCHA API not available");
+				document.getElementById('recaptcha-error')?.classList.remove('hidden');
+			}
+		}
+		
+		// Check if reCAPTCHA is already loaded
+		if (typeof grecaptcha === 'undefined') {
+			// Create and load the reCAPTCHA script if it's not already loaded
+			const script = document.createElement('script');
+			script.src = `https://www.google.com/recaptcha/api.js`;
+			script.async = true;
+			script.defer = true;
+			script.onload = initRecaptcha;
+			script.onerror = function() {
+				console.error("Failed to load reCAPTCHA script");
+				document.getElementById('recaptcha-error')?.classList.remove('hidden');
+			};
+			document.head.appendChild(script);
+		} else {
+			// If already loaded, just initialize it
+			initRecaptcha();
+		}
+	</script>
+)}
 
 <script define:vars={{ contactForm }}>
 	document.addEventListener('DOMContentLoaded', () => {
+		// Debug logging for client-side
+		console.log("Form initialized, reCAPTCHA enabled:", contactForm.recaptcha.enabled);
+		console.log("Development mode:", contactForm.recaptcha.isDevelopment);
+		if (contactForm.recaptcha.enabled) {
+			console.log("Using reCAPTCHA site key:", contactForm.recaptcha.siteKey);
+		}
+		
 		const form = document.getElementById('contactForm');
+		const formContainer = document.getElementById('form-container');
+		const responseContainer = document.getElementById('form-response-container');
 		const successMessage = document.getElementById('success-message');
+		const submitButton = document.getElementById('submit-button');
+		const submitButtonContent = submitButton.querySelector('.submit-button-content');
+		const submitButtonLoading = submitButton.querySelector('.submit-button-loading');
 		const formGroups = document.querySelectorAll('.form-group');
-		const formConfig = contactForm;
+
+		// Hide default Pageclip thank you page
+		// Esto asegura que el mensaje predeterminado de Pageclip se elimine del DOM
+		function hideDefaultPageclipMessage() {
+			const pageclipMessages = document.querySelectorAll(
+				'.pageclip-form__success'
+			);
+			pageclipMessages.forEach((message) => {
+				message.style.display = 'none';
+				message.remove();
+			});
+		}
+
+		// Override default pageclip success message
+		// Agregar un estilo para ocultar la página de agradecimiento predeterminada
+		const style = document.createElement('style');
+		style.textContent = `
+			.pageclip-form__success {
+				display: none !important;
+				visibility: hidden !important;
+				opacity: 0 !important;
+				height: 0 !important;
+				overflow: hidden !important;
+				pointer-events: none !important;
+			}
+		`;
+		document.head.appendChild(style);
 
 		// Form validation function
 		function validateField(input) {
@@ -295,12 +424,28 @@ const contactForm = {
 				}
 			});
 
-			// Check reCAPTCHA if enabled
-			if (formConfig.recaptcha.enabled) {
-				const recaptchaResponse = grecaptcha?.getResponse();
-				if (!recaptchaResponse) {
+			// reCAPTCHA validation - Skip in development mode
+			if (!contactForm.recaptcha.isDevelopment && contactForm.recaptcha.enabled) {
+				try {
+					// Check if grecaptcha is available
+					if (typeof grecaptcha === 'undefined') {
+						console.error("reCAPTCHA not loaded");
+						alert('Error: reCAPTCHA no ha cargado correctamente. Por favor, recarga la página.');
+						isFormValid = false;
+					} else {
+						// Get the response
+						const recaptchaResponse = grecaptcha.getResponse();
+						console.log("reCAPTCHA response length:", recaptchaResponse?.length);
+						
+						if (!recaptchaResponse || recaptchaResponse.length === 0) {
+							alert('Por favor, complete el captcha para continuar');
+							isFormValid = false;
+						}
+					}
+				} catch (error) {
+					console.error("Error checking reCAPTCHA:", error);
+					alert('Error al verificar reCAPTCHA. Por favor, recarga la página e intenta de nuevo.');
 					isFormValid = false;
-					alert('Por favor, complete el captcha para continuar');
 				}
 			}
 
@@ -325,5 +470,108 @@ const contactForm = {
 				});
 			}
 		});
+
+		// Pageclip integration with better UX
+		if (typeof Pageclip !== 'undefined') {
+			Pageclip.form(form, {
+				onSubmit: function () {
+					// Show loading state on the button
+					submitButton.classList.add('is-loading');
+					submitButtonContent.classList.add('hidden');
+					submitButtonLoading.classList.remove('hidden');
+					submitButtonLoading.classList.add('flex');
+
+					// Disable button and inputs during submission to prevent multiple submissions
+					submitButton.disabled = true;
+					form.querySelectorAll('input, textarea').forEach(
+						(input) => {
+							input.disabled = true;
+						}
+					);
+
+					return validateForm();
+				},
+				onResponse: function (error, response) {
+					// Ocultar mensajes de Pageclip predeterminados inmediatamente
+					hideDefaultPageclipMessage();
+
+					if (!error) {
+						// Evitar redireccionamiento y mostrar nuestro mensaje personalizado
+						if (event && event.preventDefault) {
+							event.preventDefault();
+						}
+
+						// Hide form and show success message with smooth animation
+						formContainer.style.height =
+							formContainer.offsetHeight + 'px';
+						formContainer.style.opacity = '1';
+
+						setTimeout(() => {
+							formContainer.style.height = '0';
+							formContainer.style.opacity = '0';
+							formContainer.style.overflow = 'hidden';
+							formContainer.style.margin = '0';
+							formContainer.style.padding = '0';
+
+							// Show success message
+							successMessage.classList.remove('hidden');
+							responseContainer.style.height = 'auto';
+							responseContainer.style.opacity = '1';
+
+							// Asegurarnos de que el mensaje predeterminado siga oculto
+							hideDefaultPageclipMessage();
+						}, 100);
+
+						// Track form submission (if analytics exists)
+						if (typeof gtag === 'function') {
+							gtag('event', 'form_submission', {
+								event_category: 'Contact',
+								event_label: 'Contact Form',
+							});
+						}
+					} else {
+						// Reset button and form state on error
+						submitButton.classList.remove('is-loading');
+						submitButtonLoading.classList.add('hidden');
+						submitButtonLoading.classList.remove('flex');
+						submitButtonContent.classList.remove('hidden');
+						submitButton.disabled = false;
+						form.querySelectorAll('input, textarea').forEach(
+							(input) => {
+								input.disabled = false;
+							}
+						);
+
+						// Show error alert
+						alert(
+							'Ocurrió un error al enviar el formulario. Por favor, inténtalo de nuevo.'
+						);
+					}
+				},
+			});
+
+			// Observar cambios en el DOM para eliminar el mensaje de agradecimiento de Pageclip
+			const observer = new MutationObserver(hideDefaultPageclipMessage);
+			observer.observe(document.body, { childList: true, subtree: true });
+		}
+
+		// Only perform reCAPTCHA checks if not in development mode
+		if (!contactForm.recaptcha.isDevelopment && contactForm.recaptcha.enabled && window.grecaptcha) {
+			try {
+				window.grecaptcha.ready(function() {
+					console.log('reCAPTCHA is ready');
+				});
+			} catch (error) {
+				console.error("Error initializing reCAPTCHA:", error);
+			}
+		}
+
+		// Asegurarnos de que el botón de envío se muestre correctamente al cargar la página
+		if (submitButtonContent) {
+			submitButtonContent.classList.remove('hidden');
+		}
+		if (submitButtonLoading) {
+			submitButtonLoading.classList.add('hidden');
+		}
 	});
 </script>

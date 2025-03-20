@@ -61,11 +61,29 @@
   transform: none;
 }
 
+/* Enhanced form transitions */
+#form-container {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#form-response-container {
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Loading spinner */
+.loading-spinner {
+  box-shadow: 0 0 15px rgba(var(--color-primary-rgb), 0.3);
+}
+
 /* Button loading state */
 .pageclip-form__submit.pageclip-form__submit--loading {
   position: relative;
   pointer-events: none;
   opacity: 0.8;
+  background-color: var(--color-primary-dark);
 }
 
 .pageclip-form__submit.pageclip-form__submit--loading::after {
@@ -104,6 +122,16 @@
   }
 }
 
+/* Loading overlay animation */
+#loading-overlay {
+  transition: all 0.3s ease;
+  opacity: 0;
+}
+
+#loading-overlay.flex {
+  opacity: 1;
+}
+
 /* Responsive adjustments */
 @media (max-width: 640px) {
   .form-group .form-input, 
@@ -122,4 +150,67 @@
   .g-recaptcha {
     transform: scale(0.85);
   }
+}
+
+/* Enhanced button loading state */
+.pageclip-form__submit.is-loading {
+  position: relative;
+  background-color: var(--color-primary-dark);
+  min-width: 180px;
+  transition: all 0.3s ease;
+}
+
+/* Corrección para asegurar que los estados del botón se muestren correctamente */
+.pageclip-form__submit .submit-button-content {
+  display: flex;
+  align-items: center;
+}
+
+.pageclip-form__submit.is-loading .submit-button-loading {
+  animation: fadeIn 0.3s ease forwards;
+  display: flex !important;
+}
+
+.pageclip-form__submit.is-loading .submit-button-content {
+  animation: fadeOut 0.3s ease forwards;
+  display: none !important;
+}
+
+/* Ocultar completamente el mensaje de éxito de Pageclip */
+.pageclip-form__success,
+.pageclip-form__submitted {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  position: absolute !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  width: 1px !important;
+  border: 0 !important;
+}
+
+.pageclip-form__submit .submit-button-loading {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.pageclip-form__submit .submit-button-content {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Remove the default Pageclip loading spinner since we're using our own */
+.pageclip-form__submit.pageclip-form__submit--loading::after {
+  display: none;
 }
