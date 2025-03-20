@@ -1,0 +1,68 @@
+---
+import ArrowRightIcon from './icons/ArrowRight.astro';
+import Button from './Button.astro';
+
+// Define the interface for the Offer prop
+interface Offer {
+	title: string;
+	description: string;
+	discount: string;
+	originalPrice: string;
+	salePrice: string;
+	image: string;
+	link: string;
+}
+
+// Accept a single Offer as a prop
+const { Offer, index = 0 } = Astro.props;
+---
+
+<div
+	class={`promo-item bg-white rounded-xl overflow-hidden shadow-lg transform transition-all duration-500 hover:-translate-y-2 hover:shadow-xl promo-${index + 1}`}>
+	<div class='relative'>
+		<!-- Discount badge -->
+		<div
+			class='absolute top-4 right-4 bg-accent text-white text-lg font-bold py-2 px-4 rounded-lg shadow-lg rotate-2 animate-pulse-subtle z-10'>
+			{Offer.discount} OFF
+		</div>
+
+		<!-- Image -->
+		<img
+			src={Offer.image}
+			alt={Offer.title}
+			class='w-full h-48 object-cover object-center'
+		/>
+
+		<!-- Content -->
+		<div class='p-6'>
+			<h3 class='text-xl font-bold text-primary-dark mb-2'>
+				{Offer.title}
+			</h3>
+			<p class='text-gray-600 mb-4'>{Offer.description}</p>
+
+			<!-- Price comparison -->
+			<div class='flex items-center mb-6'>
+				<span class='text-2xl font-bold text-accent'
+					>{Offer.salePrice}</span
+				>
+				<span class='ml-2 text-gray-500 line-through text-sm'
+					>{Offer.originalPrice}</span
+				>
+			</div>
+
+			<!-- Action button -->
+			<Button
+				variant='primary'
+				size='medium'
+				href={Offer.link}
+				class='w-full shadow-md hover:shadow-lg group'>
+				<span class='flex items-center justify-center'>
+					Comprar ahora
+					<ArrowRightIcon
+						class='w-5 h-5 ml-1 group-hover:translate-x-1 transition-transform'
+					/>
+				</span>
+			</Button>
+		</div>
+	</div>
+</div>
