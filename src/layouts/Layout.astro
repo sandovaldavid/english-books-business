@@ -55,6 +55,12 @@ const siteTitle = title.includes('FluentReads')
 			rel='stylesheet'
 		/>
 
+		<link
+			rel='stylesheet'
+			href='https://s.pageclip.co/v1/pageclip.css'
+			media='screen'
+		/>
+
 		<!-- SEO Meta Tags -->
 		<title>{siteTitle}</title>
 		<meta name='description' content={description} />
@@ -99,5 +105,8 @@ const siteTitle = title.includes('FluentReads')
 			<slot />
 		</main>
 		<Footer />
+		<!-- Add Pageclip script -->
+		<script src='https://s.pageclip.co/v1/pageclip.js' charset='utf-8'
+		></script>
 	</body>
 </html>
