@@ -7,6 +7,7 @@ import '../styles/FAQ.css';
 // Import FAQ data directly
 import generalFaqs from '../database/general-faqs.json';
 import paymentFaqs from '../database/payment-faqs.json';
+import catalogFaqs from '../database/catalog-faqs.json';
 
 interface FAQItem {
 	question: string;
@@ -15,7 +16,7 @@ interface FAQItem {
 
 interface Props {
 	jsonPath?: string; // Keep for backward compatibility but not used anymore
-	dataset?: 'general' | 'payment' | 'custom';
+	dataset?: 'general' | 'payment' | 'catalog' | 'custom';
 	customFAQs?: FAQItem[];
 	title: string;
 	description?: string;
@@ -42,6 +43,8 @@ if (dataset === 'general') {
 	faqItems = generalFaqs;
 } else if (dataset === 'payment') {
 	faqItems = paymentFaqs;
+} else if (dataset === 'catalog') {
+	faqItems = catalogFaqs;
 } else if (dataset === 'custom' && customFAQs.length > 0) {
 	faqItems = customFAQs;
 }
