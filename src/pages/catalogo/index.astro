@@ -9,8 +9,10 @@ import FAQ from '../../components/FAQ.astro';
 import CTABanner from '../../components/CTA-Banner.astro';
 import '../../styles/catalog.css';
 
-// Import book data
+// Import book data and types
 import booksData from '../../database/books.json';
+import type { Book } from '../../types/book';
+import { BookLevel, FormatTag, PopularityTag } from '../../types/book';
 
 // Get filter parameters from URL if any
 const { searchParams } = Astro.url;
@@ -23,51 +25,60 @@ let pageTitle = 'Catálogo de Libros en Inglés';
 let pageDescription =
 	'Explora nuestro catálogo completo de libros y materiales educativos en inglés para profesionales y estudiantes de todos los niveles.';
 
+// Define level name mapping with proper type checking
+const levelNames: Record<string, string> = {
+	basic: 'Nivel Básico',
+	intermediate: 'Nivel Intermedio',
+	advanced: 'Nivel Avanzado',
+	professional: 'Nivel Profesional',
+	'all-levels': 'Multi-nivel',
+};
+
 // If level filter is applied, customize title
 if (level !== 'all') {
-	const levelNames = {
-		basic: 'Nivel Básico',
-		intermediate: 'Nivel Intermedio',
-		advanced: 'Nivel Avanzado',
-		professional: 'Nivel Profesional',
-		'all-levels': 'Multi-nivel',
-	};
-	pageTitle = `Libros en Inglés - ${levelNames[level] || level}`;
-	pageDescription = `Materiales educativos en inglés para ${levelNames[level] || level}. Encuentra los recursos perfectos para tu nivel de aprendizaje.`;
+	const levelName = levelNames[level] || level;
+	pageTitle = `Libros en Inglés - ${levelName}`;
+	pageDescription = `Materiales educativos en inglés para ${levelName}. Encuentra los recursos perfectos para tu nivel de aprendizaje.`;
 }
+
+// Define format name mapping with proper type checking
+const formatNames: Record<string, string> = {
+	pdf: 'PDF',
+	workbook: 'Workbooks',
+	audio: 'Material con Audio',
+	video: 'Material con Video',
+	software: 'Software',
+	exams: 'Exámenes de Práctica',
+};
 
 // If format filter is applied, customize further
 if (format !== 'all') {
-	const formatNames = {
-		pdf: 'PDF',
-		workbook: 'Workbooks',
-		audio: 'Material con Audio',
-		video: 'Material con Video',
-		software: 'Software',
-		exams: 'Exámenes de Práctica',
-	};
-	pageTitle = `${formatNames[format] || format} - ${pageTitle}`;
-	pageDescription = `${formatNames[format] || format} ${pageDescription}`;
+	const formatName = formatNames[format] || format;
+	pageTitle = `${formatName} - ${pageTitle}`;
+	pageDescription = `${formatName} ${pageDescription}`;
 }
 
-// Prepare books data for the component
-const safeBooks = booksData.map((book) => ({
-	id: book.id,
-	title: book.title,
-	description: book.description,
-	price: book.price,
-	coverImage: book.coverImage,
-	altText: book.altText || `${book.title} Book cover`,
-	includedItems: book.includedItems || [],
-	rating: book.rating || { score: 0, reviewCount: 0 },
-	buyLink: book.buyLink || '#',
-	detailsLink: book.detailsLink || '#',
-	discount: book.discount || 0,
-	level: book.level,
-	featured: book.featured || false,
-	formatTags: book.formatTags || [],
-	popularityTags: book.popularityTags || [],
-}));
+// Validate book data and transform to proper Book type
+const safeBooks: Book[] = booksData.map(
+	(book: any): Book => ({
+		id: book.id || '',
+		title: book.title || '',
+		description: book.description || '',
+		price: book.price || 0,
+		coverImage: book.coverImage || '',
+		altText: book.altText || `${book.title} Book cover`,
+		includedItems: book.includedItems || [],
+		rating: book.rating || { score: 0, reviewCount: 0 },
+		buyLink: book.buyLink || '#',
+		detailsLink: book.detailsLink || '#',
+		discount: book.discount || 0,
+		// Validate enum values using type assertions
+		level: book.level as BookLevel | undefined,
+		featured: book.featured || false,
+		formatTags: (book.formatTags || []) as FormatTag[],
+		popularityTags: (book.popularityTags || []) as PopularityTag[],
+	})
+);
 ---
 
 <Layout title={`${pageTitle} | FluentReads`} description={pageDescription}>
