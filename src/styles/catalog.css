@@ -1,0 +1,388 @@
+/* Catalog Hero Styles */
+.catalog-hero {
+    position: relative;
+    overflow: hidden;
+}
+
+.book-particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+.hero-title {
+    animation: fadeInDown 1s ease-out;
+}
+
+.hero-subtitle {
+    animation: fadeInUp 1s ease-out 0.2s forwards;
+    opacity: 0;
+}
+
+.hero-buttons {
+    animation: fadeIn 1s ease-out 0.4s forwards;
+    opacity: 0;
+}
+
+.hero-stats {
+    animation: fadeIn 1.2s ease-out 0.6s forwards;
+    opacity: 0;
+}
+
+/* Main catalog section styles */
+.catalog-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.accent-shape {
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(
+        circle,
+        var(--color-secondary-light) 0%,
+        rgba(250, 204, 21, 0) 70%
+    );
+    border-radius: 100%;
+    opacity: 0.4;
+    z-index: 0;
+    animation: pulse-slow 8s infinite alternate;
+}
+
+@keyframes pulse-slow {
+    0% {
+        opacity: 0.2;
+        transform: scale(0.8);
+    }
+    100% {
+        opacity: 0.4;
+        transform: scale(1.2);
+    }
+}
+
+/* Category cards animations */
+.category-card {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.category-card.animate-fade-in {
+    animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.category-icon {
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.animate-bounce-once {
+    animation: bounceOnce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes bounceOnce {
+    0%, 20%, 60%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-20px);
+    }
+    80% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Filter styles */
+.filter-container {
+    transition: all 0.3s ease;
+}
+
+.filter-container:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.filter-select {
+    transition: all 0.2s ease;
+}
+
+.filter-select:focus {
+    transform: translateY(-1px);
+}
+
+/* Improved filter tag styles */
+.filter-tag {
+    animation: scaleIn 0.3s ease-out forwards;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+.filter-tag:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Book grid items animation */
+.book-grid-item {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.book-grid-item.in-view {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Book visibility transition for smooth filtering */
+.book-grid-item {
+    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.book-grid-item.hidden {
+    display: none;
+}
+
+/* Loading indicator styles */
+.loading-container {
+    backdrop-filter: blur(2px);
+    transition: all 0.3s ease;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.loading-container {
+    transition: opacity 0.3s ease;
+}
+
+#loading-indicator:not(.hidden) {
+    opacity: 1;
+    visibility: visible;
+}
+
+#loading-indicator:not(.hidden) {
+    animation: fadeIn 0.2s ease forwards;
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+#books-grid.filtering {
+    opacity: 0.6;
+}
+
+/* Skeleton animation */
+.skeleton-card {
+    transition: all 0.3s ease;
+}
+
+.skeleton-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -5px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Staggered animation timing */
+.appear-1.in-view {
+    transition-delay: 0.1s;
+}
+
+.appear-2.in-view {
+    transition-delay: 0.2s;
+}
+
+.appear-3.in-view {
+    transition-delay: 0.3s;
+}
+
+.appear-4.in-view {
+    transition-delay: 0.4s;
+}
+
+/* Promo section animations */
+.promo-item {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.promo-item.in-view {
+    animation: fadeInUp 0.6s ease-out forwards;
+}
+
+/* General animations */
+.fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.fade-in.in-view {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.slide-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.slide-up.in-view {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Animation keyframes */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Pulse animation for special elements */
+.animate-pulse-subtle {
+    animation: pulseSlight 2s infinite;
+}
+
+@keyframes pulseSlight {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.8;
+    }
+}
+
+/* Loading state animations */
+@keyframes pulse-bg {
+    0%, 100% {
+        background-opacity: 0.05;
+    }
+    50% {
+        background-opacity: 0.1;
+    }
+}
+
+body.filters-loading .books-grid::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, 
+        rgba(255,255,255,0) 0%, 
+        rgba(255,255,255,0.2) 20%, 
+        rgba(255,255,255,0.5) 60%, 
+        rgba(255,255,255,0.2) 80%, 
+        rgba(255,255,255,0) 100%);
+    background-size: 200% 100%;
+    animation: shine 1.5s infinite linear;
+    z-index: 10;
+    pointer-events: none;
+}
+
+@keyframes shine {
+    to {
+        background-position: 200% 0;
+    }
+}
+
+/* Loading indicator animation */
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Enhanced empty state animation */
+#empty-state {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    animation: fadeIn 0.5s ease forwards;
+}
+
+#empty-state:not(.hidden) {
+    opacity: 1;
+}
+
+/* Button hover effect */
+#reset-filters {
+    transition: all 0.3s ease;
+}
+
+#reset-filters:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .catalog-hero {
+        padding-top: 2rem;
+        padding-bottom: 3rem;
+    }
+    
+    .hero-title {
+        font-size: 2.25rem;
+    }
+    
+    .hero-stats {
+        padding: 1rem;
+    }
+    
+    .filter-container {
+        padding: 1rem;
+    }
+}
