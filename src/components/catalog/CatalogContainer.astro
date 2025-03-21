@@ -1,0 +1,349 @@
+---
+import Card from '../Card.astro';
+import Filter from './Filter.jsx';
+import SkeletonCatalog from '../SkeletonCatalog.astro';
+import type { Book } from '../../types/book';
+
+interface Props {
+	books: Book[];
+	initialLevel?: string;
+	initialFormat?: string;
+	initialSort?: string;
+}
+
+const {
+	books = [],
+	initialLevel = 'all',
+	initialFormat = 'all',
+	initialSort = 'featured',
+} = Astro.props;
+
+// Apply initial filters on the server
+let filteredBooks = [...books];
+
+// Filter by format if specified
+if (initialFormat !== 'all') {
+	filteredBooks = filteredBooks.filter(
+		(book) =>
+			book.formatTags && book.formatTags.includes(initialFormat as any)
+	);
+}
+
+// Filter by level if specified
+if (initialLevel !== 'all') {
+	filteredBooks = filteredBooks.filter((book) => book.level === initialLevel);
+}
+
+// Apply initial sorting
+if (initialSort === 'price-low') {
+	filteredBooks.sort((a, b) => a.price - b.price);
+} else if (initialSort === 'price-high') {
+	filteredBooks.sort((a, b) => b.price - a.price);
+} else if (initialSort === 'newest') {
+	// Assuming we don't have a date field, we'll leave this as is
+	// In a real app, you'd sort by date: filteredBooks.sort((a, b) => new Date(b.publishedDate) - new Date(a.publishedDate));
+} else if (initialSort === 'bestseller') {
+	filteredBooks = filteredBooks.sort((a, b) => {
+		const aIsBestseller = a.popularityTags?.includes('bestseller') || false;
+		const bIsBestseller = b.popularityTags?.includes('bestseller') || false;
+		return bIsBestseller - aIsBestseller;
+	});
+} else {
+	// Default 'featured' sort
+	filteredBooks = filteredBooks.sort(
+		(a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0)
+	);
+}
+
+// Pass all books as a JSON string to make them available for client-side filtering
+const allBooksJSON = JSON.stringify(books);
+---
+
+<div class='flex flex-col items-center'>
+	<!-- Filtro en React (Isla) con parámetros iniciales -->
+	<Filter
+		client:load
+		initialLevel={initialLevel}
+		initialFormat={initialFormat}
+		initialSort={initialSort}
+	/>
+
+	<!-- Hidden input to store all books data for client-side manipulation -->
+	<input type='hidden' id='all-books-data' value={allBooksJSON} />
+
+	<!-- Contenedor del grid con posición relativa para el loading indicator -->
+	<div class='relative'>
+		<!-- Loading indicator dentro del contenedor del grid -->
+		<div
+			id='loading-indicator'
+			class='hidden absolute inset-0 bg-white/80 rounded-lg z-10 loading-container'>
+			<!-- Skeleton loader que se muestra durante la carga -->
+			<SkeletonCatalog count={6} />
+		</div>
+
+		<!-- Grid de libros -->
+		<div
+			id='books-grid'
+			class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8 min-h-[300px] px-8'>
+			{
+				filteredBooks.map((book) => (
+					<div
+						class='book-grid-item'
+						data-book-id={book.id}
+						data-level={book.level}
+						data-format={book.formatTags?.join(',')}
+						data-featured={book.featured}
+						data-bestseller={book.popularityTags?.includes(
+							'bestseller'
+						)}>
+						<Card
+							title={book.title}
+							description={book.description}
+							price={book.price}
+							coverImage={book.coverImage}
+							altText={book.altText}
+							includedItems={book.includedItems}
+							rating={book.rating}
+							buyLink={book.buyLink}
+							detailsLink={book.detailsLink}
+							discount={book.discount}
+							level={book.level}
+							featured={book.featured}
+							formatTags={book.formatTags}
+							popularityTags={book.popularityTags}
+						/>
+					</div>
+				))
+			}
+		</div>
+	</div>
+
+	<!-- Empty state message that will be shown when no books match filters -->
+	<div id='empty-state' class='text-center py-16 px-4 hidden'>
+		<div class='text-6xl mb-4'>📚</div>
+		<h3 class='text-2xl font-bold text-gray-700 mb-2'>
+			No hay resultados que coincidan con tus filtros
+		</h3>
+		<p class='text-gray-500 mb-6'>
+			Intenta con otros filtros o revisa todas nuestras opciones
+			disponibles
+		</p>
+		<button
+			id='reset-filters'
+			class='bg-primary text-white py-2 px-6 rounded-lg hover:bg-primary-dark transition-colors'>
+			Limpiar filtros
+		</button>
+	</div>
+</div>
+
+<script>
+	// Client-side filtering without page reload
+	document.addEventListener('DOMContentLoaded', () => {
+		// Get all books from the hidden input
+		const allBooksDataElement = document.getElementById('all-books-data');
+		const allBooks = JSON.parse(allBooksDataElement.value);
+
+		// Get DOM elements
+		const booksGrid = document.getElementById('books-grid');
+		const emptyState = document.getElementById('empty-state');
+		const loadingIndicator = document.getElementById('loading-indicator');
+		const resetButton = document.getElementById('reset-filters');
+
+		// Function to show/hide loading indicator
+		const showLoading = (show) => {
+			if (show) {
+				loadingIndicator.classList.remove('hidden');
+				booksGrid.classList.add('filtering');
+				booksGrid.style.opacity = '0'; // Ocultar el grid original cuando se muestra el skeleton
+			} else {
+				loadingIndicator.classList.add('hidden');
+				booksGrid.classList.remove('filtering');
+				booksGrid.style.opacity = '1'; // Mostrar el grid cuando se quita el skeleton
+			}
+		};
+
+		// Function to update URL without reloading
+		const updateURL = (level, format, sort) => {
+			// Create URL object based on current URL
+			const url = new URL(window.location.href);
+
+			// Update query parameters
+			if (level && level !== 'all') {
+				url.searchParams.set('level', level);
+			} else {
+				url.searchParams.delete('level');
+			}
+
+			if (format && format !== 'all') {
+				url.searchParams.set('format', format);
+			} else {
+				url.searchParams.delete('format');
+			}
+
+			if (sort && sort !== 'featured') {
+				url.searchParams.set('sort', sort);
+			} else {
+				url.searchParams.delete('sort');
+			}
+
+			// Add hash to keep user at catalog section
+			url.hash = 'full-catalog';
+
+			// Update the URL without reloading the page
+			window.history.pushState({}, '', url.toString());
+		};
+
+		// Function to filter books and update the display
+		const filterBooks = (level, format, sort) => {
+			showLoading(true);
+
+			// Incrementa el retraso para dar tiempo a ver el skeleton
+			setTimeout(() => {
+				// Apply filters
+				let filtered = [...allBooks];
+
+				// Filter by level if specified
+				if (level && level !== 'all') {
+					filtered = filtered.filter((book) => book.level === level);
+				}
+
+				// Filter by format if specified
+				if (format && format !== 'all') {
+					filtered = filtered.filter(
+						(book) =>
+							book.formatTags && book.formatTags.includes(format)
+					);
+				}
+
+				// Apply sorting
+				if (sort === 'price-low') {
+					filtered.sort((a, b) => a.price - b.price);
+				} else if (sort === 'price-high') {
+					filtered.sort((a, b) => b.price - a.price);
+				} else if (sort === 'bestseller') {
+					filtered = filtered.sort((a, b) => {
+						const aIsBestseller =
+							a.popularityTags?.includes('bestseller') || false;
+						const bIsBestseller =
+							b.popularityTags?.includes('bestseller') || false;
+						return bIsBestseller - aIsBestseller;
+					});
+				} else {
+					// Default 'featured' sort
+					filtered = filtered.sort(
+						(a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0)
+					);
+				}
+
+				// Update URL to reflect filters without page reload
+				updateURL(level, format, sort);
+
+				// Get all book items in the grid
+				const bookItems = document.querySelectorAll('.book-grid-item');
+
+				// Create a map of book IDs for quick lookup
+				const filteredIds = new Set(filtered.map((book) => book.id));
+
+				// Show/hide books based on filter results
+				let visibleCount = 0;
+				bookItems.forEach((item) => {
+					const bookId = item.getAttribute('data-book-id');
+					if (filteredIds.has(bookId)) {
+						item.classList.remove('hidden');
+						visibleCount++;
+
+						// Determine the animation delay for staggered effect
+						const index = Array.from(bookItems).indexOf(item);
+						const delayClass = `appear-${(index % 4) + 1}`;
+
+						// Reset animation classes
+						item.classList.remove(
+							'in-view',
+							'appear-1',
+							'appear-2',
+							'appear-3',
+							'appear-4'
+						);
+
+						// Force reflow to restart animation
+						void item.offsetWidth;
+
+						// Apply animation classes
+						setTimeout(() => {
+							item.classList.add('in-view', delayClass);
+						}, 50);
+					} else {
+						item.classList.add('hidden');
+					}
+				});
+
+				// Show empty state if no books match filters
+				if (visibleCount === 0) {
+					emptyState.classList.remove('hidden');
+				} else {
+					emptyState.classList.add('hidden');
+				}
+
+				showLoading(false);
+			}, 600); // Aumentamos el retraso para apreciar mejor el skeleton
+		};
+
+		// Filter change event handler - THIS IS THE KEY PART
+		const handleFilterChange = (event) => {
+			// Get the filter data from the event detail
+			const { level, format, sort } = event.detail;
+
+			// Apply client-side filtering without page reload
+			filterBooks(level, format, sort);
+		};
+
+		// Reset filters button
+		if (resetButton) {
+			resetButton.addEventListener('click', () => {
+				// Create and dispatch a reset event
+				const resetEvent = new CustomEvent('resetFilters');
+				document.dispatchEvent(resetEvent);
+
+				// Apply the default filters
+				filterBooks('all', 'all', 'featured');
+			});
+		}
+
+		// Listen for filter changes from the Filter component
+		window.addEventListener('filterChange', handleFilterChange);
+
+		// Animation for book grid items
+		const observeElements = () => {
+			const observer = new IntersectionObserver(
+				(entries) => {
+					entries.forEach((entry, index) => {
+						if (entry.isIntersecting) {
+							// Add class for animation and staggered timing
+							setTimeout(
+								() => {
+									entry.target.classList.add(
+										'in-view',
+										`appear-${(index % 4) + 1}`
+									);
+								},
+								100 * (index % 4)
+							);
+							observer.unobserve(entry.target);
+						}
+					});
+				},
+				{ threshold: 0.1 }
+			);
+
+			// Observe all book grid items
+			document.querySelectorAll('.book-grid-item').forEach((item) => {
+				if (!item.classList.contains('hidden')) {
+					observer.observe(item);
+				}
+			});
+		};
+
+		// Initialize animations
+		observeElements();
+	});
+</script>
