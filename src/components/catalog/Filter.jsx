@@ -280,7 +280,7 @@ const CatalogFilter = ({
 	return (
 		<div
 			id='catalog-filters'
-			className='bg-white rounded-xl shadow-md p-4 md:p-6 mb-8 filter-container'>
+			className='bg-white rounded-xl shadow-md p-4 md:p-6 mb-8 filter-container min-w-full md:min-w-[600px]'>
 			<form
 				id='filter-form'
 				className='filter-form'
