@@ -47,4 +47,6 @@ export interface Book {
 	featured?: boolean;
 	formatTags?: FormatTag[];
 	popularityTags?: PopularityTag[];
+	video?: string;
+	images?: string[];
 }
