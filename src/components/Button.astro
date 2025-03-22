@@ -1,6 +1,12 @@
 ---
 export interface Props {
-	variant?: 'primary' | 'secondary' | 'accent' | 'outline' | 'ghost';
+	variant?:
+		| 'primary'
+		| 'secondary'
+		| 'accent'
+		| 'outline'
+		| 'ghost'
+		| 'custom';
 	size?: 'xsmall' | 'small' | 'medium' | 'large';
 	href?: string;
 	fullWidth?: boolean;
@@ -8,6 +14,7 @@ export interface Props {
 	type?: 'button' | 'submit' | 'reset';
 	class?: string;
 	newTab?: boolean;
+	customClasses?: string;
 	[key: string]: any;
 }
 
@@ -20,6 +27,7 @@ const {
 	type = 'button',
 	class: className = '',
 	newTab = true,
+	className: customClasses = '',
 	...rest
 } = Astro.props;
 
@@ -45,6 +53,7 @@ const variantClasses = {
 	outline:
 		'bg-transparent border-2 border-primary text-primary hover:bg-primary hover:text-white focus:ring-primary-light focus:ring-opacity-50 hover:shadow-md',
 	ghost: 'bg-transparent text-primary hover:bg-neutral hover:text-primary-dark focus:ring-neutral focus:ring-opacity-50',
+	custom: customClasses,
 }[variant];
 
 // Width classes with improved responsive behavior
