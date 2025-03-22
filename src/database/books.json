@@ -1,11 +1,17 @@
 [
   {
-    "id": "book-1",
+    "id": "business-english-master",
     "title": "Business English Master",
     "description": "Domina el inglés empresarial con este completo material que incluye vocabulario específico, frases comunes y ejercicios prácticos.",
     "price": 49.99,
     "coverImage": "/images/libros-template.jpg",
     "altText": "Portada del libro Business English Master",
+    "video": "https://www.youtube.com/embed/u7kdVe8q5zs?si=r_AOVcnJOR1bRXhA",
+    "images": [
+      "/images/book-sample/book-sample-01.jpg",
+      "/images/book-sample/book-sample-02.jpg",
+      "/images/book-sample/book-sample-03.jpg"
+    ],
     "includedItems": [
       "PDF del libro completo",
       "Workbook con ejercicios",
