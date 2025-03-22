@@ -1,6 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import BookDetail from '../../components/BookDetailDesktop.astro';
+import ProductDetailDesktop from '../../components/ProductDetailDesktop.astro';
 import booksData from '../../database/books.json';
 import type { Book } from '../../types/book';
 
@@ -38,5 +38,9 @@ const image = book.coverImage;
 ---
 
 <Layout title={title} description={description} image={image}>
-	<BookDetail book={book} relatedBooks={relatedBooks} type='book' />
+	<ProductDetailDesktop
+		product={book}
+		relatedProducts={relatedBooks}
+		type='book'
+	/>
 </Layout>
