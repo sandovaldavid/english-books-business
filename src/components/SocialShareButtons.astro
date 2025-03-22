@@ -1,0 +1,155 @@
+---
+import Button from './Button.astro';
+import WhatsAppIcon from './icons/WhatsApp.astro';
+import FacebookIcon from './icons/Facebook.astro';
+import TelegramIcon from './icons/Telegram.astro';
+import TwitterIcon from './icons/X.astro';
+import SiteInfo from '../database/pageInformation.json';
+
+interface Props {
+	url: string;
+	title: string;
+	description: string;
+	image?: string;
+	productType: 'book' | 'pack' | 'exam';
+	price?: number;
+	currency?: string;
+}
+
+const {
+	url,
+	title,
+	description,
+	image,
+	productType,
+	price,
+	currency = 'PEN',
+} = Astro.props;
+
+// Create product type in Spanish
+const productTypeSpanish =
+	{
+		book: 'libro',
+		pack: 'pack',
+		exam: 'examen',
+	}[productType] || 'producto';
+
+// Format price for display if available
+const priceText = price ? `S/${price.toFixed(2)}` : '';
+
+// Create share message for WhatsApp and Telegram
+const shareMessage = `¡Mira este ${productTypeSpanish} en ${priceText ? priceText : `${SiteInfo.siteName}`}! "${title}": ${description}`;
+
+// Create share URLs
+const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`${shareMessage} ${url}`)}`;
+const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(shareMessage)}`;
+const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(`${title} ${priceText ? '- ' + priceText : ''} vía @${SiteInfo.socialMediaHandles.twitter}`)}`;
+
+// Set icons sizes
+const iconSize = 'w-5 h-5';
+---
+
+<div class='social-share-container my-8 px-4 lg:w-3xl mx-auto'>
+	<div
+		class='flex flex-col bg-gray-50 border border-gray-200 rounded-lg p-5 shadow-sm'>
+		<h3 class='text-lg font-bold text-gray-700 mb-4 text-center'>
+			Compartir este {productTypeSpanish}
+		</h3>
+
+		<div class='grid grid-cols-2 md:grid-cols-4 gap-3'>
+			<!-- WhatsApp -->
+			<Button
+				variant='custom'
+				href={whatsappUrl}
+				target='_blank'
+				rel='noopener noreferrer'
+				className='bg-[#25D366] hover:bg-[#20BC5A] text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-all duration-300'
+				aria-label='Compartir por WhatsApp'>
+				<WhatsAppIcon class={iconSize} />
+				<span class='hidden md:inline'>WhatsApp</span>
+			</Button>
+
+			<!-- Telegram -->
+			<Button
+				variant='custom'
+				href={telegramUrl}
+				target='_blank'
+				rel='noopener noreferrer'
+				className='bg-[#0088CC] hover:bg-[#0077B5] text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-all duration-300'
+				aria-label='Compartir por Telegram'>
+				<TelegramIcon class={iconSize} />
+				<span class='hidden md:inline'>Telegram</span>
+			</Button>
+
+			<!-- Facebook -->
+			<Button
+				variant='custom'
+				href={facebookUrl}
+				target='_blank'
+				rel='noopener noreferrer'
+				className='bg-[#1877F2] hover:bg-[#0C63D4] text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-all duration-300'
+				aria-label='Compartir por Facebook'>
+				<FacebookIcon class={iconSize} />
+				<span class='hidden md:inline'>Facebook</span>
+			</Button>
+
+			<!-- Twitter/X -->
+			<Button
+				variant='custom'
+				href={twitterUrl}
+				target='_blank'
+				rel='noopener noreferrer'
+				className='bg-[#000000] hover:bg-[#333333] text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-all duration-300'
+				aria-label='Compartir por Twitter/X'>
+				<TwitterIcon class={iconSize} />
+				<span class='hidden md:inline'>Twitter</span>
+			</Button>
+		</div>
+	</div>
+</div>
+
+<script>
+	// TypeScript declaration for Google Analytics gtag function
+	declare const gtag: (
+		command: string,
+		action: string,
+		params: object
+	) => void;
+
+	// Track social share clicks with analytics if available
+	document.addEventListener('DOMContentLoaded', () => {
+		const shareButtons = document.querySelectorAll(
+			'.social-share-container a'
+		);
+
+		shareButtons.forEach((button) => {
+			button.addEventListener('click', (e) => {
+				// If Google Analytics is available
+				if (typeof gtag === 'function') {
+					const network =
+						button
+							.getAttribute('aria-label')
+							?.replace('Compartir por ', '') || 'unknown';
+					gtag('event', 'share', {
+						method: network,
+						content_type: 'product',
+						item_id: window.location.pathname,
+					});
+				}
+			});
+		});
+	});
+</script>
+
+<style>
+	/* Animation for the social buttons */
+	.social-share-container button {
+		transform: translateY(0);
+		transition: transform 0.3s ease;
+	}
+
+	.social-share-container button:hover {
+		transform: translateY(-3px);
+	}
+</style>
