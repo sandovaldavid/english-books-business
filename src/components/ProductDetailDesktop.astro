@@ -4,6 +4,8 @@ import ReviewStars from './ReviewStars.astro';
 import SectionTitle from './SectionTitle.astro';
 import MediaCarousel from './MediaCarousel.astro';
 import type { Book } from '../types/book';
+import type { Exam } from '../types/exam';
+import type { Pack } from '../types/pack';
 import WhatsAppIcon from './icons/WhatsApp.astro';
 import CartIcon from './icons/Cart.astro';
 import CheckIcon from './icons/Check.astro';
@@ -11,7 +13,7 @@ import ArrowRightIcon from './icons/ArrowRight.astro';
 import CustomerSupport from './CustomerSupport.astro';
 import { extractYoutubeId } from '../utils/videoEmbeds';
 import { levelConfig as levelInfo, formatConfig as formatInfo } from '../utils/bookTags';
-import '../styles/BookDetail.css';
+import '../styles/ProductDetail.css';
 
 // Define proper interface for MediaItem
 interface MediaItem {
@@ -21,86 +23,96 @@ interface MediaItem {
     thumbnail?: string;
 }
 
+// Define a ProductType type that can be any of our product types
+type ProductType = Book | Exam | Pack;
+
 interface Props {
-    book: Book;
-    relatedBooks?: Book[];
-    type?: 'book' | 'pack' | 'exam';
+    product: ProductType;
+    relatedProducts?: ProductType[];
+    type: 'book' | 'exam' | 'pack';
 }
 
-const { book, relatedBooks = [], type = 'book' } = Astro.props;
+const { product, relatedProducts = [], type } = Astro.props;
 
 // Prepare formatted price display
-const hasDiscount = book.discount && book.discount > 0;
-const originalPrice = book.price;
-const discountedPrice = hasDiscount ? book.price * (1 - (book.discount || 0) / 100) : book.price;
+const hasDiscount = product.discount && product.discount > 0;
+const originalPrice = product.price;
+const discountedPrice = hasDiscount ? product.price * (1 - (product.discount || 0) / 100) : product.price;
 const formattedDiscountedPrice = `S/${discountedPrice.toFixed(2)}`;
 const formattedOriginalPrice = `S/${originalPrice.toFixed(2)}`;
 
 // Generate JSON-LD for SEO
 const jsonLd = {
     "@context": "https://schema.org",
-    "@type": type === 'book' ? "Book" : (type === 'exam' ? "Product" : "Product"),
-    "name": book.title,
-    "description": book.description,
-    "image": book.coverImage,
+    "@type": type === 'book' ? "Book" : "Product",
+    "name": product.title,
+    "description": product.description,
+    "image": product.coverImage,
     "offers": {
         "@type": "Offer",
         "price": discountedPrice,
         "priceCurrency": "PEN",
         "availability": "https://schema.org/InStock",
     },
-    "aggregateRating": book.rating ? {
+    "aggregateRating": product.rating ? {
         "@type": "AggregateRating",
-        "ratingValue": book.rating.score,
-        "reviewCount": book.rating.reviewCount
+        "ratingValue": product.rating.score,
+        "reviewCount": product.rating.reviewCount
     } : undefined
 };
 
-// Dynamically set meta title based on product type
+// Determine product type text for display
 const productTypeLabel = type === 'book' ? 'Libro' : (type === 'exam' ? 'Examen' : 'Pack');
-const pageTitle = `${book.title} - ${productTypeLabel} en inglés | FluentReads`;
+const pageTitle = `${product.title} - ${productTypeLabel} en inglés | FluentReads`;
 
 // Extract YouTube video ID if present
 let youtubeVideoId = '';
-if (book.video) {
-    // Use the utility function from videoEmbeds.js
-    youtubeVideoId = extractYoutubeId(book.video);
+if (product.video) {
+    youtubeVideoId = extractYoutubeId(product.video);
 }
 
 // Prepare media items for carousel
 const mediaItems: MediaItem[] = [];
 
 // Add up to 3 images if available
-if (book.images && Array.isArray(book.images)) {
-    book.images.forEach(img => {
+if (product.images && Array.isArray(product.images)) {
+    product.images.forEach(img => {
         mediaItems.push({
             type: 'image',
             url: img,
-            title: `${book.title} - Imagen`
+            title: `${product.title} - Imagen`
         });
     });
 }
 
 // Add the cover image if it's not already included
-if (book.coverImage && (!book.images || !book.images.includes(book.coverImage))) {
+if (product.coverImage && (!product.images || !product.images.includes(product.coverImage))) {
     mediaItems.unshift({
         type: 'image',
-        url: book.coverImage,
-        title: `${book.title} - Portada`,
+        url: product.coverImage,
+        title: `${product.title} - Portada`,
     });
 }
 
 // Add video if available
-if (book.video) {
+if (product.video) {
     mediaItems.push({
         type: 'video',
-        url: book.video,
-        title: `${book.title} - Video`,
+        url: product.video,
+        title: `${product.title} - Video`,
     });
 }
+
+// Determine level display for books
+const levelDisplay = type === 'book' && (product as Book).level
+    ? levelInfo[(product as Book).level as keyof typeof levelInfo]
+    : null;
+
+// Determine format tags for books
+const formatTags = type === 'book' ? (product as Book).formatTags : null;
 ---
 
-<div class="book-detail-container">
+<div class="product-detail-container">
     <!-- JSON-LD Schema for SEO -->
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>
 
@@ -124,7 +136,7 @@ if (book.video) {
                 <li aria-current="page">
                     <div class="flex items-center">
                         <span class="mx-2">/</span>
-                        <span class="text-gray-600 font-medium truncate max-w-[200px]">{book.title}</span>
+                        <span class="text-gray-600 font-medium truncate max-w-[200px]">{product.title}</span>
                     </div>
                 </li>
             </ol>
@@ -137,25 +149,25 @@ if (book.video) {
                 {mediaItems.length > 0 ? (
                     <MediaCarousel 
                         mediaItems={mediaItems} 
-                        title={book.title} 
-                        height={book.video ? "500px" : "450px"} 
+                        title={product.title} 
+                        height={product.video ? "500px" : "450px"} 
                     />
                 ) : (
                     <!-- Fallback for when no media items are available -->
-                    <div class="relative overflow-hidden rounded-2xl shadow-xl mb-6 book-cover-container group">
+                    <div class="relative overflow-hidden rounded-2xl shadow-xl mb-6 product-cover-container group">
                         <img 
-                            src={book.coverImage} 
-                            alt={book.altText || `Portada de ${book.title}`}
+                            src={product.coverImage} 
+                            alt={product.altText || `Portada de ${product.title}`}
                             class="w-full h-auto object-cover transition-transform duration-700 transform group-hover:scale-105"
                         />
                         
-                        {hasDiscount && book.discount && (
+                        {hasDiscount && product.discount && (
                             <div class="absolute top-4 right-4 bg-accent text-white font-bold py-2 px-4 rounded-full shadow-md text-lg animate-pulse-slow">
-                                {book.discount}% OFF
+                                {product.discount}% OFF
                             </div>
                         )}
 
-                        {book.featured && (
+                        {product.featured && (
                             <div class="absolute top-4 left-4 bg-secondary text-primary font-bold py-2 px-4 rounded-full shadow-md text-sm">
                                 Recomendado
                             </div>
@@ -173,39 +185,58 @@ if (book.video) {
             <div class="flex flex-col">
                 <!-- Product title and main details -->
                 <div class="mb-6">
-                    <h1 class="text-3xl md:text-4xl font-bold text-primary-dark mb-4 product-title">{book.title}</h1>
+                    <h1 class="text-3xl md:text-4xl font-bold text-primary-dark mb-4 product-title">{product.title}</h1>
                     
-                    <!-- Level and format tags -->
-                    <div class="flex flex-wrap gap-2 mb-4">
-                        {book.level && levelInfo[book.level as keyof typeof levelInfo] && (
-                            <span class={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${levelInfo[book.level as keyof typeof levelInfo].color}`}>
-                                {levelInfo[book.level as keyof typeof levelInfo].label}
+                    <!-- Level and format tags for books -->
+                    {type === 'book' && (
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            {levelDisplay && (
+                                <span class={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${levelDisplay.color}`}>
+                                    {levelDisplay.label}
+                                </span>
+                            )}
+                            
+                            {formatTags && formatTags.map(tag => (
+                                <span class={`inline-flex items-center px-3 py-1 rounded-full border text-sm font-medium ${formatInfo[tag as keyof typeof formatInfo].color}`}>
+                                    <span class="mr-1">{formatInfo[tag as keyof typeof formatInfo].icon}</span>
+                                    {formatInfo[tag as keyof typeof formatInfo].label}
+                                </span>
+                            ))}
+                        </div>
+                    )}
+                    
+                    <!-- Products badges for exams and packs -->
+                    {type === 'exam' && (
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border bg-cyan-100 text-cyan-800 border-cyan-200">
+                                Examen Internacional
                             </span>
-                        )}
-                        
-                        {book.formatTags && book.formatTags.map(tag => (
-                            <span class={`inline-flex items-center px-3 py-1 rounded-full border text-sm font-medium ${formatInfo[tag as keyof typeof formatInfo].color}`}>
-                                <span class="mr-1">{formatInfo[tag as keyof typeof formatInfo].icon}</span>
-                                {formatInfo[tag as keyof typeof formatInfo].label}
+                        </div>
+                    )}
+                    
+                    {type === 'pack' && (
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border bg-indigo-100 text-indigo-800 border-indigo-200">
+                                Pack Completo
                             </span>
-                        ))}
-                    </div>
+                        </div>
+                    )}
                     
                     <!-- Rating and reviews with stars -->
-                    {book.rating && (
+                    {product.rating && (
                         <div class="flex items-center mb-4">
                             <div class="flex text-yellow-400">
-                                <ReviewStars score={book.rating.score} />
+                                <ReviewStars score={product.rating.score} />
                             </div>
                             <span class="ml-2 text-gray-600">
-                                {book.rating.score}/5 ({book.rating.reviewCount} reseñas)
+                                {product.rating.score}/5 ({product.rating.reviewCount} reseñas)
                             </span>
                         </div>
                     )}
                     
                     <!-- Product description with better readability -->
                     <div class="prose prose-lg max-w-none text-gray-700 mb-6">
-                        <p>{book.description}</p>
+                        <p>{product.description}</p>
                     </div>
                     
                     <!-- Price section with better visual hierarchy -->
@@ -215,9 +246,9 @@ if (book.video) {
                                 <>
                                     <span class="text-3xl font-bold text-primary mr-3">{formattedDiscountedPrice}</span>
                                     <span class="text-xl text-gray-500 line-through">{formattedOriginalPrice}</span>
-                                    {book.discount && (
+                                    {product.discount && (
                                         <span class="ml-3 bg-accent/10 text-accent text-sm font-bold px-3 py-1 rounded-full">
-                                            {book.discount}% DESCUENTO
+                                            {product.discount}% DESCUENTO
                                         </span>
                                     )}
                                 </>
@@ -234,10 +265,10 @@ if (book.video) {
                             variant="primary" 
                             size="large" 
                             class="add-to-cart-btn flex-1 shadow-lg hover:shadow-xl transform transition-all duration-300 hover:-translate-y-1 group cursor-pointer"
-                            data-id={book.id}
-                            data-title={book.title}
+                            data-id={product.id}
+                            data-title={product.title}
                             data-price={discountedPrice}
-                            data-image={book.coverImage}
+                            data-image={product.coverImage}
                             data-type={type}
                         >
                             <span class="flex items-center justify-center">
@@ -269,7 +300,7 @@ if (book.video) {
                         </h2>
                         
                         <ul class="space-y-3 included-items-list">
-                            {book.includedItems && book.includedItems.map(item => (
+                            {product.includedItems && product.includedItems.map(item => (
                                 <li class="flex items-start">
                                     <span class="text-green-500 mr-2 mt-1">✓</span>
                                     <span>{item}</span>
@@ -287,19 +318,19 @@ if (book.video) {
             </div>
         </div>
         
-        <!-- Related books section -->
-        {relatedBooks.length > 0 && (
+        <!-- Related products section -->
+        {relatedProducts.length > 0 && (
             <div class="mt-16 related-section">
                 <SectionTitle>Productos relacionados</SectionTitle>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
-                    {/* Related books grid would go here */}
+                    {/* Related products grid would go here */}
                 </div>
                 
                 <div class="text-center mt-8">
                     <Button 
                         variant="outline" 
                         size="medium" 
-                        href="/catalogo" 
+                        href={type === 'book' ? "/catalogo" : (type === 'exam' ? "/examenes-internacionales" : "/packs")} 
                         class="inline-flex items-center group"
                     >
                         Ver catálogo completo
@@ -349,7 +380,7 @@ if (book.video) {
 </script>
 
 <style>
-    .book-cover-container {
+    .product-cover-container {
         max-height: 600px;
         overflow: hidden;
     }
