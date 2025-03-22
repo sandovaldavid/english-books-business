@@ -1,0 +1,63 @@
+---
+import type { FormatTag, PopularityTag } from '../types/book';
+
+interface Props {
+	formatTags?: (FormatTag | string)[];
+	popularityTags?: (PopularityTag | string)[];
+	formatConfig: Record<string, any>;
+	popularityConfig: Record<string, any>;
+}
+
+const {
+	formatTags = [],
+	popularityTags = [],
+	formatConfig,
+	popularityConfig,
+} = Astro.props;
+---
+
+<div class='mb-3 tag-container'>
+	{/* Format tags */}
+	{
+		formatTags && formatTags.length > 0 && (
+			<div class='mb-2'>
+				<div class='flex flex-wrap gap-1.5'>
+					{formatTags.map((tag) => {
+						const config =
+							formatConfig[tag as keyof typeof formatConfig];
+						return (
+							<span
+								class={`inline-flex items-center text-xs px-2 py-1 rounded-md border ${config?.color || ''} format-tag`}>
+								<span class='mr-1'>{config?.icon || ''}</span>{' '}
+								{config?.label || tag}
+							</span>
+						);
+					})}
+				</div>
+			</div>
+		)
+	}
+
+	{/* Popularity tags */}
+	{
+		popularityTags && popularityTags.length > 0 && (
+			<div>
+				<div class='flex flex-wrap gap-1.5'>
+					{popularityTags.map((tag) => {
+						const config =
+							popularityConfig[
+								tag as keyof typeof popularityConfig
+							];
+						return (
+							<span
+								class={`inline-flex items-center text-xs px-2 py-1 rounded-md border ${config?.color || ''} popularity-tag`}>
+								<span class='mr-1'>{config?.icon || ''}</span>{' '}
+								{config?.label || tag}
+							</span>
+						);
+					})}
+				</div>
+			</div>
+		)
+	}
+</div>
