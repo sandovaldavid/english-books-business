@@ -1,9 +1,9 @@
 ---
-import ArrowRightIcon from './icons/ArrowRight.astro';
 import Button from './Button.astro';
+import TagIcon from './icons/Offer.astro';
+import ArrowRightIcon from './icons/ArrowRight.astro';
 
-// Define the interface for the Offer prop
-interface Offer {
+interface OfferProps {
 	title: string;
 	description: string;
 	discount: string;
@@ -11,58 +11,218 @@ interface Offer {
 	salePrice: string;
 	image: string;
 	link: string;
+	detailsLink?: string; // Optional details link
 }
 
-// Accept a single Offer as a prop
-const { Offer, index = 0 } = Astro.props;
+interface Props {
+	Offer: OfferProps;
+	index: number;
+}
+
+const { Offer, index } = Astro.props;
+
+// Default details link if not provided
+const detailsLink =
+	Offer.detailsLink ||
+	`/ofertas/${Offer.title.toLowerCase().replace(/\s+/g, '-')}`;
+
+// Animation delay based on index
+const animationDelay = `${(index % 3) * 0.15}s`;
 ---
 
 <div
-	class={`promo-item bg-white rounded-xl overflow-hidden shadow-lg transform transition-all duration-500 hover:-translate-y-2 hover:shadow-xl promo-${index + 1}`}>
-	<div class='relative'>
-		<!-- Discount badge -->
+	class='promo-item relative bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transform transition-all duration-500 hover:-translate-y-1'
+	style={`animation-delay: ${animationDelay}`}>
+	<!-- Discount badge - smaller on mobile -->
+	<div class='absolute top-2 sm:top-4 right-2 sm:right-4 z-10'>
 		<div
-			class='absolute top-4 right-4 bg-accent text-white text-lg font-bold py-2 px-4 rounded-lg shadow-lg rotate-2 animate-pulse-subtle z-10'>
-			{Offer.discount} OFF
+			class='bg-accent text-white text-xs sm:text-sm md:text-base font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full shadow-md flex items-center gap-1'>
+			<TagIcon class='h-3 w-4 sm:h-4 sm:w-5 md:h-5 md:w-6' />
+			<span>{Offer.discount}</span>
 		</div>
+	</div>
 
-		<!-- Image -->
-		<img
-			src={Offer.image}
-			alt={Offer.title}
-			class='w-full h-48 object-cover object-center'
-		/>
-
-		<!-- Content -->
-		<div class='p-6'>
-			<h3 class='text-xl font-bold text-primary-dark mb-2'>
-				{Offer.title}
-			</h3>
-			<p class='text-gray-600 mb-4'>{Offer.description}</p>
-
-			<!-- Price comparison -->
-			<div class='flex items-center mb-6'>
-				<span class='text-2xl font-bold text-accent'
-					>{Offer.salePrice}</span
-				>
-				<span class='ml-2 text-gray-500 line-through text-sm'
-					>{Offer.originalPrice}</span
-				>
+	<!-- Mobile/tablet layout (stacked) -->
+	<div class='flex flex-col h-full lg:hidden'>
+		<!-- Image container -->
+		<div class='relative overflow-hidden'>
+			<div class='aspect-[4/3]'>
+				<img
+					src={Offer.image}
+					alt={Offer.title}
+					class='w-full h-full object-cover'
+				/>
+			</div>
+			<!-- Overlay gradient -->
+			<div
+				class='absolute inset-0 bg-gradient-to-t from-black/60 to-transparent'>
 			</div>
 
-			<!-- Action button -->
-			<Button
-				variant='primary'
-				size='medium'
-				href={Offer.link}
-				class='w-full shadow-md hover:shadow-lg group'>
-				<span class='flex items-center justify-center'>
-					Comprar ahora
-					<ArrowRightIcon
-						class='w-5 h-5 ml-1 group-hover:translate-x-1 transition-transform'
-					/>
-				</span>
-			</Button>
+			<!-- Title overlay for mobile - with adjustable container -->
+			<div class='absolute bottom-0 left-0 right-0 p-3'>
+				<!-- Changed from line-clamp-1 to allow full title display -->
+				<div class='flex flex-col title-container'>
+					<h3
+						class='text-lg font-bold text-white break-words hyphens-auto'>
+						{Offer.title}
+					</h3>
+				</div>
+				<!-- Price display on mobile image -->
+				<div class='flex items-center justify-between mt-1'>
+					<div
+						class='flex items-center md:px-2 md:py-1 bg-blue-50 rounded-full px-1'>
+						<span class='text-accent text-lg font-bold'
+							>{Offer.salePrice}</span
+						>
+						<span class='text-primary text-xs line-through ml-2'
+							>{Offer.originalPrice}</span
+						>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Content container for mobile -->
+		<div class='p-3 flex flex-col justify-between flex-grow'>
+			<!-- Description (very short on mobile) -->
+			<p class='text-xs text-gray-600 mb-3 line-clamp-2'>
+				{Offer.description}
+			</p>
+
+			<!-- Action buttons for mobile - full width -->
+			<div class='flex flex-wrap gap-2 w-full'>
+				<Button
+					variant='outline'
+					size='xsmall'
+					href={detailsLink}
+					class='flex-1 flex items-center justify-center'>
+					Detalles
+					<ArrowRightIcon class='ml-1 w-3 h-3' />
+				</Button>
+
+				<Button
+					variant='primary'
+					size='xsmall'
+					href={Offer.link}
+					class='flex-1 flex items-center justify-center'>
+					Comprar
+				</Button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Desktop layout (side by side) -->
+	<div class='hidden lg:flex flex-row h-full'>
+		<!-- Image container -->
+		<div class='relative md:w-2/5 overflow-hidden'>
+			<div class='h-full'>
+				<img
+					src={Offer.image}
+					alt={Offer.title}
+					class='w-full h-full object-cover transition-transform duration-700 hover:scale-110'
+				/>
+			</div>
+			<!-- Overlay gradient -->
+			<div
+				class='absolute inset-0 bg-gradient-to-r from-black/60 to-transparent'>
+			</div>
+		</div>
+
+		<!-- Content container -->
+		<div class='flex-1 p-5 md:p-6 flex flex-col justify-between'>
+			<div>
+				<h3 class='text-xl md:text-2xl font-bold text-gray-800 mb-3'>
+					{Offer.title}
+				</h3>
+				<p class='text-gray-600 mb-4 line-clamp-3'>
+					{Offer.description}
+				</p>
+			</div>
+
+			<div class='flex items-center justify-between mt-4'>
+				<!-- Price display on desktop -->
+				<div class='flex items-baseline gap-2'>
+					<span class='text-primary-dark font-bold text-2xl'
+						>{Offer.salePrice}</span
+					>
+					<span class='text-gray-500 line-through'
+						>{Offer.originalPrice}</span
+					>
+				</div>
+
+				<!-- Action buttons -->
+				<div class='flex space-x-3 ml-4'>
+					<!-- View Details Button -->
+					<Button
+						variant='outline'
+						size='small'
+						href={detailsLink}
+						class='flex items-center group gap-1'>
+						Detalles
+						<ArrowRightIcon
+							class='w-4 h-4 transform group-hover:translate-x-1 transition-transform'
+						/>
+					</Button>
+
+					<!-- Buy Now Button -->
+					<Button
+						variant='primary'
+						size='small'
+						href={Offer.link}
+						class='shadow-md hover:shadow-lg'>
+						Comprar
+					</Button>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>
+
+<style>
+	.promo-item {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+
+	.promo-item.in-view {
+		animation: fadeInUp 0.6s ease forwards;
+	}
+
+	@keyframes fadeInUp {
+		from {
+			opacity: 0;
+			transform: translateY(20px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	/* Enhance mobile appearance */
+	@media (max-width: 768px) {
+		.promo-item {
+			max-height: 350px; /* Increased height to accommodate longer titles */
+		}
+
+		/* Title container styling adjustments */
+		.title-container {
+			min-height: auto;
+			max-height: 4rem;
+			overflow-y: auto;
+			scrollbar-width: none; /* Hide scrollbar for Firefox */
+		}
+
+		/* Hide scrollbar for Chrome/Safari/Edge */
+		.title-container::-webkit-scrollbar {
+			display: none;
+		}
+	}
+
+	/* Enable hyphenation for better text wrapping */
+	.hyphens-auto {
+		hyphens: auto;
+		-webkit-hyphens: auto;
+		-ms-hyphens: auto;
+	}
+</style>
