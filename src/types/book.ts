@@ -1,14 +1,14 @@
-// Book level enum
+// Book-related type definitions
+
 export enum BookLevel {
 	BASIC = 'basic',
 	INTERMEDIATE = 'intermediate',
 	ADVANCED = 'advanced',
-	ALL_LEVELS = 'all-levels',
+	ALL_LEVELS = 'all_levels',
 	PROFESSIONAL = 'professional',
-	INTERNATIONAL_EXAM = 'International Exam',
+	INTERNATIONAL_EXAM = 'internationalExam',
 }
 
-// Format tag enum
 export enum FormatTag {
 	PDF = 'pdf',
 	WORKBOOK = 'workbook',
@@ -18,35 +18,35 @@ export enum FormatTag {
 	EXAMS = 'exams',
 }
 
-// Popularity tag enum
 export enum PopularityTag {
-	BESTSELLER = 'bestseller',
+	BESTSELLER = 'bestSeller',
 	NEW = 'new',
-	SPECIAL_OFFER = 'special-offer',
-	COMPLETE_PACK = 'complete-pack',
+	SPECIAL_OFFER = 'specialOffer',
+	COMPLETE_PACK = 'completePack',
 	RECOMMENDED = 'recommended',
 }
 
-// Book interface
+export interface Rating {
+	score: number;
+	reviewCount: number;
+}
+
 export interface Book {
 	id: string;
 	title: string;
 	description: string;
 	price: number;
+	discount?: number;
 	coverImage: string;
+	images?: string[];
+	video?: string;
+	rating?: Rating;
+	level?: BookLevel | string;
+	formatTags?: (FormatTag | string)[];
+	popularityTags?: (PopularityTag | string)[];
+	featured?: boolean;
+	detailsLink: string;
+	buyLink: string;
 	altText?: string;
 	includedItems: string[];
-	rating?: {
-		score: number;
-		reviewCount: number;
-	};
-	buyLink: string;
-	detailsLink: string;
-	discount?: number;
-	level?: BookLevel;
-	featured?: boolean;
-	formatTags?: FormatTag[];
-	popularityTags?: PopularityTag[];
-	video?: string;
-	images?: string[];
 }
