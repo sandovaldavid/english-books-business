@@ -1,124 +1,257 @@
 ---
-import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+import siteInfo from '../database/pageInformation.json';
 
-// Update the Props interface to include new SEO fields
 interface Props {
+	// SEO Básico
 	title: string;
 	description: string;
+
+	// Atributos de Producto
+	productType?: 'book' | 'pack' | 'exam';
+	price?: number;
+	currency?: string;
 	image?: string;
-	canonicalURL?: string;
+
+	// URLs y Canonical
+	canonicalURL?: string | URL;
+
+	// Open Graph (WhatsApp, Facebook, Telegram, Instagram, Messenger)
 	ogType?: string;
 	ogTitle?: string;
 	ogDescription?: string;
 	ogImage?: string;
 	ogSiteName?: string;
+
+	// Twitter Card
 	twitterCard?: string;
 	twitterTitle?: string;
 	twitterDescription?: string;
 	twitterImage?: string;
 	twitterSite?: string;
+
+	// JSON-LD y Breadcrumbs
+	structuredData?: Record<string, any>;
+	breadcrumbData?: Record<string, any>;
+
+	// Idioma y Estilos
 	language?: string;
+	imageWidth?: number;
+	imageHeight?: number;
+	bodyClass?: string;
 }
 
 const {
 	title,
 	description,
-	image,
-	canonicalURL = Astro.url.href,
+	productType,
+	price,
+	currency = 'PEN',
+	image = siteInfo.seo.defaultImage,
+	canonicalURL,
 	ogType = 'website',
 	ogTitle = title,
 	ogDescription = description,
 	ogImage = image,
-	ogSiteName = 'FluentReads',
+	ogSiteName = siteInfo.siteName,
 	twitterCard = 'summary_large_image',
 	twitterTitle = title,
 	twitterDescription = description,
 	twitterImage = image,
-	twitterSite = '@fluentreads',
+	twitterSite = siteInfo.socialMediaHandles.twitter,
+	structuredData,
+	breadcrumbData,
 	language = 'es',
+	imageWidth = 1200,
+	imageHeight = 630,
+	bodyClass = '',
 } = Astro.props;
 
-// Format image URL properly if it's a relative path
-const formattedImage =
-	typeof image === 'string' && image?.startsWith('/')
-		? new URL(image, Astro.url.origin).toString()
-		: image;
+const siteUrl =
+	import.meta.env.PUBLIC_SITE_URL || siteInfo.siteURL || Astro.url.origin;
+
+// Función para asegurar URLs absolutas
+const getAbsoluteUrl = (path: string | URL): string =>
+	path instanceof URL
+		? path.toString()
+		: path.startsWith('http')
+			? path
+			: new URL(path, siteUrl).toString();
+
+// Convertir imágenes y canonical a URLs absolutas
+const absoluteOgImage = getAbsoluteUrl(ogImage);
+const absoluteTwitterImage = getAbsoluteUrl(twitterImage);
+const absoluteCanonicalUrl = canonicalURL
+	? getAbsoluteUrl(canonicalURL)
+	: siteUrl;
+
+// JSON-LD dinámico
+const finalStructuredData = structuredData ?? {
+	'@context': 'https://schema.org',
+	'@type': productType ? 'Product' : 'WebSite',
+	...(productType
+		? {
+				name: title,
+				description: description,
+				image: absoluteOgImage,
+				offers: price
+					? {
+							'@type': 'Offer',
+							price: price,
+							priceCurrency: currency,
+							availability: 'https://schema.org/InStock',
+							url: absoluteCanonicalUrl,
+						}
+					: undefined,
+			}
+		: {
+				name: siteInfo.siteName,
+				url: siteUrl,
+				description: siteInfo.siteDescription,
+				potentialAction: {
+					'@type': 'SearchAction',
+					target: `${siteUrl}/catalogo?search={search_term_string}`,
+					'query-input': 'required name=search_term_string',
+				},
+			}),
+};
+
+// Breadcrumbs dinámicos
+const finalBreadcrumbData =
+	breadcrumbData ??
+	(productType && {
+		'@context': 'https://schema.org',
+		'@type': 'BreadcrumbList',
+		itemListElement: [
+			{ '@type': 'ListItem', position: 1, name: 'Inicio', item: siteUrl },
+			{
+				'@type': 'ListItem',
+				position: 2,
+				name:
+					productType === 'book'
+						? 'Catálogo'
+						: productType === 'pack'
+							? 'Packs'
+							: 'Exámenes Internacionales',
+				item: `${siteUrl}/${productType === 'book' ? 'catalogo' : productType === 'pack' ? 'packs' : 'examenes-internacionales'}`,
+			},
+			{
+				'@type': 'ListItem',
+				position: 3,
+				name: title,
+				item: absoluteCanonicalUrl,
+			},
+		],
+	});
+
+// Meta Tags Unificados
+const metaData = {
+	og: {
+		type: ogType,
+		url: absoluteCanonicalUrl,
+		title: ogTitle,
+		description: ogDescription,
+		image: absoluteOgImage,
+		siteName: ogSiteName,
+	},
+	twitter: {
+		card: twitterCard,
+		url: absoluteCanonicalUrl,
+		title: twitterTitle,
+		description: twitterDescription,
+		image: absoluteTwitterImage,
+		site: twitterSite,
+	},
+};
 ---
 
 <!doctype html>
 <html lang={language}>
 	<head>
-		<meta charset='utf-8' />
-		<meta name='viewport' content='width=device-width' />
+		<meta charset='UTF-8' />
+		<meta name='viewport' content='width=device-width, initial-scale=1.0' />
+
 		<title>{title}</title>
 		<meta name='description' content={description} />
+		<link rel='canonical' href={absoluteCanonicalUrl} />
+
+		<!-- Meta Tags Open Graph (WhatsApp, Telegram, Facebook, Instagram, Messenger) -->
+		{
+			Object.entries(metaData.og).map(([key, value]) => (
+				<meta property={`og:${key}`} content={value} />
+			))
+		}
+
+		<!-- Meta Tags Twitter -->
+		{
+			Object.entries(metaData.twitter).map(([key, value]) => (
+				<meta name={`twitter:${key}`} content={value} />
+			))
+		}
+
+		<!-- Meta Tags para WhatsApp (Precio del Producto) -->
+		{
+			productType && price !== undefined && (
+				<>
+					<meta
+						property='product:price:amount'
+						content={price.toFixed(2)}
+					/>
+					<meta
+						property='product:price:currency'
+						content={currency}
+					/>
+				</>
+			)
+		}
 
 		<!-- Favicon -->
-		<link rel='icon' type='image/svg+xml' href='/favicon.svg' />
+		<link rel='icon' type='image/png' href='/favicon.png' />
 
-		<!-- Canonical URL -->
-		<link rel='canonical' href={canonicalURL} />
-
-		<!-- Open Graph / Facebook -->
-		<meta property='og:type' content={ogType} />
-		<meta property='og:url' content={canonicalURL} />
-		<meta property='og:title' content={ogTitle} />
-		<meta property='og:description' content={ogDescription} />
-		{ogImage && <meta property='og:image' content={ogImage} />}
-		<meta property='og:site_name' content={ogSiteName} />
-
-		<!-- Twitter -->
-		<meta name='twitter:card' content={twitterCard} />
-		<meta name='twitter:title' content={twitterTitle} />
-		<meta name='twitter:description' content={twitterDescription} />
-		{twitterImage && <meta name='twitter:image' content={twitterImage} />}
-		{twitterSite && <meta name='twitter:site' content={twitterSite} />}
-
-		<!-- Additional SEO tags for language learning books -->
-		<meta
-			name='keywords'
-			content='libros en inglés, aprender inglés, material educativo, inglés para negocios, FluentReads, libros para profesionales'
-		/>
-		<meta name='robots' content='index, follow' />
-		<meta name='language' content={language} />
-		<meta name='revisit-after' content='7 days' />
-
-		<!-- Additional head elements -->
-		<slot name='head' />
-
-		<!-- Fonts -->
-		<link rel='preconnect' href='https://fonts.googleapis.com' />
-		<link rel='preconnect' href='https://fonts.gstatic.com' crossorigin />
+		<!-- Preload de fuentes optimizado -->
 		<link
-			href='https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap'
-			rel='stylesheet'
+			rel='preload'
+			as='style'
+			href='https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap'
 		/>
 		<link
-			href='https://fonts.googleapis.com/css2?family=Lora:ital,wght@1,600&display=swap'
 			rel='stylesheet'
+			href='https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap'
 		/>
 
-		<link
-			rel='stylesheet'
-			href='https://s.pageclip.co/v1/pageclip.css'
-			media='screen'
+		<!-- JSON-LD (Structured Data) -->
+		<script
+			type='application/ld+json'
+			set:html={JSON.stringify(finalStructuredData)}
 		/>
+		{
+			finalBreadcrumbData && (
+				<script
+					type='application/ld+json'
+					set:html={JSON.stringify(finalBreadcrumbData)}
+				/>
+			)
+		}
 
-		<!-- Lite YouTube custom element -->
-		<script>
-			import('@justinribeiro/lite-youtube');
+		<!-- Corrección de altura en iOS -->
+		<script is:inline>
+			document.documentElement.style.setProperty(
+				'--vh',
+				`${window.innerHeight * 0.01}px`
+			);
+			window.addEventListener('resize', () =>
+				document.documentElement.style.setProperty(
+					'--vh',
+					`${window.innerHeight * 0.01}px`
+				)
+			);
 		</script>
 	</head>
-	<body class='font-poppins'>
+	<body class={bodyClass}>
 		<Header />
-		<main>
-			<slot />
-		</main>
+		<main><slot /></main>
 		<Footer />
-		<!-- Add Pageclip script -->
-		<script src='https://s.pageclip.co/v1/pageclip.js' charset='utf-8'
-		></script>
 	</body>
 </html>
