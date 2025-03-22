@@ -1,0 +1,42 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import BookDetail from '../../components/BookDetailDesktop.astro';
+import booksData from '../../database/books.json';
+import type { Book } from '../../types/book';
+
+export async function getStaticPaths() {
+	return booksData.map((book) => ({
+		params: { id: book.id },
+		props: { book },
+	}));
+}
+
+interface Props {
+	book: Book;
+}
+
+const { book } = Astro.props;
+
+// Get related books (same level or format)
+const relatedBooks = booksData
+	.filter(
+		(item) =>
+			item.id !== book.id &&
+			(item.level === book.level ||
+				(item.formatTags &&
+					book.formatTags &&
+					item.formatTags.some((tag) =>
+						book.formatTags?.includes(tag)
+					)))
+	)
+	.slice(0, 4);
+
+// SEO metadata
+const title = `${book.title} | Libro en inglés | FluentReads`;
+const description = book.description;
+const image = book.coverImage;
+---
+
+<Layout title={title} description={description} image={image}>
+	<BookDetail book={book} relatedBooks={relatedBooks} type='book' />
+</Layout>
