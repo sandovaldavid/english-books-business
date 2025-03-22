@@ -22,8 +22,7 @@ const sort = searchParams.get('sort') || 'featured';
 
 // Determine page title based on filters
 let pageTitle = 'Catálogo de Libros en Inglés';
-let pageDescription =
-	'Explora nuestro catálogo completo de libros y materiales educativos en inglés para profesionales y estudiantes de todos los niveles.';
+let pageDescription = 'Explora nuestra amplia selección de materiales educativos en inglés para todos los niveles. Encuentra el recurso perfecto para tus necesidades de aprendizaje.';
 
 // Define level name mapping with proper type checking
 const levelNames: Record<string, string> = {
@@ -121,8 +120,14 @@ const safeBooks: Book[] = booksData.map((book) => ({
 		</div>
 	</section>
 
-	<!-- Promotional Section -->
-	<PromoSection />
+	<!-- Promotional Section with updated props -->
+	<PromoSection
+		title="Ofertas y Promociones Exclusivas" 
+		subtitle="Ofertas Especiales"
+		className="bg-gradient-to-br from-primary/5 to-accent/5 py-16"
+		countdownDays={5}
+		cardSize="large"
+	/>
 
 	<!-- FAQ Section -->
 	<FAQ
