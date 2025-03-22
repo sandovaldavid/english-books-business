@@ -7,6 +7,13 @@
 		"coverImage": "/images/exam-template.jpg",
 		"detailsLink": "/examenes-internacionales/ielts-prep-guide",
 		"buyLink": "/checkout/ielts-prep-guide",
-		"video": "https://www.youtube.com/embed/YOUR_VIDEO_ID"
+		"video": "https://www.youtube.com/embed/YOUR_VIDEO_ID",
+		"includedItems": [
+			"Guía completa en PDF",
+			"4 exámenes de práctica",
+			"Estrategias para speaking",
+			"Material de listening con audio",
+			"Tips para writing task 1 y 2"
+		]
 	}
 ]
