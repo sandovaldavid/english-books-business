@@ -1,4 +1,4 @@
-import type { Book, FormatTag, PopularityTag, Rating, BookLevel } from './book';
+import type { FormatTag, PopularityTag, Rating, BookLevel } from './book';
 
 export interface Pack {
 	id: string;
@@ -9,7 +9,7 @@ export interface Pack {
 	coverImage: string;
 	images?: string[];
 	video?: string;
-	books: Book[];
+	booksIds: string[];
 	rating?: Rating;
 	level?: BookLevel | string;
 	formatTags?: (FormatTag | string)[];
