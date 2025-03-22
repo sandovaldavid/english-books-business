@@ -106,22 +106,7 @@ const allBooksJSON = JSON.stringify(books);
 						data-bestseller={book.popularityTags?.includes(
 							PopularityTag.BESTSELLER
 						)}>
-						<Card
-							title={book.title}
-							description={book.description}
-							price={book.price}
-							coverImage={book.coverImage}
-							altText={book.altText}
-							includedItems={book.includedItems}
-							rating={book.rating}
-							buyLink={book.buyLink}
-							detailsLink={book.detailsLink}
-							discount={book.discount}
-							level={book.level}
-							featured={book.featured}
-							formatTags={book.formatTags}
-							popularityTags={book.popularityTags}
-						/>
+							<Card book={book} />
 					</div>
 				))
 			}
