@@ -7,6 +7,13 @@
 		"coverImage": "/images/pack-template.jpg",
 		"detailsLink": "/packs/complete-english-pack",
 		"buyLink": "/checkout/complete-english-pack",
-		"video": "https://www.youtube.com/embed/YOUR_VIDEO_ID"
+		"video": "https://www.youtube.com/embed/YOUR_VIDEO_ID",
+		"includedItems": [
+			"5 libros digitales completos",
+			"Ejercicios interactivos",
+			"Material de audio con pronunciación",
+			"Vocabulario especializado",
+			"Certificado de finalización"
+		]
 	}
 ]
