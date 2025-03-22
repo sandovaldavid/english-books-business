@@ -11,6 +11,7 @@ interface Props {
 	title?: string;
 	subtitle?: string;
 	countdownDays?: number;
+	cardSize?: 'small' | 'medium' | 'large';
 }
 
 const {
@@ -18,12 +19,29 @@ const {
 	title = 'Aprovecha nuestras promociones',
 	subtitle = 'Ofertas Especiales',
 	countdownDays = 7,
+	cardSize = 'large',
 } = Astro.props;
 
 // Get a date for countdown
 const offerEndDate = new Date();
 offerEndDate.setDate(offerEndDate.getDate() + countdownDays);
 const endDateString = offerEndDate.toISOString();
+
+// Determine grid column configuration based on card size and viewport
+const gridColumns =
+	cardSize === 'small'
+		? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4'
+		: cardSize === 'medium'
+			? 'grid-cols-2 md:grid-cols-3'
+			: 'grid-cols-2';
+
+// Determine gap size based on card size
+const gapSize =
+	cardSize === 'small'
+		? 'gap-2 sm:gap-3'
+		: cardSize === 'medium'
+			? 'gap-3 sm:gap-4 md:gap-6'
+			: 'gap-4 sm:gap-6 lg:gap-8';
 ---
 
 <section
@@ -60,14 +78,18 @@ const endDateString = offerEndDate.toISOString();
 			</div>
 		</div>
 
-		<!-- Promo cards grid - responsive for all screen sizes -->
-		<div class='grid grid-cols-2 gap-4 sm:gap-6 lg:gap-8 max-w-5xl mx-auto'>
+		<!-- Refactored promo cards grid with responsive layout based on card size -->
+		<div class={`grid ${gridColumns} ${gapSize} max-w-7xl mx-auto`}>
 			{
 				offers.map((offer, index) => (
 					<div
 						class='promo-grid-item'
 						style={`animation-delay: ${index * 0.15}s`}>
-						<PromoCard Offer={offer} index={index} />
+						<PromoCard
+							Offer={offer}
+							index={index}
+							size={cardSize}
+						/>
 					</div>
 				))
 			}
