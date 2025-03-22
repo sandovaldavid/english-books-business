@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@astrojs/react": "^4.2.1",
+    "@justinribeiro/lite-youtube": "^1.7.1",
     "@tailwindcss/vite": "^4.0.14",
     "@types/react": "^19.0.12",
     "@types/react-dom": "^19.0.4",
