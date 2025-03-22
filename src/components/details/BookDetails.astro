@@ -3,6 +3,7 @@ import Button from '../Button.astro';
 import ReviewStars from '../ReviewStars.astro';
 import SectionTitle from '../SectionTitle.astro';
 import MediaCarousel from '../MediaCarousel.astro';
+import SocialShareButtons from '../SocialShareButtons.astro';
 import type { Book } from '../../types/book';
 import WhatsAppIcon from '../icons/WhatsApp.astro';
 import CartIcon from '../icons/Cart.astro';
@@ -55,9 +56,6 @@ const jsonLd = {
     } : undefined
 };
 
-// Page title for SEO
-const pageTitle = `${book.title} - Libro en inglés | FluentReads`;
-
 // Extract YouTube video ID if present
 let youtubeVideoId = '';
 if (book.video) {
@@ -103,6 +101,13 @@ const levelDisplay = book.level
 
 // Get format tags
 const formatTags = book.formatTags || [];
+
+// Prepare social share data
+const currentUrl = Astro.url.href;
+const shareUrl = currentUrl;
+const shareTitle = book.title;
+const shareDescription = book.description.substring(0, 100) + (book.description.length > 100 ? '...' : '');
+const shareImage = book.coverImage;
 ---
 
 <div class="product-detail-container">
@@ -291,13 +296,67 @@ const formatTags = book.formatTags || [];
                 </div>
             </div>
         </div>
+
+        <!-- Social sharing buttons for product pages -->
+        <SocialShareButtons 
+            url={shareUrl} 
+            title={shareTitle} 
+            description={shareDescription} 
+            image={shareImage}
+            productType="book"
+            price={discountedPrice}
+            currency="PEN"
+        />
         
         <!-- Related books section -->
         {relatedBooks.length > 0 && (
             <div class="mt-16 related-section">
                 <SectionTitle>Libros relacionados</SectionTitle>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
-                    {/* Related books grid would go here */}
+                    {relatedBooks.map(relatedBook => (
+                        <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100">
+                            <a href={`/libro/${relatedBook.id}`} class="block">
+                                <div class="relative overflow-hidden product-image-container">
+                                    <img 
+                                        src={relatedBook.coverImage} 
+                                        alt={relatedBook.altText || `Portada de ${relatedBook.title}`}
+                                        class="w-full h-48 object-cover transform transition-transform duration-500 hover:scale-105"
+                                    />
+                                    {relatedBook.discount && relatedBook.discount > 0 && (
+                                        <div class="absolute top-2 right-2 bg-accent text-white text-xs font-bold px-2 py-1 rounded-full">
+                                            {relatedBook.discount}% OFF
+                                        </div>
+                                    )}
+                                </div>
+                                <div class="p-4">
+                                    <h3 class="font-bold text-primary-dark text-lg mb-1 line-clamp-2">{relatedBook.title}</h3>
+                                    {relatedBook.level && levelConfig[relatedBook.level as keyof typeof levelConfig] && (
+                                        <div class="mb-2">
+                                            <span class={`text-xs px-2 py-1 rounded-full ${levelConfig[relatedBook.level as keyof typeof levelConfig].color}`}>
+                                                {levelConfig[relatedBook.level as keyof typeof levelConfig].label}
+                                            </span>
+                                        </div>
+                                    )}
+                                    <div class="mb-2 flex justify-between items-center">
+                                        {relatedBook.discount && relatedBook.discount > 0 ? (
+                                            <div class="flex items-center">
+                                                <span class="font-bold text-primary text-lg">
+                                                    S/{(relatedBook.price * (1 - relatedBook.discount / 100)).toFixed(2)}
+                                                </span>
+                                                <span class="text-gray-400 line-through text-sm ml-2">
+                                                    S/{relatedBook.price.toFixed(2)}
+                                                </span>
+                                            </div>
+                                        ) : (
+                                            <span class="font-bold text-primary text-lg">
+                                                S/{relatedBook.price.toFixed(2)}
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    ))}
                 </div>
                 
                 <div class="text-center mt-8">
