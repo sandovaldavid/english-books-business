@@ -1,0 +1,12 @@
+[
+	{
+		"id": "complete-english-pack",
+		"title": "Complete English Learning Pack",
+		"description": "Incluye 5 libros esenciales...",
+		"price": 99.99,
+		"coverImage": "/images/pack-template.jpg",
+		"detailsLink": "/packs/complete-english-pack",
+		"buyLink": "/checkout/complete-english-pack",
+		"video": "https://www.youtube.com/embed/YOUR_VIDEO_ID"
+	}
+]
