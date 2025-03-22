@@ -24,7 +24,7 @@
       "reviewCount": 124
     },
     "buyLink": "/checkout/business-english-master",
-    "detailsLink": "/libros/business-english-master",
+    "detailsLink": "/libro/business-english-master",
     "discount": 20,
     "level": "intermediate",
     "featured": true,
@@ -32,7 +32,7 @@
     "popularityTags": ["bestSeller", "specialOffer"]
   },
   {
-    "id": "book-2",
+    "id": "grammar-fundamentals",
     "title": "Grammar Fundamentals",
     "description": "Aprende las bases gramaticales del inglés con explicaciones claras y cientos de ejercicios prácticos para todos los niveles.",
     "price": 34.99,
@@ -50,7 +50,7 @@
       "reviewCount": 98
     },
     "buyLink": "/checkout/grammar-fundamentals",
-    "detailsLink": "/libros/grammar-fundamentals",
+    "detailsLink": "/libro/grammar-fundamentals",
     "discount": 0,
     "level": "basic",
     "featured": false,
@@ -76,7 +76,7 @@
       "reviewCount": 75
     },
     "buyLink": "/checkout/professional-presentations",
-    "detailsLink": "/libros/professional-presentations",
+    "detailsLink": "/libro/professional-presentations",
     "discount": 15,
     "level": "professional",
     "featured": false,
@@ -102,7 +102,7 @@
       "reviewCount": 142
     },
     "buyLink": "/checkout/toefl-guide",
-    "detailsLink": "/libros/toefl-guide",
+    "detailsLink": "/libro/toefl-guide",
     "discount": 0,
     "level": "advanced",
     "featured": true,
@@ -128,7 +128,7 @@
       "reviewCount": 87
     },
     "buyLink": "/checkout/english-it",
-    "detailsLink": "/libros/english-it",
+    "detailsLink": "/libro/english-it",
     "discount": 25,
     "level": "professional",
     "featured": true,
@@ -154,7 +154,7 @@
       "reviewCount": 112
     },
     "buyLink": "/checkout/conversational-english",
-    "detailsLink": "/libros/conversational-english",
+    "detailsLink": "/libro/conversational-english",
     "discount": 0,
     "level": "all-levels",
     "featured": false,
@@ -180,7 +180,7 @@
       "reviewCount": 65
     },
     "buyLink": "/checkout/english-healthcare",
-    "detailsLink": "/libros/english-healthcare",
+    "detailsLink": "/libro/english-healthcare",
     "discount": 10,
     "level": "professional",
     "featured": false,
@@ -206,7 +206,7 @@
       "reviewCount": 93
     },
     "buyLink": "/checkout/pronunciation-mastery",
-    "detailsLink": "/libros/pronunciation-mastery",
+    "detailsLink": "/libro/pronunciation-mastery",
     "discount": 15,
     "level": "intermediate",
     "featured": false,
@@ -232,7 +232,7 @@
       "reviewCount": 58
     },
     "buyLink": "/checkout/legal-english",
-    "detailsLink": "/libros/legal-english",
+    "detailsLink": "/libro/legal-english",
     "discount": 0,
     "level": "professional",
     "featured": true,
@@ -258,7 +258,7 @@
       "reviewCount": 138
     },
     "buyLink": "/checkout/english-kids",
-    "detailsLink": "/libros/english-kids",
+    "detailsLink": "/libro/english-kids",
     "discount": 20,
     "level": "basic",
     "featured": false,
@@ -284,7 +284,7 @@
       "reviewCount": 102
     },
     "buyLink": "/checkout/interview-english",
-    "detailsLink": "/libros/interview-english",
+    "detailsLink": "/libro/interview-english",
     "discount": 10,
     "level": "intermediate",
     "featured": false,
@@ -310,7 +310,7 @@
       "reviewCount": 79
     },
     "buyLink": "/checkout/academic-writing",
-    "detailsLink": "/libros/academic-writing",
+    "detailsLink": "/libro/academic-writing",
     "discount": 15,
     "level": "advanced",
     "featured": true,
