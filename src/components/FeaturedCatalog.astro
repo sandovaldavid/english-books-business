@@ -7,13 +7,28 @@ import '../styles/FeaturedCatalog.css';
 
 // DataBase Xd
 import booksData from '../database/books.json';
-
 import { BookLevel, FormatTag, PopularityTag } from '../types/book';
-
 import type { Book } from '../types/book';
 
 const maxBooks = 3;
-const booksToShow = booksData.slice(0, maxBooks) as Partial<Book>[];
+// Convert data to Book type with proper validation
+const books: Book[] = booksData.slice(0, maxBooks).map((book) => ({
+	id: book.id || '',
+	title: book.title || '',
+	description: book.description || '',
+	price: book.price || 0,
+	coverImage: book.coverImage || '',
+	altText: book.altText || `${book.title} Book cover`,
+	includedItems: book.includedItems || [],
+	rating: book.rating || { score: 0, reviewCount: 0 },
+	buyLink: book.buyLink || '#',
+	detailsLink: book.detailsLink || '#',
+	discount: book.discount || 0,
+	level: book.level as BookLevel,
+	featured: book.featured || false,
+	formatTags: (book.formatTags || []) as FormatTag[],
+	popularityTags: (book.popularityTags || []) as PopularityTag[],
+}));
 
 // Calculate appropriate grid class based on number of books
 const getGridClass = (bookCount: number = maxBooks) => {
@@ -28,58 +43,6 @@ const getGridClass = (bookCount: number = maxBooks) => {
 	// For 4+ books: 4 columns on desktop, 2 on tablet, 1 on mobile
 	else return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4';
 };
-
-// Function to validate book level
-function validateBookLevel(level: string | undefined): BookLevel | undefined {
-	if (!level) return undefined;
-
-	return Object.values(BookLevel).includes(level as BookLevel)
-		? (level as BookLevel)
-		: undefined;
-}
-
-// Function to filter valid format tags
-function filterValidFormatTags(tags: string[] | undefined): FormatTag[] {
-	const validTags: FormatTag[] = [];
-
-	if (Array.isArray(tags)) {
-		tags.forEach((tag) => {
-			// Check if tag is a valid FormatTag using type information
-			if (Object.values(FormatTag).includes(tag as FormatTag)) {
-				validTags.push(tag as FormatTag);
-			}
-		});
-	}
-
-	return validTags;
-}
-
-// Function to filter valid popularity tags
-function filterValidPopularityTags(
-	tags: string[] | undefined
-): PopularityTag[] {
-	const validTags: PopularityTag[] = [];
-
-	if (Array.isArray(tags)) {
-		tags.forEach((tag) => {
-			if (Object.values(PopularityTag).includes(tag as PopularityTag)) {
-				validTags.push(tag as PopularityTag);
-			}
-		});
-	}
-
-	return validTags;
-}
-
-// Function to validate book data against the Book interface
-function validateBookData(book: Partial<Book>): Partial<Book> {
-	return {
-		...book,
-		level: validateBookLevel(book.level),
-		formatTags: filterValidFormatTags(book.formatTags),
-		popularityTags: filterValidPopularityTags(book.popularityTags),
-	};
-}
 
 // Get total count for display
 const totalBooks = booksData.length;
@@ -157,7 +120,7 @@ const isLoading = false;
 
 		<!-- Books grid with enhanced layout -->
 		<div
-			class={`grid ${getGridClass(maxBooks)} gap-6 md:gap-8 mb-12 books-grid relative min-h-[300px]`}>
+			class={`grid ${getGridClass(books.length)} gap-6 md:gap-8 mb-12 books-grid relative min-h-[300px]`}>
 			{
 				isLoading ? (
 					<div class='absolute inset-0 flex items-center justify-center col-span-full'>
@@ -166,44 +129,13 @@ const isLoading = false;
 							text='Cargando libros...'
 						/>
 					</div>
-				) : booksToShow.length > 0 ? (
-					booksToShow.map((book, index) => {
-						const validatedBook = validateBookData(book);
-						return (
-							<div
-								class={`book-item flex appear-${index + 1} justify-center`}>
-								<Card
-									title={validatedBook.title || 'Sin título'}
-									description={
-										validatedBook.description || ''
-									}
-									price={validatedBook.price || 0}
-									coverImage={validatedBook.coverImage || ''}
-									altText={validatedBook.altText || ''}
-									includedItems={
-										validatedBook.includedItems || []
-									}
-									rating={
-										validatedBook.rating || {
-											score: 0,
-											reviewCount: 0,
-										}
-									}
-									buyLink={validatedBook.buyLink || '#'}
-									detailsLink={
-										validatedBook.detailsLink || '#'
-									}
-									discount={validatedBook.discount || 0}
-									level={validatedBook.level}
-									featured={validatedBook.featured || false}
-									formatTags={validatedBook.formatTags || []}
-									popularityTags={
-										validatedBook.popularityTags || []
-									}
-								/>
-							</div>
-						);
-					})
+				) : books.length > 0 ? (
+					books.map((book, index) => (
+						<div
+							class={`book-item flex appear-${index + 1} justify-center`}>
+							<Card book={book} />
+						</div>
+					))
 				) : (
 					<div class='col-span-full text-center py-10'>
 						<p class='text-gray-500'>
