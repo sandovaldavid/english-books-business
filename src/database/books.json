@@ -29,7 +29,7 @@
     "level": "intermediate",
     "featured": true,
     "formatTags": ["pdf", "workbook", "audio"],
-    "popularityTags": ["bestseller", "special-offer"]
+    "popularityTags": ["bestSeller", "specialOffer"]
   },
   {
     "id": "book-2",
@@ -81,7 +81,7 @@
     "level": "professional",
     "featured": false,
     "formatTags": ["pdf", "video", "software"],
-    "popularityTags": ["special-offer"]
+    "popularityTags": ["specialOffer"]
   },
   {
     "id": "book-4",
@@ -107,7 +107,7 @@
     "level": "advanced",
     "featured": true,
     "formatTags": ["pdf", "audio", "exams"],
-    "popularityTags": ["bestseller", "recommended"]
+    "popularityTags": ["bestSeller", "recommended"]
   },
   {
     "id": "book-5",
@@ -133,7 +133,7 @@
     "level": "professional",
     "featured": true,
     "formatTags": ["pdf", "video", "software"],
-    "popularityTags": ["special-offer", "recommended"]
+    "popularityTags": ["specialOffer", "recommended"]
   },
   {
     "id": "book-6",
@@ -185,7 +185,7 @@
     "level": "professional",
     "featured": false,
     "formatTags": ["pdf", "workbook", "exams"],
-    "popularityTags": ["special-offer", "complete-pack"]
+    "popularityTags": ["specialOffer", "completePack"]
   },
   {
     "id": "book-8",
@@ -211,7 +211,7 @@
     "level": "intermediate",
     "featured": false,
     "formatTags": ["pdf", "audio", "video"],
-    "popularityTags": ["special-offer"]
+    "popularityTags": ["specialOffer"]
   },
   {
     "id": "book-9",
@@ -237,7 +237,7 @@
     "level": "professional",
     "featured": true,
     "formatTags": ["pdf", "workbook"],
-    "popularityTags": ["recommended", "complete-pack"]
+    "popularityTags": ["recommended", "completePack"]
   },
   {
     "id": "book-10",
@@ -263,7 +263,7 @@
     "level": "basic",
     "featured": false,
     "formatTags": ["pdf", "audio", "video", "software"],
-    "popularityTags": ["special-offer", "new"]
+    "popularityTags": ["specialOffer", "new"]
   },
   {
     "id": "book-11",
@@ -289,7 +289,7 @@
     "level": "intermediate",
     "featured": false,
     "formatTags": ["pdf", "audio", "exams"],
-    "popularityTags": ["special-offer", "new"]
+    "popularityTags": ["specialOffer", "new"]
   },
   {
     "id": "book-12",
