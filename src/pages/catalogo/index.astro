@@ -59,26 +59,23 @@ if (format !== 'all') {
 }
 
 // Validate book data and transform to proper Book type
-const safeBooks: Book[] = booksData.map(
-	(book: any): Book => ({
-		id: book.id || '',
-		title: book.title || '',
-		description: book.description || '',
-		price: book.price || 0,
-		coverImage: book.coverImage || '',
-		altText: book.altText || `${book.title} Book cover`,
-		includedItems: book.includedItems || [],
-		rating: book.rating || { score: 0, reviewCount: 0 },
-		buyLink: book.buyLink || '#',
-		detailsLink: book.detailsLink || '#',
-		discount: book.discount || 0,
-		// Validate enum values using type assertions
-		level: book.level as BookLevel | undefined,
-		featured: book.featured || false,
-		formatTags: (book.formatTags || []) as FormatTag[],
-		popularityTags: (book.popularityTags || []) as PopularityTag[],
-	})
-);
+const safeBooks: Book[] = booksData.map((book) => ({
+	id: book.id || '',
+	title: book.title || '',
+	description: book.description || '',
+	price: book.price || 0,
+	coverImage: book.coverImage || '',
+	altText: book.altText || `${book.title} Book cover`,
+	includedItems: book.includedItems || [],
+	rating: book.rating || { score: 0, reviewCount: 0 },
+	buyLink: book.buyLink || '#',
+	detailsLink: book.detailsLink || '#',
+	discount: book.discount || 0,
+	level: book.level as BookLevel,
+	featured: book.featured || false,
+	formatTags: (book.formatTags || []) as FormatTag[],
+	popularityTags: (book.popularityTags || []) as PopularityTag[],
+}));
 ---
 
 <Layout title={`${pageTitle} | FluentReads`} description={pageDescription}>
