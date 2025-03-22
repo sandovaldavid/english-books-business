@@ -1,0 +1,354 @@
+---
+import Button from '../Button.astro';
+import ReviewStars from '../ReviewStars.astro';
+import SectionTitle from '../SectionTitle.astro';
+import MediaCarousel from '../MediaCarousel.astro';
+import type { Book } from '../../types/book';
+import WhatsAppIcon from '../icons/WhatsApp.astro';
+import CartIcon from '../icons/Cart.astro';
+import CheckIcon from '../icons/Check.astro';
+import ArrowRightIcon from '../icons/ArrowRight.astro';
+import CustomerSupport from '../CustomerSupport.astro';
+import { extractYoutubeId } from '../../utils/videoEmbeds';
+import { levelConfig, formatConfig } from '../../utils/bookTags';
+import '../../styles/ProductDetail.css';
+
+// Define proper interface for MediaItem
+interface MediaItem {
+    type: 'image' | 'video';
+    url: string;
+    title?: string;
+    thumbnail?: string;
+}
+
+interface Props {
+    book: Book;
+    relatedBooks?: Book[];
+}
+
+const { book, relatedBooks = [] } = Astro.props;
+
+// Prepare formatted price display
+const hasDiscount = book.discount && book.discount > 0;
+const originalPrice = book.price;
+const discountedPrice = hasDiscount ? book.price * (1 - (book.discount || 0) / 100) : book.price;
+const formattedDiscountedPrice = `S/${discountedPrice.toFixed(2)}`;
+const formattedOriginalPrice = `S/${originalPrice.toFixed(2)}`;
+
+// Generate JSON-LD for SEO
+const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Book",
+    "name": book.title,
+    "description": book.description,
+    "image": book.coverImage,
+    "offers": {
+        "@type": "Offer",
+        "price": discountedPrice,
+        "priceCurrency": "PEN",
+        "availability": "https://schema.org/InStock",
+    },
+    "aggregateRating": book.rating ? {
+        "@type": "AggregateRating",
+        "ratingValue": book.rating.score,
+        "reviewCount": book.rating.reviewCount
+    } : undefined
+};
+
+// Page title for SEO
+const pageTitle = `${book.title} - Libro en inglés | FluentReads`;
+
+// Extract YouTube video ID if present
+let youtubeVideoId = '';
+if (book.video) {
+    youtubeVideoId = extractYoutubeId(book.video);
+}
+
+// Prepare media items for carousel
+const mediaItems: MediaItem[] = [];
+
+// Add up to 3 images if available
+if (book.images && Array.isArray(book.images)) {
+    book.images.forEach(img => {
+        mediaItems.push({
+            type: 'image',
+            url: img,
+            title: `${book.title} - Imagen`
+        });
+    });
+}
+
+// Add the cover image if it's not already included
+if (book.coverImage && (!book.images || !book.images.includes(book.coverImage))) {
+    mediaItems.unshift({
+        type: 'image',
+        url: book.coverImage,
+        title: `${book.title} - Portada`,
+    });
+}
+
+// Add video if available
+if (book.video) {
+    mediaItems.push({
+        type: 'video',
+        url: book.video,
+        title: `${book.title} - Video`,
+    });
+}
+
+// Determine level display for books
+const levelDisplay = book.level
+    ? levelConfig[book.level as keyof typeof levelConfig]
+    : null;
+
+// Get format tags
+const formatTags = book.formatTags || [];
+---
+
+<div class="product-detail-container">
+    <!-- JSON-LD Schema for SEO -->
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        <!-- Breadcrumbs navigation -->
+        <nav class="flex text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a href="/" class="hover:text-primary transition-colors">
+                        Inicio
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <span class="mx-2">/</span>
+                        <a href="/catalogo" class="hover:text-primary transition-colors">
+                            Catálogo
+                        </a>
+                    </div>
+                </li>
+                <li aria-current="page">
+                    <div class="flex items-center">
+                        <span class="mx-2">/</span>
+                        <span class="text-gray-600 font-medium truncate max-w-[200px]">{book.title}</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+
+        <!-- Product details grid with more contrast and visual separation -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
+            <!-- Left column with media carousel -->
+            <div class="flex flex-col">
+                {mediaItems.length > 0 ? (
+                    <MediaCarousel 
+                        mediaItems={mediaItems} 
+                        title={book.title} 
+                        height={book.video ? "500px" : "450px"} 
+                    />
+                ) : (
+                    <!-- Fallback for when no media items are available -->
+                    <div class="relative overflow-hidden rounded-2xl shadow-xl mb-6 product-cover-container group">
+                        <img 
+                            src={book.coverImage} 
+                            alt={book.altText || `Portada de ${book.title}`}
+                            class="w-full h-auto object-cover transition-transform duration-700 transform group-hover:scale-105"
+                        />
+                        
+                        {hasDiscount && book.discount && (
+                            <div class="absolute top-4 right-4 bg-accent text-white font-bold py-2 px-4 rounded-full shadow-md text-lg animate-pulse-slow">
+                                {book.discount}% OFF
+                            </div>
+                        )}
+
+                        {book.featured && (
+                            <div class="absolute top-4 left-4 bg-secondary text-primary font-bold py-2 px-4 rounded-full shadow-md text-sm">
+                                Recomendado
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                <!-- Customer support widget -->
+                <div class="mt-6">
+                    <CustomerSupport />
+                </div>
+            </div>
+
+            <!-- Right column with product details -->
+            <div class="flex flex-col">
+                <!-- Book title and main details -->
+                <div class="mb-6">
+                    <h1 class="text-3xl md:text-4xl font-bold text-primary-dark mb-4 product-title">{book.title}</h1>
+                    
+                    <!-- Level and format tags for books -->
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        {levelDisplay && (
+                            <span class={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${levelDisplay.color}`}>
+                                {levelDisplay.label}
+                            </span>
+                        )}
+                        
+                        {formatTags && formatTags.map(tag => (
+                            <span class={`inline-flex items-center px-3 py-1 rounded-full border text-sm font-medium ${formatConfig[tag as keyof typeof formatConfig].color}`}>
+                                <span class="mr-1">{formatConfig[tag as keyof typeof formatConfig].icon}</span>
+                                {formatConfig[tag as keyof typeof formatConfig].label}
+                            </span>
+                        ))}
+                    </div>
+                    
+                    <!-- Rating and reviews with stars -->
+                    {book.rating && (
+                        <div class="flex items-center mb-4">
+                            <div class="flex text-yellow-400">
+                                <ReviewStars score={book.rating.score} />
+                            </div>
+                            <span class="ml-2 text-gray-600">
+                                {book.rating.score}/5 ({book.rating.reviewCount} reseñas)
+                            </span>
+                        </div>
+                    )}
+                    
+                    <!-- Book description with better readability -->
+                    <div class="prose prose-lg max-w-none text-gray-700 mb-6">
+                        <p>{book.description}</p>
+                    </div>
+                    
+                    <!-- Price section with better visual hierarchy -->
+                    <div class="bg-gray-50 rounded-xl p-5 border border-gray-200 shadow-sm mb-6">
+                        <div class="flex items-center mb-2">
+                            {hasDiscount ? (
+                                <>
+                                    <span class="text-3xl font-bold text-primary mr-3">{formattedDiscountedPrice}</span>
+                                    <span class="text-xl text-gray-500 line-through">{formattedOriginalPrice}</span>
+                                    {book.discount && (
+                                        <span class="ml-3 bg-accent/10 text-accent text-sm font-bold px-3 py-1 rounded-full">
+                                            {book.discount}% DESCUENTO
+                                        </span>
+                                    )}
+                                </>
+                            ) : (
+                                <span class="text-3xl font-bold text-primary">{formattedOriginalPrice}</span>
+                            )}
+                        </div>
+                        <p class="text-green-700 font-medium text-sm">✓ Entrega inmediata por correo electrónico</p>
+                    </div>
+                    
+                    <!-- Call to action buttons -->
+                    <div class="flex flex-col sm:flex-row gap-4 mb-8">
+                        <Button 
+                            variant="primary" 
+                            size="large" 
+                            class="add-to-cart-btn flex-1 shadow-lg hover:shadow-xl transform transition-all duration-300 hover:-translate-y-1 group cursor-pointer"
+                            data-id={book.id}
+                            data-title={book.title}
+                            data-price={discountedPrice}
+                            data-image={book.coverImage}
+                            data-type="book"
+                        >
+                            <span class="flex items-center justify-center">
+                                <CartIcon class="w-5 h-5 mr-2" />
+                                Agregar al carrito
+                            </span>
+                        </Button>
+                        
+                        <Button 
+                            variant="accent" 
+                            size="large" 
+                            href="/checkout" 
+                            class="view-cart-btn flex-1 shadow-lg hover:shadow-xl transform transition-all duration-300 hover:-translate-y-1 group"
+                        >
+                            <span class="flex items-center justify-center">
+                                <WhatsAppIcon class="w-5 h-5 mr-2" />
+                                Ver carrito
+                            </span>
+                        </Button>
+                    </div>
+                    
+                    <!-- Book contents/included items with improved styling -->
+                    <div class="border border-gray-200 rounded-xl bg-white p-5 shadow-sm">
+                        <h2 class="text-xl font-bold text-primary-dark mb-4 flex items-center">
+                            <span class="bg-primary text-white p-1 rounded-full mr-2">
+                                <CheckIcon class="w-5 h-5" />
+                            </span>
+                            Contenido incluido
+                        </h2>
+                        
+                        <ul class="space-y-3 included-items-list">
+                            {book.includedItems && book.includedItems.map(item => (
+                                <li class="flex items-start">
+                                    <span class="text-green-500 mr-2 mt-1">✓</span>
+                                    <span>{item}</span>
+                                </li>
+                            ))}
+                        </ul>
+                        
+                        <div class="mt-5 bg-blue-50 rounded-lg p-4 border border-blue-100">
+                            <p class="text-blue-800 text-sm">
+                                <strong>Importante:</strong> Al realizar tu compra, recibirás acceso inmediato a todos los materiales a través de un enlace de descarga enviado a tu correo electrónico o WhatsApp.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Related books section -->
+        {relatedBooks.length > 0 && (
+            <div class="mt-16 related-section">
+                <SectionTitle>Libros relacionados</SectionTitle>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+                    {/* Related books grid would go here */}
+                </div>
+                
+                <div class="text-center mt-8">
+                    <Button 
+                        variant="outline" 
+                        size="medium" 
+                        href="/catalogo" 
+                        class="inline-flex items-center group"
+                    >
+                        Ver catálogo completo
+                        <ArrowRightIcon class="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                </div>
+            </div>
+        )}
+    </div>
+</div>
+
+<script>
+    import { CartManager } from '../../utils/cartManager';
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Add event listeners to "Add to Cart" buttons
+        const addToCartBtn = document.querySelector('.add-to-cart-btn');
+        if (addToCartBtn) {
+            addToCartBtn.addEventListener('click', () => {
+                const productId = addToCartBtn.getAttribute('data-id');
+                const productTitle = addToCartBtn.getAttribute('data-title');
+                const productPriceStr = addToCartBtn.getAttribute('data-price');
+                const productImage = addToCartBtn.getAttribute('data-image');
+                const productType = addToCartBtn.getAttribute('data-type');
+                
+                if (productId && productTitle && productPriceStr && productImage && productType) {
+                    const productPrice = parseFloat(productPriceStr);
+                    
+                    // Add item to cart using CartManager
+                    CartManager.addItem({
+                        id: productId,
+                        title: productTitle,
+                        price: productPrice,
+                        image: productImage,
+                        type: productType as 'book' | 'exam' | 'pack'
+                    });
+                    
+                    // Show success message
+                    CartManager.showNotification(`"${productTitle}" agregado al carrito`);
+                    
+                    // Dispatch event to notify other components about cart update
+                    window.dispatchEvent(new CustomEvent('cartUpdated'));
+                }
+            });
+        }
+    });
+</script>
