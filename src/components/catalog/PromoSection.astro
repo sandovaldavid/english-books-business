@@ -6,14 +6,28 @@ import PromoCard from '../PromoCard.astro';
 // Import offers data
 import offers from '../../database/offers.json';
 
-// Get a date 7 days from now for the countdown
+interface Props {
+	className?: string;
+	title?: string;
+	subtitle?: string;
+	countdownDays?: number;
+}
+
+const {
+	className = '',
+	title = 'Aprovecha nuestras promociones',
+	subtitle = 'Ofertas Especiales',
+	countdownDays = 7,
+} = Astro.props;
+
+// Get a date for countdown
 const offerEndDate = new Date();
-offerEndDate.setDate(offerEndDate.getDate() + 7);
+offerEndDate.setDate(offerEndDate.getDate() + countdownDays);
 const endDateString = offerEndDate.toISOString();
 ---
 
 <section
-	class='py-16 bg-gradient-to-br from-primary/5 to-secondary/5 relative overflow-hidden'>
+	class={`py-12 md:py-16 bg-gradient-to-br from-primary/5 to-secondary/5 relative overflow-hidden ${className}`}>
 	<!-- Decorative elements -->
 	<div
 		class='absolute top-0 left-0 w-24 h-24 rounded-full bg-primary/20 -translate-x-1/2 -translate-y-1/2 blur-xl'>
@@ -24,16 +38,16 @@ const endDateString = offerEndDate.toISOString();
 
 	<div class='container mx-auto px-4 relative z-10'>
 		<!-- Section header -->
-		<div class='text-center mb-12 slide-up'>
-			<div class="flex flex-col items-center mb-4">
+		<div class='text-center mb-8 md:mb-12 slide-up'>
+			<div class='flex flex-col items-center mb-4'>
 				<span
-					class='inline-block py-1 px-4 rounded-full bg-primary/10 text-primary font-medium text-sm mb-4'
-					>Ofertas Especiales</span
-				>
+					class='inline-block py-1 px-4 rounded-full bg-primary/10 text-primary font-medium text-sm mb-4'>
+					{subtitle}
+				</span>
 				<SectionTitle
 					tag='h2'
-					class='text-3xl md:text-4xl font-bold text-primary-dark mb-4'
-					>Aprovecha nuestras promociones
+					class='text-2xl md:text-4xl font-bold text-primary-dark mb-4'>
+					{title}
 				</SectionTitle>
 			</div>
 			<div class='flex items-center justify-center text-accent space-x-2'>
@@ -45,49 +59,120 @@ const endDateString = offerEndDate.toISOString();
 				</span>
 			</div>
 		</div>
-        
-        <!-- Promo cards grid -->
-        <div class='grid md:grid-cols-2 gap-8 max-w-5xl mx-auto'>
-            {offers.map((offer, index) => (
-                <PromoCard Offer={offer} index={index} />
-            ))}
-        </div>
+
+		<!-- Promo cards grid - responsive for all screen sizes -->
+		<div class='grid grid-cols-2 gap-4 sm:gap-6 lg:gap-8 max-w-5xl mx-auto'>
+			{
+				offers.map((offer, index) => (
+					<div
+						class='promo-grid-item'
+						style={`animation-delay: ${index * 0.15}s`}>
+						<PromoCard Offer={offer} index={index} />
+					</div>
+				))
+			}
+		</div>
+
+		{/* Empty state for when there are no offers */}
+		{
+			offers.length === 0 && (
+				<div class='bg-white rounded-lg shadow-sm p-8 text-center'>
+					<p class='text-gray-500'>
+						No hay ofertas disponibles actualmente.
+					</p>
+				</div>
+			)
+		}
+
+		{/* View all button - shown when there are more than 4 offers */}
+		{
+			offers.length > 4 && (
+				<div class='text-center mt-8'>
+					<a
+						href='/ofertas'
+						class='inline-block bg-primary hover:bg-primary-dark text-white font-medium py-2 px-6 rounded-md transition-colors duration-300'>
+						Ver todas las ofertas
+					</a>
+				</div>
+			)
+		}
 	</div>
 </section>
 
 <script>
+	// Define type for countdown element
+	interface CountdownElement extends HTMLElement {
+		dataset: {
+			endDate: string;
+		};
+	}
+
 	// Countdown timer functionality
-	function updateCountdown() {
-		document.querySelectorAll('.countdown-text').forEach((el) => {
-			const endDateStr = el.getAttribute('data-end-date') || '';
-			const endDate = new Date(endDateStr);
-			const now = new Date();
-			const timeLeft = endDate.getTime() - now.getTime();
+	function updateCountdown(): void {
+		document
+			.querySelectorAll<CountdownElement>('.countdown-text')
+			.forEach((el) => {
+				const endDateStr = el.dataset.endDate || '';
+				const endDate = new Date(endDateStr);
+				const now = new Date();
+				const timeLeft = endDate.getTime() - now.getTime();
 
-			if (timeLeft <= 0) {
-				el.textContent = '¡Oferta finalizada!';
-				return;
-			}
+				if (timeLeft <= 0) {
+					el.textContent = '¡Oferta finalizada!';
+					return;
+				}
 
-			const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-			const hours = Math.floor(
-				(timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-			);
-
-			if (days > 0) {
-				el.textContent = `Termina en ${days}d ${hours}h`;
-			} else {
-				const minutes = Math.floor(
-					(timeLeft % (1000 * 60 * 60)) / (1000 * 60)
+				const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+				const hours = Math.floor(
+					(timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
 				);
-				el.textContent = `Termina en ${hours}h ${minutes}m`;
-			}
-		});
+
+				if (days > 0) {
+					el.textContent = `Termina en ${days}d ${hours}h`;
+				} else {
+					const minutes = Math.floor(
+						(timeLeft % (1000 * 60 * 60)) / (1000 * 60)
+					);
+					el.textContent = `Termina en ${hours}h ${minutes}m`;
+				}
+			});
 	}
 
 	// Update every minute
 	document.addEventListener('DOMContentLoaded', () => {
 		updateCountdown();
 		setInterval(updateCountdown, 60000);
+
+		// Set up intersection observer for animations
+		const observer = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting) {
+						entry.target.classList.add('in-view');
+						observer.unobserve(entry.target);
+					}
+				});
+			},
+			{ threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+		);
+
+		// Observe all promo items for scroll animations
+		document.querySelectorAll('.promo-grid-item').forEach((item) => {
+			observer.observe(item);
+		});
 	});
 </script>
+
+<style>
+	/* Animation styles for grid items */
+	.promo-grid-item {
+		opacity: 0;
+		transform: translateY(20px);
+		transition: all 0.5s ease-out;
+	}
+
+	.promo-grid-item.in-view {
+		opacity: 1;
+		transform: translateY(0);
+	}
+</style>
