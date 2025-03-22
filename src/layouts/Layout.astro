@@ -3,45 +3,90 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 
+// Update the Props interface to include new SEO fields
 interface Props {
-	title?: string;
-	description?: string;
+	title: string;
+	description: string;
 	image?: string;
-	canonicalURL?: URL | string;
+	canonicalURL?: string;
+	ogType?: string;
+	ogTitle?: string;
+	ogDescription?: string;
+	ogImage?: string;
+	ogSiteName?: string;
+	twitterCard?: string;
+	twitterTitle?: string;
+	twitterDescription?: string;
+	twitterImage?: string;
+	twitterSite?: string;
+	language?: string;
 }
 
 const {
-	title = 'FluentReads',
-	description = 'Tu fuente confiable de libros en inglés y materiales educativos para profesionales y estudiantes',
-	image = '/images/default-og.png',
-	canonicalURL,
+	title,
+	description,
+	image,
+	canonicalURL = Astro.url.href,
+	ogType = 'website',
+	ogTitle = title,
+	ogDescription = description,
+	ogImage = image,
+	ogSiteName = 'FluentReads',
+	twitterCard = 'summary_large_image',
+	twitterTitle = title,
+	twitterDescription = description,
+	twitterImage = image,
+	twitterSite = '@fluentreads',
+	language = 'es',
 } = Astro.props;
 
-// Create a safe canonical URL
-let canonicalURLString: string;
-try {
-	canonicalURLString = canonicalURL
-		? canonicalURL.toString()
-		: Astro.site
-			? new URL(Astro.url.pathname, Astro.site).toString()
-			: Astro.url.pathname;
-} catch (error) {
-	canonicalURLString = Astro.url.pathname;
-}
-
-// Build full metadata
-const siteTitle = title.includes('FluentReads')
-	? title
-	: `${title} | FluentReads`;
+// Format image URL properly if it's a relative path
+const formattedImage =
+	typeof image === 'string' && image?.startsWith('/')
+		? new URL(image, Astro.url.origin).toString()
+		: image;
 ---
 
 <!doctype html>
-<html lang='es'>
+<html lang={language}>
 	<head>
-		<meta charset='UTF-8' />
+		<meta charset='utf-8' />
 		<meta name='viewport' content='width=device-width' />
-		<link rel='icon' type='image/svg+xml' href='/favicon.webp' />
-		<meta name='generator' content={Astro.generator} />
+		<title>{title}</title>
+		<meta name='description' content={description} />
+
+		<!-- Favicon -->
+		<link rel='icon' type='image/svg+xml' href='/favicon.svg' />
+
+		<!-- Canonical URL -->
+		<link rel='canonical' href={canonicalURL} />
+
+		<!-- Open Graph / Facebook -->
+		<meta property='og:type' content={ogType} />
+		<meta property='og:url' content={canonicalURL} />
+		<meta property='og:title' content={ogTitle} />
+		<meta property='og:description' content={ogDescription} />
+		{ogImage && <meta property='og:image' content={ogImage} />}
+		<meta property='og:site_name' content={ogSiteName} />
+
+		<!-- Twitter -->
+		<meta name='twitter:card' content={twitterCard} />
+		<meta name='twitter:title' content={twitterTitle} />
+		<meta name='twitter:description' content={twitterDescription} />
+		{twitterImage && <meta name='twitter:image' content={twitterImage} />}
+		{twitterSite && <meta name='twitter:site' content={twitterSite} />}
+
+		<!-- Additional SEO tags for language learning books -->
+		<meta
+			name='keywords'
+			content='libros en inglés, aprender inglés, material educativo, inglés para negocios, FluentReads, libros para profesionales'
+		/>
+		<meta name='robots' content='index, follow' />
+		<meta name='language' content={language} />
+		<meta name='revisit-after' content='7 days' />
+
+		<!-- Additional head elements -->
+		<slot name='head' />
 
 		<!-- Fonts -->
 		<link rel='preconnect' href='https://fonts.googleapis.com' />
@@ -60,44 +105,6 @@ const siteTitle = title.includes('FluentReads')
 			href='https://s.pageclip.co/v1/pageclip.css'
 			media='screen'
 		/>
-
-		<!-- SEO Meta Tags -->
-		<title>{siteTitle}</title>
-		<meta name='description' content={description} />
-		<link rel='canonical' href={canonicalURLString} />
-
-		<!-- Open Graph / Facebook -->
-		<meta property='og:type' content='website' />
-		<meta property='og:url' content={canonicalURLString} />
-		<meta property='og:title' content={siteTitle} />
-		<meta property='og:description' content={description} />
-		<meta
-			property='og:image'
-			content={typeof image === 'string' && image.startsWith('/')
-				? Astro.url.origin + image
-				: image}
-		/>
-
-		<!-- Twitter -->
-		<meta property='twitter:card' content='summary_large_image' />
-		<meta property='twitter:url' content={canonicalURLString} />
-		<meta property='twitter:title' content={siteTitle} />
-		<meta property='twitter:description' content={description} />
-		<meta
-			property='twitter:image'
-			content={typeof image === 'string' && image.startsWith('/')
-				? Astro.url.origin + image
-				: image}
-		/>
-
-		<!-- Additional SEO tags for language learning books -->
-		<meta
-			name='keywords'
-			content='libros en inglés, aprender inglés, material educativo, inglés para negocios, FluentReads, libros para profesionales'
-		/>
-		<meta name='robots' content='index, follow' />
-		<meta name='language' content='Spanish' />
-		<meta name='revisit-after' content='7 days' />
 
 		<!-- Lite YouTube custom element -->
 		<script>
