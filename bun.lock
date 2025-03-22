@@ -4,6 +4,7 @@
     "": {
       "dependencies": {
         "@astrojs/react": "^4.2.1",
+        "@justinribeiro/lite-youtube": "^1.7.1",
         "@tailwindcss/vite": "^4.0.14",
         "@types/react": "^19.0.12",
         "@types/react-dom": "^19.0.4",
@@ -164,6 +165,8 @@
     "@jridgewell/sourcemap-codec": ["@jridgewell/sourcemap-codec@1.5.0", "", {}, "sha512-gv3ZRaISU3fjPAgNsriBRqGWQL6quFx04YMPW/zD8XMLsU32mhCCbfbO6KZFLjvYpCZ8zyDEgqsgf+PwPaM7GQ=="],
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.25", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ=="],
+
+    "@justinribeiro/lite-youtube": ["@justinribeiro/lite-youtube@1.7.1", "", {}, "sha512-nbasgHAmjw7g6zy8sK//nL7CQoJcBmvfBM3jWulKVJPRIhBHa6ZnHtQbMdd6TAukU3h0udZP09N8EEyLGWVysA=="],
 
     "@oslojs/encoding": ["@oslojs/encoding@1.1.0", "", {}, "sha512-70wQhgYmndg4GCPxPPxPGevRKqTIJ2Nh4OkiMWmDAVYsTQ+Ta7Sq+rPevXyXGdzr30/qZBnyOalCszoMxlyldQ=="],
 
