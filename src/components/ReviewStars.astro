@@ -1,0 +1,61 @@
+---
+interface Props {
+	score: number;
+	size?: 'small' | 'medium' | 'large';
+}
+
+const { score, size = 'medium' } = Astro.props;
+
+// Calculate full, half, and empty stars
+const fullStars = Math.floor(score);
+const hasHalfStar = score % 1 >= 0.5;
+const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+// Size classes
+const sizeClasses = {
+	small: 'text-sm',
+	medium: 'text-base',
+	large: 'text-lg',
+};
+
+const starSizeClass = sizeClasses[size];
+---
+
+<div class='flex items-center'>
+	{
+		Array(fullStars)
+			.fill(0)
+			.map(() => (
+				<span class={`text-yellow-400 ${starSizeClass} star-icon`}>
+					★
+				</span>
+			))
+	}
+
+	{
+		hasHalfStar && (
+			<span class={`text-yellow-400 ${starSizeClass} star-icon`}>★</span>
+		)
+	}
+
+	{
+		Array(emptyStars)
+			.fill(0)
+			.map(() => (
+				<span class={`text-gray-300 ${starSizeClass} empty-star`}>
+					☆
+				</span>
+			))
+	}
+</div>
+
+<style>
+	.star-icon {
+		display: inline-block;
+		transition: transform 0.3s ease;
+	}
+
+	.star-icon:hover {
+		transform: scale(1.2);
+	}
+</style>
