@@ -1,7 +1,7 @@
 ---
 export interface Props {
 	variant?: 'primary' | 'secondary' | 'accent' | 'outline' | 'ghost';
-	size?: 'small' | 'medium' | 'large';
+	size?: 'xsmall' | 'small' | 'medium' | 'large';
 	href?: string;
 	fullWidth?: boolean;
 	disabled?: boolean;
@@ -29,6 +29,7 @@ const baseClasses =
 
 // Size-specific classes with improved responsive sizing
 const sizeClasses = {
+	xsmall: 'px-1.5 py-0.5 text-2xs sm:text-xs',
 	small: 'px-2 py-1 text-xs sm:px-3 sm:py-1 sm:text-sm',
 	medium: 'px-3 py-1.5 text-sm sm:px-4 sm:py-2 sm:text-base',
 	large: 'px-4 py-2 text-base sm:px-6 sm:py-3 sm:text-lg',
@@ -97,9 +98,20 @@ const linkProps = isLink
 <style>
 	/* Improve touch target size on mobile */
 	@media (max-width: 640px) {
-		a,
-		button {
-			min-height: 44px;
+		a:not(.size-xsmall),
+		button:not(.size-xsmall) {
+			min-height: 25px;
 		}
+
+		a.size-xsmall,
+		button.size-xsmall {
+			min-height: 30px;
+		}
+	}
+
+	/* Add text-2xs custom size */
+	.text-2xs {
+		font-size: 0.65rem;
+		line-height: 1rem;
 	}
 </style>
