@@ -1,0 +1,181 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import BookDetails from '../../components/details/BookDetails.astro';
+import booksData from '../../database/books.json';
+import type { Book } from '../../types/book';
+import { levelConfig } from '../../utils/bookTags';
+
+export async function getStaticPaths() {
+	return booksData.map((book) => ({
+		params: { id: book.id },
+		props: { book },
+	}));
+}
+
+interface Props {
+	book: Book;
+}
+
+const { book } = Astro.props;
+
+// Get related books (same level or format)
+const relatedBooks = booksData
+	.filter(
+		(item) =>
+			item.id !== book.id &&
+			(item.level === book.level ||
+				(item.formatTags &&
+					book.formatTags &&
+					item.formatTags.some((tag) =>
+						book.formatTags?.includes(tag)
+					)))
+	)
+	.slice(0, 4);
+
+// Calculate discounted price if there's a discount
+const hasDiscount = book.discount && book.discount > 0;
+const originalPrice = book.price;
+const discountedPrice = hasDiscount ? book.price * (1 - book.discount / 100) : book.price;
+
+// SEO metadata - Enhanced
+const bookLevel = book.level ? levelConfig[book.level as keyof typeof levelConfig]?.label || book.level : '';
+const formatTags = book.formatTags?.join(', ') || '';
+
+// Improved title with keywords
+const title = `${book.title} | Libro en inglés ${bookLevel ? `- ${bookLevel}` : ''} | FluentReads`;
+
+// Enhanced description with more context and keywords
+const description = book.description?.length > 160 
+	? `${book.description.substring(0, 157)}...` 
+	: book.description || `Material educativo en inglés: ${book.title}. ${formatTags ? `Incluye: ${formatTags}.` : ''} Mejora tu nivel de inglés con FluentReads.`;
+
+const image = book.coverImage;
+
+// Canonical URL
+const canonicalURL = new URL(`/libro/${book.id}`, Astro.site).toString();
+
+// Generate comprehensive JSON-LD for SEO
+const jsonLd = {
+	"@context": "https://schema.org",
+	"@type": "Product",
+	"name": book.title,
+	"description": book.description,
+	"image": book.coverImage,
+	"sku": book.id,
+	"offers": {
+		"@type": "Offer",
+		"price": discountedPrice,
+		"priceCurrency": "PEN",
+		"availability": "https://schema.org/InStock",
+		"url": canonicalURL,
+		"priceValidUntil": new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0]
+	},
+	"brand": {
+		"@type": "Brand",
+		"name": "FluentReads"
+	},
+	"aggregateRating": book.rating ? {
+		"@type": "AggregateRating",
+		"ratingValue": book.rating.score,
+		"reviewCount": book.rating.reviewCount,
+		"bestRating": "5",
+		"worstRating": "1"
+	} : undefined,
+	"category": bookLevel
+};
+
+// Create breadcrumb structured data
+const breadcrumbJsonLd = {
+	"@context": "https://schema.org",
+	"@type": "BreadcrumbList",
+	"itemListElement": [
+		{
+			"@type": "ListItem",
+			"position": 1,
+			"name": "Inicio",
+			"item": new URL("/", Astro.site).toString()
+		},
+		{
+			"@type": "ListItem",
+			"position": 2,
+			"name": "Catálogo",
+			"item": new URL("/catalogo", Astro.site).toString()
+		},
+		{
+			"@type": "ListItem",
+			"position": 3,
+			"name": book.title,
+			"item": canonicalURL
+		}
+	]
+};
+
+// Language tag
+const language = "es";
+
+// OpenGraph metadata
+const ogType = "product";
+const ogUrl = canonicalURL;
+const ogTitle = title;
+const ogDescription = description;
+const ogImage = new URL(image, Astro.site).toString();
+const ogSiteName = "FluentReads";
+
+// Twitter card metadata
+const twitterCard = "summary_large_image";
+const twitterTitle = title;
+const twitterDescription = description;
+const twitterImage = ogImage;
+const twitterSite = "@fluentreads";
+---
+
+<Layout 
+	title={title} 
+	description={description} 
+	image={image}
+	canonicalURL={canonicalURL}
+	ogType={ogType}
+	ogTitle={ogTitle}
+	ogDescription={ogDescription}
+	ogImage={ogImage}
+	ogSiteName={ogSiteName}
+	twitterCard={twitterCard}
+	twitterTitle={twitterTitle}
+	twitterDescription={twitterDescription}
+	twitterImage={twitterImage}
+	twitterSite={twitterSite}
+	language={language}>
+	
+	<!-- Structured data for SEO -->
+	<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+	<script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+	
+	<BookDetails
+		book={book}
+		relatedBooks={relatedBooks}
+	/>
+	
+	<!-- Schema metadata for price -->
+	{hasDiscount && (
+		<meta itemprop="price" content={discountedPrice.toFixed(2)} />
+		<meta itemprop="priceCurrency" content="PEN" />
+	)}
+	
+	<!-- Add event listener for cart operations -->
+	<script>
+		import { CartManager } from '../../utils/cartManager';
+
+		// Initialize cart functionality
+		document.addEventListener('DOMContentLoaded', () => {
+			// Make sure cart is initialized
+			if (typeof window !== 'undefined') {
+				CartManager.initializeCart();
+			}
+			
+			// Listen for cart updates to refresh indicators
+			window.addEventListener('cartUpdated', () => {
+				console.log('Cart updated');
+			});
+		});
+	</script>
+</Layout>
