@@ -1,61 +1,91 @@
 ---
+import StarIcon from './icons/Star.astro';
 interface Props {
 	score: number;
 	size?: 'small' | 'medium' | 'large';
+	showScore?: boolean;
+	reviewCount?: number;
+	className?: string;
 }
 
-const { score, size = 'medium' } = Astro.props;
+const {
+	score,
+	size = 'medium',
+	showScore = true,
+	reviewCount = undefined,
+	className,
+} = Astro.props;
 
-// Calculate full, half, and empty stars
-const fullStars = Math.floor(score);
-const hasHalfStar = score % 1 >= 0.5;
-const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+// Calculate full and partial stars
+const fullStarsCount = Math.floor(score);
+const partialFill = score - fullStarsCount;
+const emptyStarsCount = 5 - fullStarsCount - (partialFill > 0 ? 1 : 0);
 
 // Size classes
 const sizeClasses = {
-	small: 'text-sm',
-	medium: 'text-base',
-	large: 'text-lg',
+	small: 'w-4 h-4 text-sm',
+	medium: 'w-5 h-5 text-base',
+	large: 'w-6 h-6 text-lg',
 };
 
 const starSizeClass = sizeClasses[size];
 ---
 
-<div class='flex items-center'>
-	{
-		Array(fullStars)
-			.fill(0)
-			.map(() => (
-				<span class={`text-yellow-400 ${starSizeClass} star-icon`}>
-					★
-				</span>
+<div class=`flex items-center ${className}`>
+	<div class='flex items-center justify-between'>
+		{/* Full stars */}
+		{
+			Array.from({ length: fullStarsCount }).map(() => (
+				<StarIcon class='w-5 h-5 text-yellow-400 mr-0.5' />
 			))
-	}
+		}
+
+		{/* Partial star */}
+		{
+			partialFill > 0 && (
+				<div class='relative mr-0.5'>
+					{/* Background star (empty) */}
+					<StarIcon class={`${starSizeClass} text-gray-300`} />
+
+					{/* Foreground star (partial fill) */}
+					<div
+						class='absolute inset-0 overflow-hidden'
+						style={`width: ${partialFill * 100}%`}>
+						<StarIcon class={`${starSizeClass} text-yellow-400`} />
+					</div>
+				</div>
+			)
+		}
+
+		{/* Empty stars */}
+		{
+			Array.from({ length: emptyStarsCount }).map(() => (
+				<svg
+					class={`${starSizeClass} text-gray-300 mr-0.5`}
+					fill='currentColor'
+					viewBox='0 0 24 24'
+					stroke='none'
+					aria-hidden='true'>
+					<path d='M12 2l2.4 7.2h7.6l-6 4.8 2.4 7.2-6-4.8-6 4.8 2.4-7.2-6-4.8h7.6z' />
+				</svg>
+			))
+		}
+	</div>
 
 	{
-		hasHalfStar && (
-			<span class={`text-yellow-400 ${starSizeClass} star-icon`}>★</span>
+		showScore && (
+			<span class='text-sm text-gray-500 ml-1.5'>
+				{score.toFixed(1)}
+				{reviewCount !== undefined && (
+					<span class='ml-1'>({reviewCount})</span>
+				)}
+			</span>
 		)
-	}
-
-	{
-		Array(emptyStars)
-			.fill(0)
-			.map(() => (
-				<span class={`text-gray-300 ${starSizeClass} empty-star`}>
-					☆
-				</span>
-			))
 	}
 </div>
 
 <style>
-	.star-icon {
-		display: inline-block;
-		transition: transform 0.3s ease;
-	}
-
-	.star-icon:hover {
-		transform: scale(1.2);
+	div:hover svg {
+		transform: scale(1.1);
 	}
 </style>
