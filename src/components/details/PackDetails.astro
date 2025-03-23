@@ -4,6 +4,8 @@ import ReviewStars from '../ReviewStars.astro';
 import SectionTitle from '../SectionTitle.astro';
 import MediaCarousel from '../MediaCarousel.astro';
 import Card from '../Card.astro';
+import ValuePropositionHighlight from './ValuePropositionHighlight.astro';
+import ValueCard from './ValueCard.astro';
 import type { Pack } from '../../types/pack';
 import type { Book } from '../../types/book';
 import WhatsAppIcon from '../icons/WhatsApp.astro';
@@ -240,44 +242,21 @@ const levelDisplay = pack.level
                     </div>
                     
                     <!-- Value proposition highlight -->
-                    <div class="bg-indigo-50 rounded-xl p-5 border border-indigo-100 shadow-sm mb-6">
-                        <h3 class="text-lg font-bold text-indigo-800 mb-2">Valor del pack</h3>
-                        <div class="flex flex-wrap justify-between items-center">
-                            <div>
-                                <p class="text-sm text-gray-700">Valor de productos individuales: <span class="font-bold text-indigo-700">{formattedTotalBooksValue}</span></p>
-                                <p class="text-sm text-gray-700">Precio del pack: <span class="font-bold text-green-700">{hasDiscount ? formattedDiscountedPrice : formattedOriginalPrice}</span></p>
-                            </div>
-                            <div class="bg-indigo-100 px-4 py-2 rounded-lg">
-                                <p class="text-indigo-800 font-bold">
-                                    {bonusValue > 0 ? `Ahorras: ${formattedBonusValue}` : 'Oferta Especial'}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+                    <ValuePropositionHighlight 
+                        totalBooksValue={totalBooksValue}
+                        originalPrice={originalPrice}
+                        discountedPrice={hasDiscount ? discountedPrice : undefined}
+                        discount={pack.discount}
+                    />
                     
-                    <!-- Price section with better visual hierarchy -->
-                    <div class="bg-gray-50 rounded-xl p-5 border border-gray-200 shadow-sm mb-6">
-                        <div class="flex items-center mb-2">
-                            {hasDiscount ? (
-                                <>
-                                    <span class="text-3xl font-bold text-primary mr-3">{formattedDiscountedPrice}</span>
-                                    <span class="text-xl text-gray-500 line-through">{formattedOriginalPrice}</span>
-                                    {pack.discount && (
-                                        <span class="ml-3 bg-accent/10 text-accent text-sm font-bold px-3 py-1 rounded-full">
-                                            {pack.discount}% DESCUENTO
-                                        </span>
-                                    )}
-                                </>
-                            ) : (
-                                <span class="text-3xl font-bold text-primary">{formattedOriginalPrice}</span>
-                            )}
-                        </div>
-                        
-                        {hasDiscount && (
-                            <p class="text-accent font-medium text-sm mb-1">¡Ahorras {formattedSavingsAmount} con esta oferta!</p>
-                        )}
-                        <p class="text-green-700 font-medium text-sm">✓ Entrega inmediata por correo electrónico</p>
-                    </div>
+                    <!-- Price section now using the ValueCard component -->
+                    <ValueCard
+                        originalPrice={originalPrice}
+                        discountedPrice={hasDiscount ? discountedPrice : undefined}
+                        discount={pack.discount}
+                        savingsAmount={savingsAmount}
+                        productType="pack"
+                    />
                     
                     <!-- Call to action buttons -->
                     <div class="flex flex-col sm:flex-row gap-4 mb-8">
