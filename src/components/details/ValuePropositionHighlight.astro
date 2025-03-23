@@ -1,0 +1,69 @@
+---
+interface Props {
+	totalBooksValue: number;
+	originalPrice: number;
+	discountedPrice?: number;
+	discount?: number;
+	currency?: string;
+}
+
+const {
+	totalBooksValue,
+	originalPrice,
+	discountedPrice,
+	discount,
+	currency = 'S/',
+} = Astro.props;
+
+// Determine if we have a discount
+const hasDiscount = discount && discount > 0 && discountedPrice !== undefined;
+
+// Calculate price to compare
+const priceToCompare = hasDiscount ? discountedPrice! : originalPrice;
+
+// Calculate bonus value (how much you save by buying the pack vs individual books)
+const bonusValue = totalBooksValue - priceToCompare;
+
+// Format currency values
+const formattedTotalBooksValue = `${currency}${totalBooksValue.toFixed(2)}`;
+const formattedOriginalPrice = `${currency}${originalPrice.toFixed(2)}`;
+const formattedDiscountedPrice = discountedPrice
+	? `${currency}${discountedPrice.toFixed(2)}`
+	: formattedOriginalPrice;
+const formattedBonusValue =
+	bonusValue > 0 ? `${currency}${bonusValue.toFixed(2)}` : `${currency}0.00`;
+---
+
+<!-- Value proposition highlight -->
+<div
+	class='bg-indigo-50 rounded-xl p-5 border border-indigo-100 shadow-sm mb-6'>
+	<h3 class='text-lg font-bold text-indigo-800 mb-2'>Valor del pack</h3>
+	<div class='flex flex-wrap justify-between items-center'>
+		<div>
+			<p class='text-sm text-gray-700'>
+				Valor de productos individuales: <span
+					class='font-bold text-indigo-700'
+					>{formattedTotalBooksValue}</span
+				>
+			</p>
+			<p class='text-sm text-gray-700'>
+				Precio del pack: <span class='font-bold text-green-700'
+					>{
+						hasDiscount
+							? formattedDiscountedPrice
+							: formattedOriginalPrice
+					}</span
+				>
+			</p>
+		</div>
+		<div class='bg-indigo-100 px-4 py-2 rounded-lg'>
+			<p class='text-indigo-800 font-bold'>
+				{
+					bonusValue > 0
+						? `Ahorras: ${formattedBonusValue}`
+						: 'Oferta Especial'
+				}
+			</p>
+		</div>
+	</div>
+</div>
