@@ -1,28 +1,18 @@
 ---
 import Button from './Button.astro';
-import type { BookLevel, FormatTag, PopularityTag } from '../types/book';
+import { PopularityTag } from '../types/book';
+import type { Book } from '../types/book';
+import { levelConfig, popularityConfig, formatConfig } from '../utils/bookTags';
 import ArrowRightIcon from './icons/ArrowRight.astro';
 import '../styles/Card.css';
+import BookTags from './BookTags.astro';
+import ReviewStars from './ReviewStars.astro';
 
 interface Props {
-	title: string;
-	description: string;
-	price: number;
-	coverImage: string;
-	altText?: string;
-	includedItems: string[];
-	rating?: {
-		score: number;
-		reviewCount: number;
-	};
-	buyLink: string;
-	detailsLink: string;
-	discount?: number;
-	level?: BookLevel;
-	featured?: boolean;
-	formatTags?: FormatTag[];
-	popularityTags?: PopularityTag[];
+	book: Book;
 }
+
+const { book } = Astro.props;
 
 const {
 	title,
@@ -39,7 +29,7 @@ const {
 	featured = false,
 	formatTags = [],
 	popularityTags = [],
-} = Astro.props;
+} = book;
 
 // Truncate description if too long
 const truncatedDescription =
@@ -47,123 +37,24 @@ const truncatedDescription =
 		? `${description.substring(0, 70)}...`
 		: description;
 
-// Format price to display in soles
-const formattedPrice = `S/${price.toFixed(2)}`;
-
-// Calculate discounted price if applicable
+// Price calculations
 const hasDiscount = discount > 0;
-const originalPrice = price;
 const discountedPrice = hasDiscount ? price * (1 - discount / 100) : price;
+const formattedPrice = `S/${price.toFixed(2)}`;
 const formattedDiscountedPrice = `S/${discountedPrice.toFixed(2)}`;
-const formattedOriginalPrice = `S/${originalPrice.toFixed(2)}`;
 
-// Create stars based on rating
-const fullStars = rating ? Math.floor(rating.score) : 0;
-const hasHalfStar = rating ? rating.score % 1 >= 0.5 : false;
-const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+// Get level configuration
+const levelDisplay = level
+	? levelConfig[level as keyof typeof levelConfig]
+	: null;
 
-// Level tag colors and labels
-const levelConfig = {
-	basic: {
-		color: 'bg-blue-100 text-blue-800',
-		label: 'Básico',
-	},
-	intermediate: {
-		color: 'bg-green-100 text-green-800',
-		label: 'Intermedio',
-	},
-	advanced: {
-		color: 'bg-purple-100 text-purple-800',
-		label: 'Avanzado',
-	},
-	'all-levels': {
-		color: 'bg-amber-100 text-amber-800',
-		label: 'Todos los Niveles',
-	},
-	professional: {
-		color: 'bg-rose-100 text-rose-800',
-		label: 'Profesional',
-	},
-	'International Exam': {
-		color: 'bg-cyan-100 text-cyan-800',
-		label: 'Examen Internacional',
-	},
-};
-
-// Format tag configuration
-const formatConfig = {
-	pdf: {
-		icon: '📄',
-		label: 'PDF',
-		color: 'bg-blue-50 text-blue-600 border-blue-200',
-	},
-	workbook: {
-		icon: '📓',
-		label: 'Workbook',
-		color: 'bg-emerald-50 text-emerald-600 border-emerald-200',
-	},
-	audio: {
-		icon: '🎧',
-		label: 'Audios',
-		color: 'bg-purple-50 text-purple-600 border-purple-200',
-	},
-	video: {
-		icon: '📹',
-		label: 'Videos',
-		color: 'bg-red-50 text-red-600 border-red-200',
-	},
-	software: {
-		icon: '💻',
-		label: 'Software',
-		color: 'bg-slate-50 text-slate-600 border-slate-200',
-	},
-	exams: {
-		icon: '📝',
-		label: 'Exámenes',
-		color: 'bg-orange-50 text-orange-600 border-orange-200',
-	},
-};
-
-// Popularity tag configuration
-const popularityConfig = {
-	bestseller: {
-		icon: '🚀',
-		label: 'Más vendido',
-		color: 'bg-amber-50 text-amber-600 border-amber-200',
-	},
-	new: {
-		icon: '🆕',
-		label: 'Nuevo',
-		color: 'bg-green-50 text-green-600 border-green-200',
-	},
-	'special-offer': {
-		icon: '🏷',
-		label: 'Oferta especial',
-		color: 'bg-pink-50 text-pink-600 border-pink-200',
-	},
-	'complete-pack': {
-		icon: '🎁',
-		label: 'Pack Completo',
-		color: 'bg-indigo-50 text-indigo-600 border-indigo-200',
-	},
-	recommended: {
-		icon: '💯',
-		label: 'Recomendado',
-		color: 'bg-rose-50 text-rose-600 border-rose-200',
-	},
-};
-
-// Get level configuration or default
-const levelDisplay = level ? levelConfig[level] : null;
-
-// Check if the book has any special status to be highlighted
+// Special status highlighting
 const isSpecialOffer =
 	hasDiscount ||
-	(popularityTags &&
-		popularityTags.includes('special-offer' as PopularityTag));
+	(popularityTags && popularityTags.includes(PopularityTag.SPECIAL_OFFER));
 const isFeaturedOrBestseller =
 	featured ||
-	(popularityTags && popularityTags.includes('bestseller' as PopularityTag));
+	(popularityTags && popularityTags.includes(PopularityTag.BESTSELLER));
 ---
 
 <div
@@ -180,12 +71,13 @@ const isFeaturedOrBestseller =
 			src={coverImage}
 			alt={altText}
 			class='w-full h-full object-cover transition-transform duration-700 book-cover'
+			loading='lazy'
 		/>
 		<div
 			class='absolute inset-0 bg-gradient-to-b from-transparent to-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cover-overlay'>
 		</div>
 
-		<!-- Featured badge with animation-->
+		<!-- Featured & Level badges -->
 		{
 			featured && (
 				<div class='absolute top-3 left-3 bg-secondary text-black font-bold py-1 px-3 rounded-full text-sm shadow-md animate-pulse-subtle'>
@@ -194,7 +86,6 @@ const isFeaturedOrBestseller =
 			)
 		}
 
-		<!-- Level tag -->
 		{
 			levelDisplay && (
 				<div
@@ -204,7 +95,7 @@ const isFeaturedOrBestseller =
 			)
 		}
 
-		<!-- Discount badge with attention-grabbing animation -->
+		<!-- Discount badge -->
 		{
 			hasDiscount && (
 				<div class='absolute -right-12 top-7 bg-accent text-white font-bold py-1 px-10 shadow-md transform rotate-45 discount-badge'>
@@ -222,55 +113,20 @@ const isFeaturedOrBestseller =
 			{title}
 		</h3>
 
-		<!-- Tags Section with improved visual appeal -->
-		<div class='mb-3 tag-container'>
-			{/* Format tags */}
-			{
-				formatTags && formatTags.length > 0 && (
-					<div class='mb-2'>
-						<div class='flex flex-wrap gap-1.5'>
-							{formatTags.map((tag) => {
-								const config = formatConfig[tag];
-								return (
-									<span
-										class={`inline-flex items-center text-xs px-2 py-1 rounded-md border ${config.color} format-tag`}>
-										<span class='mr-1'>{config.icon}</span>{' '}
-										{config.label}
-									</span>
-								);
-							})}
-						</div>
-					</div>
-				)
-			}
+		<!-- Tags Section -->
+		<BookTags
+			formatTags={formatTags}
+			popularityTags={popularityTags}
+			formatConfig={formatConfig}
+			popularityConfig={popularityConfig}
+		/>
 
-			{/* Popularity tags */}
-			{
-				popularityTags && popularityTags.length > 0 && (
-					<div>
-						<div class='flex flex-wrap gap-1.5'>
-							{popularityTags.map((tag) => {
-								const config = popularityConfig[tag];
-								return (
-									<span
-										class={`inline-flex items-center text-xs px-2 py-1 rounded-md border ${config.color} popularity-tag`}>
-										<span class='mr-1'>{config.icon}</span>{' '}
-										{config.label}
-									</span>
-								);
-							})}
-						</div>
-					</div>
-				)
-			}
-		</div>
-
-		<!-- Description with better contrast -->
+		<!-- Description -->
 		<p class='text-gray-700 text-sm mb-4 line-clamp-2 book-description'>
 			{truncatedDescription}
 		</p>
 
-		<!-- Price with attention-grabbing styling for discounts -->
+		<!-- Price display -->
 		<div class='mb-4 flex items-center price-display'>
 			{
 				hasDiscount ? (
@@ -279,7 +135,7 @@ const isFeaturedOrBestseller =
 							{formattedDiscountedPrice}
 						</span>
 						<span class='ml-2 text-sm text-gray-500 line-through original-price'>
-							{formattedOriginalPrice}
+							{formattedPrice}
 						</span>
 						<span class='ml-2 bg-accent/10 text-accent text-xs font-bold px-2 py-0.5 rounded-full discount-tag'>
 							{discount}% OFF
@@ -293,7 +149,7 @@ const isFeaturedOrBestseller =
 			}
 		</div>
 
-		<!-- Additional Content with improved list styling -->
+		<!-- Included items list -->
 		<div class='mb-5 flex-grow included-content'>
 			<p class='font-medium text-gray-700 mb-2'>Incluye:</p>
 			<ul class='text-sm space-y-1.5 included-list'>
@@ -308,41 +164,17 @@ const isFeaturedOrBestseller =
 			</ul>
 		</div>
 
-		<!-- Rating (if available) with enhanced star display -->
-		{
-			rating && (
-				<div class='flex items-center mb-5 rating-display'>
-					<div class='flex text-yellow-400'>
-						{Array(fullStars)
-							.fill(0)
-							.map(() => (
-								<span class='text-lg star-icon'>⭐</span>
-							))}
-						{hasHalfStar && (
-							<span class='text-lg star-icon'>⭐</span>
-						)}
-						{Array(emptyStars)
-							.fill(0)
-							.map(() => (
-								<span class='text-lg text-gray-300 empty-star'>
-									☆
-								</span>
-							))}
-					</div>
-					<span class='text-sm text-gray-500 ml-2 review-count'>
-						{rating.score}/5 ({rating.reviewCount} reseñas)
-					</span>
-				</div>
-			)
-		}
+		<!-- Rating stars -->
+		{rating && <ReviewStars score={rating.score} className='mb-5' />}
 
-		<!-- Action Buttons with improved CTA -->
+		<!-- Action Buttons -->
 		<div class='flex space-x-2 mt-auto action-buttons'>
 			<Button
 				variant='primary'
 				size='small'
 				href={buyLink}
 				fullWidth={true}
+				newTab={false}
 				class='group shadow-md hover:shadow-lg buy-button'>
 				<span>Comprar</span>
 				<ArrowRightIcon class='w-6 h-6 ml' />
@@ -351,6 +183,7 @@ const isFeaturedOrBestseller =
 				variant='outline'
 				size='small'
 				href={detailsLink}
+				newTab={false}
 				class='min-w-[120px] details-button'>
 				Ver Detalles
 			</Button>
@@ -359,16 +192,11 @@ const isFeaturedOrBestseller =
 </div>
 
 <script>
-	// Add click to expand functionality for mobile
+	// Mobile click to expand functionality
 	document.addEventListener('DOMContentLoaded', () => {
-		const cards = document.querySelectorAll('.book-card');
-
-		cards.forEach((card) => {
-			// For mobile: tap to expand the description
+		document.querySelectorAll('.book-card').forEach((card) => {
 			card.addEventListener('click', (e) => {
-				// Only do this on mobile
 				if (window.innerWidth <= 768) {
-					// Don't activate if clicking on buttons or links
 					const target = e.target as Element;
 					if (
 						target &&

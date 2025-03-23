@@ -1,0 +1,434 @@
+---
+import Button from '../Button.astro';
+import ReviewStars from '../ReviewStars.astro';
+import SectionTitle from '../SectionTitle.astro';
+import MediaCarousel from '../MediaCarousel.astro';
+import Card from '../Card.astro';
+import ValuePropositionHighlight from './ValuePropositionHighlight.astro';
+import ValueCard from './ValueCard.astro';
+import type { Pack } from '../../types/pack';
+import type { Book } from '../../types/book';
+import WhatsAppIcon from '../icons/WhatsApp.astro';
+import CartIcon from '../icons/Cart.astro';
+import CheckIcon from '../icons/Check.astro';
+import ArrowRightIcon from '../icons/ArrowRight.astro';
+import CustomerSupport from '../CustomerSupport.astro';
+import { extractYoutubeId } from '../../utils/videoEmbeds';
+import { levelConfig, formatConfig } from '../../utils/bookTags';
+import booksData from '../../database/books.json';
+import '../../styles/ProductDetail.css';
+
+// Define proper interface for MediaItem
+interface MediaItem {
+    type: 'image' | 'video';
+    url: string;
+    title?: string;
+    thumbnail?: string;
+}
+
+interface Props {
+    pack: Pack;
+    relatedProducts?: Pack[];
+}
+
+const { pack, relatedProducts = [] } = Astro.props;
+
+// Get actual book objects using booksIds
+const packBooks: Book[] = pack.booksIds
+    .map(id => booksData.find(book => book.id === id))
+    .filter(book => book !== undefined) as Book[];
+
+// Prepare formatted price display
+const hasDiscount = pack.discount && pack.discount > 0;
+const originalPrice = pack.price;
+const discountedPrice = hasDiscount ? pack.price * (1 - (pack.discount || 0) / 100) : pack.price;
+const formattedDiscountedPrice = `S/${discountedPrice.toFixed(2)}`;
+const formattedOriginalPrice = `S/${originalPrice.toFixed(2)}`;
+
+// Calculate savings amount if there's a discount
+const savingsAmount = hasDiscount ? originalPrice - discountedPrice : 0;
+const formattedSavingsAmount = `S/${savingsAmount.toFixed(2)}`;
+
+// Calculate the total value of included books (sum of individual book prices)
+const totalBooksValue = packBooks.reduce((sum, book) => {
+    // Ensure the book has a valid price (use original book price, not discounted)
+    const bookPrice = typeof book.price === 'number' && !isNaN(book.price) ? book.price : 0;
+    return sum + bookPrice;
+}, 0);
+const formattedTotalBooksValue = `S/${totalBooksValue.toFixed(2)}`;
+
+// Calculate bonus value (how much you save by buying the pack vs individual books)
+const priceToCompare = hasDiscount ? discountedPrice : originalPrice;
+const bonusValue = totalBooksValue - priceToCompare;
+const formattedBonusValue = bonusValue > 0 ? `S/${bonusValue.toFixed(2)}` : 'S/0.00';
+
+// Generate JSON-LD for SEO
+const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": pack.title,
+    "description": pack.description,
+    "image": pack.coverImage,
+    "offers": {
+        "@type": "Offer",
+        "price": discountedPrice,
+        "priceCurrency": "PEN",
+        "availability": "https://schema.org/InStock",
+    },
+    "aggregateRating": pack.rating ? {
+        "@type": "AggregateRating",
+        "ratingValue": pack.rating.score,
+        "reviewCount": pack.rating.reviewCount
+    } : undefined
+};
+
+// Extract YouTube video ID if present
+let youtubeVideoId = '';
+if (pack.video) {
+    youtubeVideoId = extractYoutubeId(pack.video);
+}
+
+// Prepare media items for carousel
+const mediaItems: MediaItem[] = [];
+
+// Add up to 3 images if available
+if (pack.images && Array.isArray(pack.images)) {
+    pack.images.forEach(img => {
+        mediaItems.push({
+            type: 'image',
+            url: img,
+            title: `${pack.title} - Imagen`
+        });
+    });
+}
+
+// Add the cover image if it's not already included
+if (pack.coverImage && (!pack.images || !pack.images.includes(pack.coverImage))) {
+    mediaItems.unshift({
+        type: 'image',
+        url: pack.coverImage,
+        title: `${pack.title} - Portada`,
+    });
+}
+
+// Add video if available
+if (pack.video) {
+    mediaItems.push({
+        type: 'video',
+        url: pack.video,
+        title: `${pack.title} - Video`,
+    });
+}
+
+// Get format tags
+const formatTags = pack.formatTags || [];
+
+// Level display for packs (if applicable)
+const levelDisplay = pack.level
+    ? levelConfig[pack.level as keyof typeof levelConfig]
+    : null;
+---
+
+<div class="product-detail-container">
+    <!-- JSON-LD Schema for SEO -->
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        <!-- Breadcrumbs navigation -->
+        <nav class="flex text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a href="/" class="hover:text-primary transition-colors">
+                        Inicio
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <span class="mx-2">/</span>
+                        <a href="/packs" class="hover:text-primary transition-colors">
+                            Packs
+                        </a>
+                    </div>
+                </li>
+                <li aria-current="page">
+                    <div class="flex items-center">
+                        <span class="mx-2">/</span>
+                        <span class="text-gray-600 font-medium truncate max-w-[200px]">{pack.title}</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+
+        <!-- Product details grid with more contrast and visual separation -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
+            <!-- Left column with media carousel -->
+            <div class="flex flex-col">
+                {mediaItems.length > 0 ? (
+                    <MediaCarousel 
+                        mediaItems={mediaItems} 
+                        title={pack.title} 
+                        height={pack.video ? "500px" : "450px"} 
+                    />
+                ) : (
+                    <!-- Fallback for when no media items are available -->
+                    <div class="relative overflow-hidden rounded-2xl shadow-xl mb-6 product-cover-container group">
+                        <img 
+                            src={pack.coverImage} 
+                            alt={pack.altText || `Portada de ${pack.title}`}
+                            class="w-full h-auto object-cover transition-transform duration-700 transform group-hover:scale-105"
+                        />
+                        
+                        {hasDiscount && pack.discount && (
+                            <div class="absolute top-4 right-4 bg-accent text-white font-bold py-2 px-4 rounded-full shadow-md text-lg animate-pulse-slow">
+                                {pack.discount}% OFF
+                            </div>
+                        )}
+
+                        {pack.featured && (
+                            <div class="absolute top-4 left-4 bg-secondary text-primary font-bold py-2 px-4 rounded-full shadow-md text-sm">
+                                Recomendado
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                <!-- Customer support widget -->
+                <div class="mt-6">
+                    <CustomerSupport />
+                </div>
+            </div>
+
+            <!-- Right column with product details -->
+            <div class="flex flex-col">
+                <!-- Pack title and main details -->
+                <div class="mb-6">
+                    <h1 class="text-3xl md:text-4xl font-bold text-primary-dark mb-4 product-title">{pack.title}</h1>
+                    
+                    <!-- Pack badges -->
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border bg-indigo-100 text-indigo-800 border-indigo-200">
+                            Pack Completo
+                        </span>
+                        
+                        {levelDisplay && (
+                            <span class={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${levelDisplay.color}`}>
+                                {levelDisplay.label}
+                            </span>
+                        )}
+                        
+                        {formatTags && formatTags.map(tag => (
+                            <span class={`inline-flex items-center px-3 py-1 rounded-full border text-sm font-medium ${formatConfig[tag as keyof typeof formatConfig]?.color || "bg-gray-100 text-gray-800 border-gray-200"}`}>
+                                <span class="mr-1">{formatConfig[tag as keyof typeof formatConfig]?.icon || ""}</span>
+                                {formatConfig[tag as keyof typeof formatConfig]?.label || tag}
+                            </span>
+                        ))}
+                    </div>
+                    
+                    <!-- Rating and reviews with stars -->
+                    {pack.rating && (
+                        <div class="flex items-center mb-4">
+                            <div class="flex text-yellow-400">
+                                <ReviewStars score={pack.rating.score} />
+                            </div>
+                            <span class="ml-2 text-gray-600">
+                                {pack.rating.score}/5 ({pack.rating.reviewCount} reseñas)
+                            </span>
+                        </div>
+                    )}
+                    
+                    <!-- Pack description with better readability -->
+                    <div class="prose prose-lg max-w-none text-gray-700 mb-6">
+                        <p>{pack.description}</p>
+                    </div>
+                    
+                    <!-- Value proposition highlight -->
+                    <ValuePropositionHighlight 
+                        totalBooksValue={totalBooksValue}
+                        originalPrice={originalPrice}
+                        discountedPrice={hasDiscount ? discountedPrice : undefined}
+                        discount={pack.discount}
+                    />
+                    
+                    <!-- Price section now using the ValueCard component -->
+                    <ValueCard
+                        originalPrice={originalPrice}
+                        discountedPrice={hasDiscount ? discountedPrice : undefined}
+                        discount={pack.discount}
+                        savingsAmount={savingsAmount}
+                        productType="pack"
+                    />
+                    
+                    <!-- Call to action buttons -->
+                    <div class="flex flex-col sm:flex-row gap-4 mb-8">
+                        <Button 
+                            variant="primary" 
+                            size="large" 
+                            class="add-to-cart-btn flex-1 shadow-lg hover:shadow-xl transform transition-all duration-300 hover:-translate-y-1 group cursor-pointer"
+                            data-id={pack.id}
+                            data-title={pack.title}
+                            data-price={discountedPrice}
+                            data-image={pack.coverImage}
+                            data-type="pack"
+                        >
+                            <span class="flex items-center justify-center">
+                                <CartIcon class="w-5 h-5 mr-2" />
+                                Agregar al carrito
+                            </span>
+                        </Button>
+                        
+                        <Button 
+                            variant="accent" 
+                            size="large" 
+                            href="/checkout" 
+                            class="view-cart-btn flex-1 shadow-lg hover:shadow-xl transform transition-all duration-300 hover:-translate-y-1 group"
+                        >
+                            <span class="flex items-center justify-center">
+                                <WhatsAppIcon class="w-5 h-5 mr-2" />
+                                Ver carrito
+                            </span>
+                        </Button>
+                    </div>
+                    
+                    <!-- Pack contents/included items with improved styling -->
+                    <div class="border border-gray-200 rounded-xl bg-white p-5 shadow-sm mb-8">
+                        <h2 class="text-xl font-bold text-primary-dark mb-4 flex items-center">
+                            <span class="bg-primary text-white p-1 rounded-full mr-2">
+                                <CheckIcon class="w-5 h-5" />
+                            </span>
+                            Contenido incluido
+                        </h2>
+                        
+                        <ul class="space-y-3 included-items-list">
+                            {pack.includedItems && pack.includedItems.map(item => (
+                                <li class="flex items-start">
+                                    <span class="text-green-500 mr-2 mt-1">✓</span>
+                                    <span>{item}</span>
+                                </li>
+                            ))}
+                        </ul>
+                        
+                        <div class="mt-5 bg-blue-50 rounded-lg p-4 border border-blue-100">
+                            <p class="text-blue-800 text-sm">
+                                <strong>Importante:</strong> Al realizar tu compra, recibirás acceso inmediato a todos los materiales a través de un enlace de descarga enviado a tu correo electrónico o WhatsApp.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Included Books Section -->
+        {packBooks.length > 0 && (
+            <div class="mt-8 included-books-section">
+                <SectionTitle>Libros incluidos en este pack</SectionTitle>
+                <p class="text-gray-600 mb-6 max-w-3xl">Este pack contiene los siguientes productos que también puedes adquirir por separado:</p>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+                    {packBooks.map((book) => (
+                        <div class="book-card-container">
+                            <Card book={book} />
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )}
+        
+        <!-- Related packs section -->
+        {relatedProducts.length > 0 && (
+            <div class="mt-16 related-section">
+                <SectionTitle>Packs relacionados</SectionTitle>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+                    {/* Related packs grid would go here */}
+                </div>
+                
+                <div class="text-center mt-8">
+                    <Button 
+                        variant="outline" 
+                        size="medium" 
+                        href="/packs" 
+                        class="inline-flex items-center group"
+                    >
+                        Ver todos los packs
+                        <ArrowRightIcon class="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                </div>
+            </div>
+        )}
+    </div>
+</div>
+
+<script>
+    import { CartManager } from '../../utils/cartManager';
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Add event listeners to "Add to Cart" buttons
+        const addToCartBtn = document.querySelector('.add-to-cart-btn');
+        if (addToCartBtn) {
+            addToCartBtn.addEventListener('click', () => {
+                const productId = addToCartBtn.getAttribute('data-id');
+                const productTitle = addToCartBtn.getAttribute('data-title');
+                const productPriceStr = addToCartBtn.getAttribute('data-price');
+                const productImage = addToCartBtn.getAttribute('data-image');
+                const productType = addToCartBtn.getAttribute('data-type');
+                
+                if (productId && productTitle && productPriceStr && productImage && productType) {
+                    const productPrice = parseFloat(productPriceStr);
+                    
+                    // Add item to cart using CartManager
+                    CartManager.addItem({
+                        id: productId,
+                        title: productTitle,
+                        price: productPrice,
+                        image: productImage,
+                        type: productType as 'book' | 'exam' | 'pack'
+                    });
+                    
+                    // Show success message
+                    CartManager.showNotification(`"${productTitle}" agregado al carrito`);
+                    
+                    // Dispatch event to notify other components about cart update
+                    window.dispatchEvent(new CustomEvent('cartUpdated'));
+                }
+            });
+        }
+    });
+</script>
+
+<style>
+    /* Pack-specific styles */
+    .included-books-section {
+        padding-top: 1rem;
+        border-top: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .book-card-container {
+        transition: transform 0.3s ease;
+    }
+    
+    .book-card-container:hover {
+        transform: translateY(-5px);
+    }
+    
+    /* Animation for pack items */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .included-items-list li {
+        animation: fadeInUp 0.5s ease forwards;
+        opacity: 0;
+    }
+    
+    .included-items-list li:nth-child(1) { animation-delay: 0.1s; }
+    .included-items-list li:nth-child(2) { animation-delay: 0.2s; }
+    .included-items-list li:nth-child(3) { animation-delay: 0.3s; }
+    .included-items-list li:nth-child(4) { animation-delay: 0.4s; }
+    .included-items-list li:nth-child(5) { animation-delay: 0.5s; }
+</style>

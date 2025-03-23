@@ -1,0 +1,16 @@
+{
+	"id": "complete-english-pack",
+	"title": "Complete English Learning Pack",
+	"description": "Un pack con los mejores libros para aprender inglés desde cero.",
+	"price": 99.99,
+	"discount": 15,
+	"coverImage": "/images/pack-template.jpg",
+	"booksIds": ["business-english-master", "grammar-fundamentals"],
+	"formatTags": ["pdf", "audio", "video"],
+	"popularityTags": ["completePack"],
+	"featured": true,
+	"detailsLink": "/packs/complete-english-pack",
+	"buyLink": "/checkout/english-complete-pack",
+	"includedItems": ["Audios adicionales", "Guía de estudio"],
+	"stock": 50
+}

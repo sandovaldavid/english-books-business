@@ -1,112 +1,261 @@
 ---
-import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+import siteInfo from '../database/pageInformation.json';
 
 interface Props {
-	title?: string;
-	description?: string;
+	// SEO Básico
+	title: string;
+	description: string;
+
+	// Atributos de Producto
+	productType?: 'book' | 'pack' | 'exam';
+	price?: number;
+	currency?: string;
 	image?: string;
-	canonicalURL?: URL | string;
+
+	// URLs y Canonical
+	canonicalURL?: string | URL;
+
+	// Open Graph (WhatsApp, Facebook, Telegram, Instagram, Messenger)
+	ogType?: string;
+	ogTitle?: string;
+	ogDescription?: string;
+	ogImage?: string;
+	ogSiteName?: string;
+
+	// Twitter Card
+	twitterCard?: string;
+	twitterTitle?: string;
+	twitterDescription?: string;
+	twitterImage?: string;
+	twitterSite?: string;
+
+	// JSON-LD y Breadcrumbs
+	structuredData?: Record<string, any>;
+	breadcrumbData?: Record<string, any>;
+
+	// Idioma y Estilos
+	language?: string;
+	imageWidth?: number;
+	imageHeight?: number;
+	bodyClass?: string;
 }
 
 const {
-	title = 'FluentReads',
-	description = 'Tu fuente confiable de libros en inglés y materiales educativos para profesionales y estudiantes',
-	image = '/images/default-og.png',
+	title,
+	description,
+	productType,
+	price,
+	currency = 'PEN',
+	image,
 	canonicalURL,
+	ogType = 'website',
+	ogTitle = title,
+	ogDescription = description,
+	ogImage = image,
+	ogSiteName = siteInfo.siteName,
+	twitterCard = 'summary_large_image',
+	twitterTitle = title,
+	twitterDescription = description,
+	twitterImage = image,
+	twitterSite = siteInfo.socialMediaHandles.twitter,
+	structuredData,
+	breadcrumbData,
+	language = 'es',
+	imageWidth = 1200,
+	imageHeight = 630,
+	bodyClass = '',
 } = Astro.props;
 
-// Create a safe canonical URL
-let canonicalURLString: string;
-try {
-	canonicalURLString = canonicalURL
-		? canonicalURL.toString()
-		: Astro.site
-			? new URL(Astro.url.pathname, Astro.site).toString()
-			: Astro.url.pathname;
-} catch (error) {
-	canonicalURLString = Astro.url.pathname;
-}
+const siteUrl =
+	import.meta.env.PUBLIC_SITE_URL || siteInfo.siteURL || Astro.url.origin;
 
-// Build full metadata
-const siteTitle = title.includes('FluentReads')
-	? title
-	: `${title} | FluentReads`;
+// Función para asegurar URLs absolutas
+const getAbsoluteUrl = (path: string | URL): string =>
+	path instanceof URL
+		? path.toString()
+		: path.startsWith('http')
+			? path
+			: new URL(path, siteUrl).toString();
+
+// Definir una imagen por defecto si no hay una específica
+const defaultImage = siteInfo.seo?.defaultImage || '/default-thumbnail.jpg';
+const absoluteOgImage = getAbsoluteUrl(ogImage || defaultImage);
+const absoluteTwitterImage = getAbsoluteUrl(twitterImage || defaultImage);
+const absoluteCanonicalUrl = canonicalURL
+	? getAbsoluteUrl(canonicalURL)
+	: siteUrl;
+
+// JSON-LD dinámico
+const finalStructuredData = structuredData ?? {
+	'@context': 'https://schema.org',
+	'@type': productType ? 'Product' : 'WebSite',
+	...(productType
+		? {
+				name: title,
+				description: description,
+				image: absoluteOgImage,
+				offers: price
+					? {
+							'@type': 'Offer',
+							price: price,
+							priceCurrency: currency,
+							availability: 'https://schema.org/InStock',
+							url: absoluteCanonicalUrl,
+						}
+					: undefined,
+			}
+		: {
+				name: siteInfo.siteName,
+				url: siteUrl,
+				description: siteInfo.siteDescription,
+				potentialAction: {
+					'@type': 'SearchAction',
+					target: `${siteUrl}/catalogo?search={search_term_string}`,
+					'query-input': 'required name=search_term_string',
+				},
+			}),
+};
+
+// Breadcrumbs dinámicos
+const finalBreadcrumbData =
+	breadcrumbData ??
+	(productType && {
+		'@context': 'https://schema.org',
+		'@type': 'BreadcrumbList',
+		itemListElement: [
+			{ '@type': 'ListItem', position: 1, name: 'Inicio', item: siteUrl },
+			{
+				'@type': 'ListItem',
+				position: 2,
+				name:
+					productType === 'book'
+						? 'Catálogo'
+						: productType === 'pack'
+							? 'Packs'
+							: 'Exámenes Internacionales',
+				item: `${siteUrl}/${productType === 'book' ? 'catalogo' : productType === 'pack' ? 'packs' : 'examenes-internacionales'}`,
+			},
+			{
+				'@type': 'ListItem',
+				position: 3,
+				name: title,
+				item: absoluteCanonicalUrl,
+			},
+		],
+	});
+
+// Meta Tags Unificados
+const metaData = {
+	og: {
+		type: ogType,
+		url: absoluteCanonicalUrl,
+		title: ogTitle,
+		description: ogDescription,
+		image: absoluteOgImage,
+		siteName: ogSiteName,
+		imageWidth: imageWidth.toString(),
+		imageHeight: imageHeight.toString(),
+	},
+	twitter: {
+		card: twitterCard,
+		url: absoluteCanonicalUrl,
+		title: twitterTitle,
+		description: twitterDescription,
+		image: absoluteTwitterImage,
+		site: twitterSite,
+	},
+};
 ---
 
 <!doctype html>
-<html lang='es'>
+<html lang={language}>
 	<head>
 		<meta charset='UTF-8' />
-		<meta name='viewport' content='width=device-width' />
-		<link rel='icon' type='image/svg+xml' href='/favicon.webp' />
-		<meta name='generator' content={Astro.generator} />
+		<meta name='viewport' content='width=device-width, initial-scale=1.0' />
 
-		<!-- Fonts -->
+		<title>{title}</title>
+		<meta name='description' content={description} />
+		<link rel='canonical' href={absoluteCanonicalUrl} />
+
+		<!-- SEO Mejorado -->
+		<meta
+			name='robots'
+			content='index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
+		/>
+
+		<!-- Open Graph / WhatsApp / Facebook -->
+		{
+			Object.entries(metaData.og).map(([key, value]) => (
+				<meta property={`og:${key}`} content={value} />
+			))
+		}
+
+		<!-- Twitter Cards -->
+		{
+			Object.entries(metaData.twitter).map(([key, value]) => (
+				<meta name={`twitter:${key}`} content={value} />
+			))
+		}
+
+		<!-- Meta Tags para WhatsApp (Precio del Producto) -->
+		{
+			productType && price !== undefined && (
+				<>
+					<meta
+						property='product:price:amount'
+						content={price.toFixed(2)}
+					/>
+					<meta
+						property='product:price:currency'
+						content={currency}
+					/>
+				</>
+			)
+		}
+
+		<!-- Favicon -->
+		<link rel='icon' type='image/png' href='/favicon.png' />
+
+		<!-- Preload de fuentes optimizado -->
 		<link rel='preconnect' href='https://fonts.googleapis.com' />
 		<link rel='preconnect' href='https://fonts.gstatic.com' crossorigin />
-		<link
-			href='https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap'
-			rel='stylesheet'
-		/>
 		<link
 			href='https://fonts.googleapis.com/css2?family=Lora:ital,wght@1,600&display=swap'
 			rel='stylesheet'
 		/>
-
 		<link
 			rel='stylesheet'
-			href='https://s.pageclip.co/v1/pageclip.css'
-			media='screen'
+			href='https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap'
+			media='print'
+			onload="this.media='all'"
 		/>
+		<noscript>
+			<link
+				rel='stylesheet'
+				href='https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap'
+			/>
+		</noscript>
 
-		<!-- SEO Meta Tags -->
-		<title>{siteTitle}</title>
-		<meta name='description' content={description} />
-		<link rel='canonical' href={canonicalURLString} />
-
-		<!-- Open Graph / Facebook -->
-		<meta property='og:type' content='website' />
-		<meta property='og:url' content={canonicalURLString} />
-		<meta property='og:title' content={siteTitle} />
-		<meta property='og:description' content={description} />
-		<meta
-			property='og:image'
-			content={typeof image === 'string' && image.startsWith('/')
-				? Astro.url.origin + image
-				: image}
+		<!-- JSON-LD (Structured Data) -->
+		<script
+			type='application/ld+json'
+			set:html={JSON.stringify(finalStructuredData)}
 		/>
-
-		<!-- Twitter -->
-		<meta property='twitter:card' content='summary_large_image' />
-		<meta property='twitter:url' content={canonicalURLString} />
-		<meta property='twitter:title' content={siteTitle} />
-		<meta property='twitter:description' content={description} />
-		<meta
-			property='twitter:image'
-			content={typeof image === 'string' && image.startsWith('/')
-				? Astro.url.origin + image
-				: image}
-		/>
-
-		<!-- Additional SEO tags for language learning books -->
-		<meta
-			name='keywords'
-			content='libros en inglés, aprender inglés, material educativo, inglés para negocios, FluentReads, libros para profesionales'
-		/>
-		<meta name='robots' content='index, follow' />
-		<meta name='language' content='Spanish' />
-		<meta name='revisit-after' content='7 days' />
+		{
+			finalBreadcrumbData && (
+				<script
+					type='application/ld+json'
+					set:html={JSON.stringify(finalBreadcrumbData)}
+				/>
+			)
+		}
 	</head>
-	<body class='font-poppins'>
+	<body class={bodyClass}>
 		<Header />
-		<main>
-			<slot />
-		</main>
+		<main><slot /></main>
 		<Footer />
-		<!-- Add Pageclip script -->
-		<script src='https://s.pageclip.co/v1/pageclip.js' charset='utf-8'
-		></script>
 	</body>
 </html>

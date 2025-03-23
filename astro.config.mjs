@@ -8,5 +8,9 @@ export default defineConfig({
 	integrations: [react()],
 	vite: {
 		plugins: [tailwindcss()],
+		ssr: {
+			// Add external packages that should be skipped during SSR
+			noExternal: ['@justinribeiro/lite-youtube'],
+		}
 	},
 });

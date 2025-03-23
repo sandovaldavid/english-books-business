@@ -1,0 +1,73 @@
+---
+interface Props {
+	originalPrice: number;
+	discountedPrice?: number;
+	discount?: number;
+	savingsAmount?: number;
+	currency?: string;
+	productType?: 'book' | 'pack' | 'exam';
+}
+
+const {
+	originalPrice,
+	discountedPrice,
+	discount,
+	savingsAmount,
+	currency = 'S/',
+	productType = 'book',
+} = Astro.props;
+
+// Determine if we have a discount
+const hasDiscount = discount && discount > 0 && discountedPrice !== undefined;
+
+// Format currency values
+const formattedOriginalPrice = `${currency}${originalPrice.toFixed(2)}`;
+const formattedDiscountedPrice = discountedPrice
+	? `${currency}${discountedPrice.toFixed(2)}`
+	: formattedOriginalPrice;
+const formattedSavingsAmount = savingsAmount
+	? `${currency}${savingsAmount.toFixed(2)}`
+	: undefined;
+
+// Product-specific message
+const deliveryMessage =
+	productType === 'exam'
+		? '✓ Acceso inmediato tras la compra'
+		: '✓ Entrega inmediata por correo electrónico';
+---
+
+<!-- Price section with better visual hierarchy -->
+<div class='bg-gray-50 rounded-xl p-5 border border-gray-200 shadow-sm mb-6'>
+	<div class='flex items-center mb-2'>
+		{
+			hasDiscount ? (
+				<>
+					<span class='text-3xl font-bold text-primary mr-3'>
+						{formattedDiscountedPrice}
+					</span>
+					<span class='text-xl text-gray-500 line-through'>
+						{formattedOriginalPrice}
+					</span>
+					{discount && (
+						<span class='ml-3 bg-accent/10 text-accent text-sm font-bold px-3 py-1 rounded-full'>
+							{discount}% DESCUENTO
+						</span>
+					)}
+				</>
+			) : (
+				<span class='text-3xl font-bold text-primary'>
+					{formattedOriginalPrice}
+				</span>
+			)
+		}
+	</div>
+
+	{
+		hasDiscount && formattedSavingsAmount && (
+			<p class='text-accent font-medium text-sm mb-1'>
+				¡Ahorras {formattedSavingsAmount} con esta oferta!
+			</p>
+		)
+	}
+	<p class='text-green-700 font-medium text-sm'>{deliveryMessage}</p>
+</div>

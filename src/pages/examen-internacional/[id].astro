@@ -1,0 +1,87 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ExamDetails from '../../components/details/ExamDetails.astro';
+import examsData from '../../database/exams.json';
+import type { Exam } from '../../types/exam';
+
+export async function getStaticPaths() {
+	const examsArray = Array.isArray(examsData) ? examsData : [examsData];
+
+	return examsArray.map((exam) => ({
+		params: { id: exam.id },
+		props: { exam },
+	}));
+}
+
+const { exam } = Astro.props;
+
+// Find related exams if any (same exam type or difficulty)
+const examsArray = Array.isArray(examsData) ? examsData : [examsData];
+const relatedExams = examsArray
+	.filter(
+		(item) =>
+			item.id !== exam.id &&
+			(item.examType === exam.examType ||
+				item.difficulty === exam.difficulty)
+	)
+	.slice(0, 4);
+
+// SEO metadata
+const title = `${exam.title} | Preparación para exámenes | FluentReads`;
+const description = exam.description;
+const image = exam.coverImage;
+
+// Structured data for rich snippets
+const structuredData = {
+	'@context': 'https://schema.org',
+	'@type': 'Product',
+	name: exam.title,
+	description: exam.description,
+	image: exam.coverImage,
+	offers: {
+		'@type': 'Offer',
+		price: exam.discount
+			? exam.price * (1 - exam.discount / 100)
+			: exam.price,
+		priceCurrency: 'PEN',
+		availability: 'https://schema.org/InStock',
+		url: Astro.url.href,
+	},
+	brand: {
+		'@type': 'Brand',
+		name: 'FluentReads',
+	},
+};
+---
+
+<Layout
+	title={title}
+	description={description}
+	image={image}
+	canonicalURL={Astro.url.href}>
+	<!-- Structured data for SEO -->
+	<script
+		type='application/ld+json'
+		set:html={JSON.stringify(structuredData)}
+	/>
+
+	<ExamDetails exam={exam} relatedExams={relatedExams} />
+
+	<!-- Add event listener for cart operations -->
+	<script>
+		import { CartManager } from '../../utils/cartManager';
+
+		// Initialize cart functionality
+		document.addEventListener('DOMContentLoaded', () => {
+			// Make sure cart is initialized
+			if (typeof window !== 'undefined') {
+				CartManager.initializeCart();
+			}
+
+			// Listen for cart updates to refresh indicators
+			window.addEventListener('cartUpdated', () => {
+				console.log('Cart updated');
+			});
+		});
+	</script>
+</Layout>

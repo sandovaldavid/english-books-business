@@ -1,11 +1,17 @@
 [
   {
-    "id": "book-1",
+    "id": "business-english-master",
     "title": "Business English Master",
     "description": "Domina el inglés empresarial con este completo material que incluye vocabulario específico, frases comunes y ejercicios prácticos.",
     "price": 49.99,
     "coverImage": "/images/libros-template.jpg",
     "altText": "Portada del libro Business English Master",
+    "video": "https://www.youtube.com/embed/u7kdVe8q5zs?si=r_AOVcnJOR1bRXhA",
+    "images": [
+      "/images/book-sample/book-sample-01.jpg",
+      "/images/book-sample/book-sample-02.jpg",
+      "/images/book-sample/book-sample-03.jpg"
+    ],
     "includedItems": [
       "PDF del libro completo",
       "Workbook con ejercicios",
@@ -18,15 +24,15 @@
       "reviewCount": 124
     },
     "buyLink": "/checkout/business-english-master",
-    "detailsLink": "/libros/business-english-master",
+    "detailsLink": "/libro/business-english-master",
     "discount": 20,
     "level": "intermediate",
     "featured": true,
     "formatTags": ["pdf", "workbook", "audio"],
-    "popularityTags": ["bestseller", "special-offer"]
+    "popularityTags": ["bestSeller", "specialOffer"]
   },
   {
-    "id": "book-2",
+    "id": "grammar-fundamentals",
     "title": "Grammar Fundamentals",
     "description": "Aprende las bases gramaticales del inglés con explicaciones claras y cientos de ejercicios prácticos para todos los niveles.",
     "price": 34.99,
@@ -44,7 +50,7 @@
       "reviewCount": 98
     },
     "buyLink": "/checkout/grammar-fundamentals",
-    "detailsLink": "/libros/grammar-fundamentals",
+    "detailsLink": "/libro/grammar-fundamentals",
     "discount": 0,
     "level": "basic",
     "featured": false,
@@ -70,12 +76,12 @@
       "reviewCount": 75
     },
     "buyLink": "/checkout/professional-presentations",
-    "detailsLink": "/libros/professional-presentations",
+    "detailsLink": "/libro/professional-presentations",
     "discount": 15,
     "level": "professional",
     "featured": false,
     "formatTags": ["pdf", "video", "software"],
-    "popularityTags": ["special-offer"]
+    "popularityTags": ["specialOffer"]
   },
   {
     "id": "book-4",
@@ -96,12 +102,12 @@
       "reviewCount": 142
     },
     "buyLink": "/checkout/toefl-guide",
-    "detailsLink": "/libros/toefl-guide",
+    "detailsLink": "/libro/toefl-guide",
     "discount": 0,
     "level": "advanced",
     "featured": true,
     "formatTags": ["pdf", "audio", "exams"],
-    "popularityTags": ["bestseller", "recommended"]
+    "popularityTags": ["bestSeller", "recommended"]
   },
   {
     "id": "book-5",
@@ -122,12 +128,12 @@
       "reviewCount": 87
     },
     "buyLink": "/checkout/english-it",
-    "detailsLink": "/libros/english-it",
+    "detailsLink": "/libro/english-it",
     "discount": 25,
     "level": "professional",
     "featured": true,
     "formatTags": ["pdf", "video", "software"],
-    "popularityTags": ["special-offer", "recommended"]
+    "popularityTags": ["specialOffer", "recommended"]
   },
   {
     "id": "book-6",
@@ -148,7 +154,7 @@
       "reviewCount": 112
     },
     "buyLink": "/checkout/conversational-english",
-    "detailsLink": "/libros/conversational-english",
+    "detailsLink": "/libro/conversational-english",
     "discount": 0,
     "level": "all-levels",
     "featured": false,
@@ -174,12 +180,12 @@
       "reviewCount": 65
     },
     "buyLink": "/checkout/english-healthcare",
-    "detailsLink": "/libros/english-healthcare",
+    "detailsLink": "/libro/english-healthcare",
     "discount": 10,
     "level": "professional",
     "featured": false,
     "formatTags": ["pdf", "workbook", "exams"],
-    "popularityTags": ["special-offer", "complete-pack"]
+    "popularityTags": ["specialOffer", "completePack"]
   },
   {
     "id": "book-8",
@@ -200,12 +206,12 @@
       "reviewCount": 93
     },
     "buyLink": "/checkout/pronunciation-mastery",
-    "detailsLink": "/libros/pronunciation-mastery",
+    "detailsLink": "/libro/pronunciation-mastery",
     "discount": 15,
     "level": "intermediate",
     "featured": false,
     "formatTags": ["pdf", "audio", "video"],
-    "popularityTags": ["special-offer"]
+    "popularityTags": ["specialOffer"]
   },
   {
     "id": "book-9",
@@ -226,12 +232,12 @@
       "reviewCount": 58
     },
     "buyLink": "/checkout/legal-english",
-    "detailsLink": "/libros/legal-english",
+    "detailsLink": "/libro/legal-english",
     "discount": 0,
     "level": "professional",
     "featured": true,
     "formatTags": ["pdf", "workbook"],
-    "popularityTags": ["recommended", "complete-pack"]
+    "popularityTags": ["recommended", "completePack"]
   },
   {
     "id": "book-10",
@@ -252,12 +258,12 @@
       "reviewCount": 138
     },
     "buyLink": "/checkout/english-kids",
-    "detailsLink": "/libros/english-kids",
+    "detailsLink": "/libro/english-kids",
     "discount": 20,
     "level": "basic",
     "featured": false,
     "formatTags": ["pdf", "audio", "video", "software"],
-    "popularityTags": ["special-offer", "new"]
+    "popularityTags": ["specialOffer", "new"]
   },
   {
     "id": "book-11",
@@ -278,12 +284,12 @@
       "reviewCount": 102
     },
     "buyLink": "/checkout/interview-english",
-    "detailsLink": "/libros/interview-english",
+    "detailsLink": "/libro/interview-english",
     "discount": 10,
     "level": "intermediate",
     "featured": false,
     "formatTags": ["pdf", "audio", "exams"],
-    "popularityTags": ["special-offer", "new"]
+    "popularityTags": ["specialOffer", "new"]
   },
   {
     "id": "book-12",
@@ -304,7 +310,7 @@
       "reviewCount": 79
     },
     "buyLink": "/checkout/academic-writing",
-    "detailsLink": "/libros/academic-writing",
+    "detailsLink": "/libro/academic-writing",
     "discount": 15,
     "level": "advanced",
     "featured": true,

@@ -3,6 +3,7 @@ import Card from '../Card.astro';
 import Filter from './Filter.jsx';
 import SkeletonCatalog from '../SkeletonCatalog.astro';
 import type { Book } from '../../types/book';
+import { PopularityTag } from '../../types/book';
 
 interface Props {
 	books: Book[];
@@ -44,8 +45,17 @@ if (initialSort === 'price-low') {
 	// In a real app, you'd sort by date: filteredBooks.sort((a, b) => new Date(b.publishedDate) - new Date(a.publishedDate));
 } else if (initialSort === 'bestseller') {
 	filteredBooks = filteredBooks.sort((a, b) => {
-		const aIsBestseller = a.popularityTags?.includes('bestseller') || false;
-		const bIsBestseller = b.popularityTags?.includes('bestseller') || false;
+		// Fixed type error by converting boolean to number
+		const aIsBestseller = a.popularityTags?.includes(
+			PopularityTag.BESTSELLER
+		)
+			? 1
+			: 0;
+		const bIsBestseller = b.popularityTags?.includes(
+			PopularityTag.BESTSELLER
+		)
+			? 1
+			: 0;
 		return bIsBestseller - aIsBestseller;
 	});
 } else {
@@ -94,24 +104,9 @@ const allBooksJSON = JSON.stringify(books);
 						data-format={book.formatTags?.join(',')}
 						data-featured={book.featured}
 						data-bestseller={book.popularityTags?.includes(
-							'bestseller'
+							PopularityTag.BESTSELLER
 						)}>
-						<Card
-							title={book.title}
-							description={book.description}
-							price={book.price}
-							coverImage={book.coverImage}
-							altText={book.altText}
-							includedItems={book.includedItems}
-							rating={book.rating}
-							buyLink={book.buyLink}
-							detailsLink={book.detailsLink}
-							discount={book.discount}
-							level={book.level}
-							featured={book.featured}
-							formatTags={book.formatTags}
-							popularityTags={book.popularityTags}
-						/>
+							<Card book={book} />
 					</div>
 				))
 			}
@@ -141,7 +136,14 @@ const allBooksJSON = JSON.stringify(books);
 	document.addEventListener('DOMContentLoaded', () => {
 		// Get all books from the hidden input
 		const allBooksDataElement = document.getElementById('all-books-data');
-		const allBooks = JSON.parse(allBooksDataElement.value);
+		if (!allBooksDataElement) {
+			console.error('All books data element not found');
+			return;
+		}
+		// Cast to HTMLInputElement to access the value property
+		const allBooks = JSON.parse(
+			(allBooksDataElement as HTMLInputElement).value
+		);
 
 		// Get DOM elements
 		const booksGrid = document.getElementById('books-grid');
@@ -150,7 +152,9 @@ const allBooksJSON = JSON.stringify(books);
 		const resetButton = document.getElementById('reset-filters');
 
 		// Function to show/hide loading indicator
-		const showLoading = (show) => {
+		const showLoading = (show: boolean): void => {
+			if (!loadingIndicator || !booksGrid) return;
+
 			if (show) {
 				loadingIndicator.classList.remove('hidden');
 				booksGrid.classList.add('filtering');
@@ -163,7 +167,11 @@ const allBooksJSON = JSON.stringify(books);
 		};
 
 		// Function to update URL without reloading
-		const updateURL = (level, format, sort) => {
+		const updateURL = (
+			level: string,
+			format: string,
+			sort: string
+		): void => {
 			// Create URL object based on current URL
 			const url = new URL(window.location.href);
 
@@ -194,7 +202,11 @@ const allBooksJSON = JSON.stringify(books);
 		};
 
 		// Function to filter books and update the display
-		const filterBooks = (level, format, sort) => {
+		const filterBooks = (
+			level: string,
+			format: string,
+			sort: string
+		): void => {
 			showLoading(true);
 
 			// Incrementa el retraso para dar tiempo a ver el skeleton
@@ -222,10 +234,17 @@ const allBooksJSON = JSON.stringify(books);
 					filtered.sort((a, b) => b.price - a.price);
 				} else if (sort === 'bestseller') {
 					filtered = filtered.sort((a, b) => {
-						const aIsBestseller =
-							a.popularityTags?.includes('bestseller') || false;
-						const bIsBestseller =
-							b.popularityTags?.includes('bestseller') || false;
+						// Use numerical values to avoid type errors
+						const aIsBestseller = a.popularityTags?.includes(
+							'bestseller'
+						)
+							? 1
+							: 0;
+						const bIsBestseller = b.popularityTags?.includes(
+							'bestseller'
+						)
+							? 1
+							: 0;
 						return bIsBestseller - aIsBestseller;
 					});
 				} else {
@@ -266,7 +285,10 @@ const allBooksJSON = JSON.stringify(books);
 						);
 
 						// Force reflow to restart animation
-						void item.offsetWidth;
+						// Use proper DOM property check
+						(item as HTMLElement).style.display = 'none';
+						void (item as HTMLElement).offsetWidth;
+						(item as HTMLElement).style.display = '';
 
 						// Apply animation classes
 						setTimeout(() => {
@@ -278,10 +300,12 @@ const allBooksJSON = JSON.stringify(books);
 				});
 
 				// Show empty state if no books match filters
-				if (visibleCount === 0) {
-					emptyState.classList.remove('hidden');
-				} else {
-					emptyState.classList.add('hidden');
+				if (emptyState) {
+					if (visibleCount === 0) {
+						emptyState.classList.remove('hidden');
+					} else {
+						emptyState.classList.add('hidden');
+					}
 				}
 
 				showLoading(false);
@@ -289,9 +313,13 @@ const allBooksJSON = JSON.stringify(books);
 		};
 
 		// Filter change event handler - THIS IS THE KEY PART
-		const handleFilterChange = (event) => {
+		const handleFilterChange = (event: CustomEvent): void => {
 			// Get the filter data from the event detail
-			const { level, format, sort } = event.detail;
+			const { level, format, sort } = event.detail as {
+				level: string;
+				format: string;
+				sort: string;
+			};
 
 			// Apply client-side filtering without page reload
 			filterBooks(level, format, sort);
@@ -310,7 +338,10 @@ const allBooksJSON = JSON.stringify(books);
 		}
 
 		// Listen for filter changes from the Filter component
-		window.addEventListener('filterChange', handleFilterChange);
+		window.addEventListener(
+			'filterChange',
+			handleFilterChange as EventListener
+		);
 
 		// Animation for book grid items
 		const observeElements = () => {

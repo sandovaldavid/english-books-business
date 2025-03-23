@@ -1,9 +1,9 @@
 ---
-import ArrowRightIcon from './icons/ArrowRight.astro';
 import Button from './Button.astro';
+import DiscountBadge from './DiscountBadge.astro';
+import ArrowRightIcon from './icons/ArrowRight.astro';
 
-// Define the interface for the Offer prop
-interface Offer {
+interface OfferProps {
 	title: string;
 	description: string;
 	discount: string;
@@ -11,58 +11,287 @@ interface Offer {
 	salePrice: string;
 	image: string;
 	link: string;
+	detailsLink?: string; // Optional details link
 }
 
-// Accept a single Offer as a prop
-const { Offer, index = 0 } = Astro.props;
+interface Props {
+	Offer: OfferProps;
+	index: number;
+	size?: 'small' | 'medium' | 'large';
+}
+
+const { Offer, index, size = 'large' } = Astro.props;
+
+// Default details link if not provided
+const detailsLink =
+	Offer.detailsLink ||
+	`/ofertas/${Offer.title.toLowerCase().replace(/\s+/g, '-')}`;
+
+// Animation delay based on index
+const animationDelay = `${(index % 3) * 0.15}s`;
+
+// Determine which layout to use based on size prop
+const isSmallLayout = size === 'small';
+const isMediumLayout = size === 'medium';
+const isLargeLayout = size === 'large';
+
+// Classes and styles based on size
+const cardHeightClass = isSmallLayout 
+	? 'promo-item-small' 
+	: (isMediumLayout ? 'promo-item-medium' : 'promo-item-large');
+
+// Improved image container aspect ratio based on size
+const imageContainerClass = isSmallLayout 
+	? 'aspect-[3/2.3]'  // Taller aspect ratio for small cards
+	: (isMediumLayout ? 'aspect-[4/3.3]' : '');
+
+// Button size based on promo card size
+const buttonSize = isSmallLayout ? 'xsmall' : (isMediumLayout ? 'small' : 'medium');
+
+// Title and price text sizes
+const titleSize = isSmallLayout 
+	? 'text-sm' 
+	: (isMediumLayout ? 'text-base' : 'text-lg md:text-xl');
+
+const priceSize = isSmallLayout 
+	? 'text-sm' 
+	: (isMediumLayout ? 'text-base' : 'text-lg');
 ---
 
 <div
-	class={`promo-item bg-white rounded-xl overflow-hidden shadow-lg transform transition-all duration-500 hover:-translate-y-2 hover:shadow-xl promo-${index + 1}`}>
-	<div class='relative'>
-		<!-- Discount badge -->
-		<div
-			class='absolute top-4 right-4 bg-accent text-white text-lg font-bold py-2 px-4 rounded-lg shadow-lg rotate-2 animate-pulse-subtle z-10'>
-			{Offer.discount} OFF
-		</div>
+	class={`promo-item relative bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transform transition-all duration-500 hover:-translate-y-1 ${cardHeightClass}`}
+	style={`animation-delay: ${animationDelay}`}>
+	
+	<!-- Discount badge using the new component -->
+	<DiscountBadge 
+		discount={Offer.discount} 
+		size={size} 
+	/>
 
-		<!-- Image -->
-		<img
-			src={Offer.image}
-			alt={Offer.title}
-			class='w-full h-48 object-cover object-center'
-		/>
-
-		<!-- Content -->
-		<div class='p-6'>
-			<h3 class='text-xl font-bold text-primary-dark mb-2'>
-				{Offer.title}
-			</h3>
-			<p class='text-gray-600 mb-4'>{Offer.description}</p>
-
-			<!-- Price comparison -->
-			<div class='flex items-center mb-6'>
-				<span class='text-2xl font-bold text-accent'
-					>{Offer.salePrice}</span
-				>
-				<span class='ml-2 text-gray-500 line-through text-sm'
-					>{Offer.originalPrice}</span
-				>
+	<!-- Small and Medium layouts (stacked) -->
+	<div class={`flex flex-col h-full ${isLargeLayout ? 'lg:hidden' : ''}`}>
+		<!-- Image container -->
+		<div class='relative overflow-hidden'>
+			<div class={imageContainerClass}>
+				<img
+					src={Offer.image}
+					alt={Offer.title}
+					class='w-full h-full object-cover'
+				/>
+			</div>
+			<!-- Overlay gradient -->
+			<div
+				class='absolute inset-0 bg-gradient-to-t from-black/60 to-transparent'>
 			</div>
 
-			<!-- Action button -->
-			<Button
-				variant='primary'
-				size='medium'
-				href={Offer.link}
-				class='w-full shadow-md hover:shadow-lg group'>
-				<span class='flex items-center justify-center'>
-					Comprar ahora
-					<ArrowRightIcon
-						class='w-5 h-5 ml-1 group-hover:translate-x-1 transition-transform'
-					/>
-				</span>
-			</Button>
+			<!-- Title overlay for compact view - FIXED FOR MOBILE -->
+			<div class='absolute bottom-0 left-0 right-0 p-2 sm:p-3 overlay-container'>
+				<!-- Title container with appropriate sizing and improved truncation -->
+				<div class='title-container max-w-full'>
+					<h3
+						class={`font-bold text-white break-words line-clamp-2 ${titleSize}`}>
+						{Offer.title}
+					</h3>
+				</div>
+				<!-- Price display on image - adjusted positioning -->
+				<div class='flex items-center justify-between mt-1'>
+					<div
+						class={`flex items-center rounded-full px-1 ${isSmallLayout ? 'bg-blue-50/80' : 'md:px-2 md:py-1 bg-blue-50'}`}>
+						<span class={`text-accent font-bold ${priceSize}`}
+							>{Offer.salePrice}</span
+						>
+						<span class={`text-primary line-through ml-1 ${isSmallLayout ? 'text-3xs' : 'text-xs'}`}
+							>{Offer.originalPrice}</span
+						>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Content container for small/medium layouts -->
+		<div class={`flex flex-col justify-between flex-grow ${isSmallLayout ? 'p-2' : 'p-3'}`}>
+			<!-- Description (length varies by size) -->
+			<p class={`text-gray-600 mb-2 ${
+				isSmallLayout 
+					? 'text-3xs line-clamp-1' 
+					: (isMediumLayout ? 'text-2xs line-clamp-2' : 'text-xs line-clamp-2')
+			}`}>
+				{Offer.description}
+			</p>
+
+			<!-- Action buttons - full width -->
+			<div class='flex flex-wrap gap-1 sm:gap-2 w-full'>
+				<!-- For small size, only show the buy button -->
+				{!isSmallLayout && (
+					<Button
+						variant='outline'
+						size={buttonSize}
+						href={detailsLink}
+						class='flex-1 flex items-center justify-center'>
+						{isSmallLayout ? '' : 'Detalles'}
+						<ArrowRightIcon class={`${isSmallLayout ? 'w-2 h-2' : 'ml-1 w-3 h-3'}`} />
+					</Button>
+				)}
+
+				<Button
+					variant='primary'
+					size={buttonSize}
+					href={Offer.link}
+					class={`${isSmallLayout ? 'w-full' : 'flex-1'} flex items-center justify-center`}>
+					Comprar
+				</Button>
+			</div>
 		</div>
 	</div>
+
+	<!-- Large layout (side by side) - Only for large size on desktop -->
+	{isLargeLayout && (
+		<div class='hidden lg:flex flex-row h-full'>
+			<!-- Image container -->
+			<div class='relative md:w-2/5 overflow-hidden'>
+				<div class='h-full'>
+					<img
+						src={Offer.image}
+						alt={Offer.title}
+						class='w-full h-full object-cover transition-transform duration-700 hover:scale-110'
+					/>
+				</div>
+				<!-- Overlay gradient -->
+				<div
+					class='absolute inset-0 bg-gradient-to-r from-black/60 to-transparent'>
+				</div>
+			</div>
+
+			<!-- Content container -->
+			<div class='flex-1 p-5 md:p-6 flex flex-col justify-between'>
+				<div>
+					<h3 class='text-xl md:text-2xl font-bold text-gray-800 mb-3'>
+						{Offer.title}
+					</h3>
+					<p class='text-gray-600 mb-4 line-clamp-3'>
+						{Offer.description}
+					</p>
+				</div>
+
+				<div class='flex items-center justify-between mt-4'>
+					<!-- Price display on desktop -->
+					<div class='flex items-baseline gap-2'>
+						<span class='text-primary-dark font-bold text-2xl'
+							>{Offer.salePrice}</span
+						>
+						<span class='text-gray-500 line-through'
+							>{Offer.originalPrice}</span
+						>
+					</div>
+
+					<!-- Action buttons -->
+					<div class='flex space-x-3 ml-4'>
+						<!-- View Details Button -->
+						<Button
+							variant='outline'
+							size='small'
+							href={detailsLink}
+							class='flex items-center group gap-1'>
+							Detalles
+							<ArrowRightIcon
+								class='w-4 h-4 transform group-hover:translate-x-1 transition-transform'
+							/>
+						</Button>
+
+						<!-- Buy Now Button -->
+						<Button
+							variant='primary'
+							size='small'
+							href={Offer.link}
+							class='shadow-md hover:shadow-lg'>
+							Comprar
+						</Button>
+					</div>
+				</div>
+			</div>
+		</div>
+	)}
 </div>
+
+<style>
+	.promo-item {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+
+	.promo-item.in-view {
+		animation: fadeInUp 0.6s ease forwards;
+	}
+
+	@keyframes fadeInUp {
+		from {
+			opacity: 0;
+			transform: translateY(20px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	/* Size-specific heights with increased values */
+	.promo-item-small {
+		max-height: 350px; /* Increased from 320px */
+	}
+	
+	.promo-item-medium {
+		max-height: 420px; /* Increased from 400px */
+	}
+	
+	.promo-item-large {
+		max-height: 450px; /* Kept the same */
+	}
+
+	/* Title container styling adjustments - FIXED FOR MOBILE */
+	.title-container {
+		min-height: auto;
+		max-height: 4rem; /* Increased from 3.5rem to allow for more text */
+		overflow: hidden;
+		text-overflow: ellipsis;
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2; /* Limit to 2 lines */
+	}
+	
+	/* Overlay container fixes for mobile */
+	.overlay-container {
+		width: 100%;
+		box-sizing: border-box;
+		overflow: hidden;
+	}
+
+	/* Ensure text doesn't overflow on small screens */
+	@media (max-width: 480px) {
+		.title-container {
+			max-height: 3.2rem; /* Increased from 2.8rem */
+		}
+		
+		.title-container h3 {
+			font-size: 0.95rem; /* Slightly increased from 0.9rem */
+			line-height: 1.4; /* Slightly increased from 1.3 */
+		}
+	}
+
+	/* Enable hyphenation for better text wrapping */
+	.hyphens-auto {
+		hyphens: auto;
+		-webkit-hyphens: auto;
+		-ms-hyphens: auto;
+	}
+	
+	/* Custom text size classes */
+	.text-2xs {
+		font-size: 0.65rem;
+		line-height: 1rem;
+	}
+	
+	.text-3xs {
+		font-size: 0.6rem;
+		line-height: 0.9rem;
+	}
+</style>
