@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import BookDetails from '../../components/details/BookDetails.astro';
 import booksData from '../../database/books.json';
+import siteInfo from '../../database/pageInformation.json';
 import type { Book } from '../../types/book';
 import { levelConfig } from '../../utils/bookTags';
 
@@ -37,24 +38,23 @@ const hasDiscount = book.discount && book.discount > 0;
 const originalPrice = book.price;
 const discountedPrice = hasDiscount ? book.price * (1 - book.discount / 100) : book.price;
 
-// SEO metadata - Enhanced
+// SEO metadata
 const bookLevel = book.level ? levelConfig[book.level as keyof typeof levelConfig]?.label || book.level : '';
 const formatTags = book.formatTags?.join(', ') || '';
 
 // Improved title with keywords
-const title = `${book.title} | Libro en inglés ${bookLevel ? `- ${bookLevel}` : ''} | FluentReads`;
+const title = `${book.title} | Libro en inglés ${bookLevel ? `- ${bookLevel}` : ''}`;
 
-// Enhanced description with more context and keywords
+// Enhanced description
 const description = book.description?.length > 160 
 	? `${book.description.substring(0, 157)}...` 
-	: book.description || `Material educativo en inglés: ${book.title}. ${formatTags ? `Incluye: ${formatTags}.` : ''} Mejora tu nivel de inglés con FluentReads.`;
-
-const image = book.coverImage;
+	: book.description || `Material educativo en inglés: ${book.title}. ${formatTags ? `Incluye: ${formatTags}.` : ''}`;
 
 // Canonical URL
-const canonicalURL = new URL(`/libro/${book.id}`, Astro.site).toString();
+const siteUrl = new URL(siteInfo.siteURL);
+const canonicalURL = new URL(`/libro/${book.id}`, siteUrl);
 
-// Generate comprehensive JSON-LD for SEO
+// Structured data for product
 const jsonLd = {
 	"@context": "https://schema.org",
 	"@type": "Product",
@@ -67,12 +67,12 @@ const jsonLd = {
 		"price": discountedPrice,
 		"priceCurrency": "PEN",
 		"availability": "https://schema.org/InStock",
-		"url": canonicalURL,
+		"url": canonicalURL.toString(),
 		"priceValidUntil": new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0]
 	},
 	"brand": {
 		"@type": "Brand",
-		"name": "FluentReads"
+		"name": `${siteInfo.siteName} - Libros en inglés`
 	},
 	"aggregateRating": book.rating ? {
 		"@type": "AggregateRating",
@@ -84,7 +84,7 @@ const jsonLd = {
 	"category": bookLevel
 };
 
-// Create breadcrumb structured data
+// Breadcrumb structured data
 const breadcrumbJsonLd = {
 	"@context": "https://schema.org",
 	"@type": "BreadcrumbList",
@@ -93,73 +93,45 @@ const breadcrumbJsonLd = {
 			"@type": "ListItem",
 			"position": 1,
 			"name": "Inicio",
-			"item": new URL("/", Astro.site).toString()
+			"item": new URL("/", siteUrl).toString()
 		},
 		{
 			"@type": "ListItem",
 			"position": 2,
 			"name": "Catálogo",
-			"item": new URL("/catalogo", Astro.site).toString()
+			"item": new URL("/catalogo", siteUrl).toString()
 		},
 		{
 			"@type": "ListItem",
 			"position": 3,
 			"name": book.title,
-			"item": canonicalURL
+			"item": canonicalURL.toString()
 		}
 	]
 };
-
-// Language tag
-const language = "es";
-
-// OpenGraph metadata
-const ogType = "product";
-const ogUrl = canonicalURL;
-const ogTitle = title;
-const ogDescription = description;
-const ogImage = new URL(image, Astro.site).toString();
-const ogSiteName = "FluentReads";
-
-// Twitter card metadata
-const twitterCard = "summary_large_image";
-const twitterTitle = title;
-const twitterDescription = description;
-const twitterImage = ogImage;
-const twitterSite = "@fluentreads";
 ---
 
 <Layout 
 	title={title} 
-	description={description} 
-	image={image}
+	description={description}
+	productType="book"
+	price={discountedPrice}
+	currency="PEN"
+	image={book.coverImage}
 	canonicalURL={canonicalURL}
-	ogType={ogType}
-	ogTitle={ogTitle}
-	ogDescription={ogDescription}
-	ogImage={ogImage}
-	ogSiteName={ogSiteName}
-	twitterCard={twitterCard}
-	twitterTitle={twitterTitle}
-	twitterDescription={twitterDescription}
-	twitterImage={twitterImage}
-	twitterSite={twitterSite}
-	language={language}>
-	
-	<!-- Structured data for SEO -->
-	<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
-	<script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
-	
+	ogTitle={title}
+	ogDescription={description}
+	ogImage={book.coverImage}
+	twitterTitle={title}
+	twitterDescription={description}
+	twitterImage={book.coverImage}
+	structuredData={jsonLd}
+	breadcrumbData={breadcrumbJsonLd}
+>
 	<BookDetails
 		book={book}
 		relatedBooks={relatedBooks}
 	/>
-	
-	<!-- Schema metadata for price -->
-	{hasDiscount && (
-		<meta itemprop="price" content={discountedPrice.toFixed(2)} />
-		<meta itemprop="priceCurrency" content="PEN" />
-	)}
 	
 	<!-- Add event listener for cart operations -->
 	<script>
