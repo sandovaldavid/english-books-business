@@ -49,15 +49,16 @@ const formattedSavingsAmount = `S/${savingsAmount.toFixed(2)}`;
 
 // Calculate the total value of included books (sum of individual book prices)
 const totalBooksValue = packBooks.reduce((sum, book) => {
-    // Ensure the book has a valid price
+    // Ensure the book has a valid price (use original book price, not discounted)
     const bookPrice = typeof book.price === 'number' && !isNaN(book.price) ? book.price : 0;
     return sum + bookPrice;
 }, 0);
 const formattedTotalBooksValue = `S/${totalBooksValue.toFixed(2)}`;
 
 // Calculate bonus value (how much you save by buying the pack vs individual books)
-const bonusValue = totalBooksValue - originalPrice;
-const formattedBonusValue = bonusValue > 0 ? `S/${bonusValue.toFixed(2)}` : '0';
+const priceToCompare = hasDiscount ? discountedPrice : originalPrice;
+const bonusValue = totalBooksValue - priceToCompare;
+const formattedBonusValue = bonusValue > 0 ? `S/${bonusValue.toFixed(2)}` : 'S/0.00';
 
 // Generate JSON-LD for SEO
 const jsonLd = {
@@ -244,10 +245,12 @@ const levelDisplay = pack.level
                         <div class="flex flex-wrap justify-between items-center">
                             <div>
                                 <p class="text-sm text-gray-700">Valor de productos individuales: <span class="font-bold text-indigo-700">{formattedTotalBooksValue}</span></p>
-                                <p class="text-sm text-gray-700">Precio del pack: <span class="font-bold text-green-700">{formattedOriginalPrice}</span></p>
+                                <p class="text-sm text-gray-700">Precio del pack: <span class="font-bold text-green-700">{hasDiscount ? formattedDiscountedPrice : formattedOriginalPrice}</span></p>
                             </div>
                             <div class="bg-indigo-100 px-4 py-2 rounded-lg">
-                                <p class="text-indigo-800 font-bold">Ahorras: {formattedBonusValue}</p>
+                                <p class="text-indigo-800 font-bold">
+                                    {bonusValue > 0 ? `Ahorras: ${formattedBonusValue}` : 'Oferta Especial'}
+                                </p>
                             </div>
                         </div>
                     </div>
