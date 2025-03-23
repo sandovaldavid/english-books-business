@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import PackDetails from '../../components/details/PackDetails.astro';
 import packsData from '../../database/packs.json';
+import siteInfo from '../../database/pageInformation.json';
 import type { Pack } from '../../types/pack';
 
 export async function getStaticPaths() {
@@ -34,10 +35,23 @@ const relatedPacks = packsArray
 	)
 	.slice(0, 3);
 
+// Calculate discounted price if there's a discount
+const hasDiscount = pack.discount !== undefined && pack.discount > 0;
+const originalPrice = pack.price;
+const discountedPrice = hasDiscount
+	? pack.price * (1 - (pack.discount || 0) / 100)
+	: pack.price;
+
 // SEO metadata
-const title = `${pack.title} | Pack de materiales en inglés | FluentReads`;
-const description = pack.description;
-const image = pack.coverImage;
+const title = `${pack.title} | Pack de materiales en inglés | ${siteInfo.siteName}`;
+const description =
+	pack.description?.length > 160
+		? `${pack.description.substring(0, 157)}...`
+		: pack.description || `Pack de materiales en inglés: ${pack.title}`;
+
+// Canonical URL
+const siteUrl = new URL(siteInfo.siteURL);
+const canonicalURL = new URL(`/pack/${pack.id}`, siteUrl);
 
 // Structured data for rich snippets
 const structuredData = {
@@ -46,33 +60,77 @@ const structuredData = {
 	name: pack.title,
 	description: pack.description,
 	image: pack.coverImage,
+	sku: pack.id,
 	offers: {
 		'@type': 'Offer',
-		price: pack.discount
-			? pack.price * (1 - pack.discount / 100)
-			: pack.price,
+		price: discountedPrice,
 		priceCurrency: 'PEN',
 		availability: 'https://schema.org/InStock',
-		url: Astro.url.href,
+		url: canonicalURL.toString(),
+		priceValidUntil: new Date(
+			new Date().setFullYear(new Date().getFullYear() + 1)
+		)
+			.toISOString()
+			.split('T')[0],
 	},
 	brand: {
 		'@type': 'Brand',
-		name: 'FluentReads',
+		name: `${siteInfo.siteName} - Packs de inglés`,
 	},
+	aggregateRating: pack.rating
+		? {
+				'@type': 'AggregateRating',
+				ratingValue: pack.rating.score,
+				reviewCount: pack.rating.reviewCount,
+				bestRating: '5',
+				worstRating: '1',
+			}
+		: undefined,
+};
+
+// Breadcrumb structured data
+const breadcrumbJsonLd = {
+	'@context': 'https://schema.org',
+	'@type': 'BreadcrumbList',
+	itemListElement: [
+		{
+			'@type': 'ListItem',
+			position: 1,
+			name: 'Inicio',
+			item: new URL('/', siteUrl).toString(),
+		},
+		{
+			'@type': 'ListItem',
+			position: 2,
+			name: 'Packs',
+			item: new URL('/packs', siteUrl).toString(),
+		},
+		{
+			'@type': 'ListItem',
+			position: 3,
+			name: pack.title,
+			item: canonicalURL.toString(),
+		},
+	],
 };
 ---
 
 <Layout
 	title={title}
 	description={description}
-	image={image}
-	canonicalURL={Astro.url.href}>
-	<!-- Structured data for SEO -->
-	<script
-		type='application/ld+json'
-		set:html={JSON.stringify(structuredData)}
-	/>
-
+	productType='pack'
+	price={discountedPrice}
+	currency='PEN'
+	image={pack.coverImage}
+	canonicalURL={canonicalURL}
+	ogTitle={title}
+	ogDescription={description}
+	ogImage={pack.coverImage}
+	twitterTitle={title}
+	twitterDescription={description}
+	twitterImage={pack.coverImage}
+	structuredData={structuredData}
+	breadcrumbData={breadcrumbJsonLd}>
 	<PackDetails pack={pack} relatedProducts={relatedPacks} />
 
 	<!-- Add event listener for cart operations -->
