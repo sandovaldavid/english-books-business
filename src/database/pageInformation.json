@@ -1,0 +1,99 @@
+{
+	"siteName": "FluentReads",
+	"siteURL": "https://fluentreads.com",
+	"siteDescription": "La mejor tienda online para aprender inglés con libros digitales, packs de estudio y material para exámenes internacionales.",
+	"logo": "/images/logo.png",
+	"contact": {
+		"email": "contacto@fluentreads.com",
+		"phone": "+51 987 654 321",
+		"whatsapp": "+51 987 654 321",
+		"address": "Av. Principal 123, Piura, Perú"
+	},
+	"socialMedia": {
+		"facebook": "https://www.facebook.com/fluentreads",
+		"instagram": "https://www.instagram.com/fluentreads",
+		"tiktok": "https://www.tiktok.com/@fluentreads",
+		"linkedin": "https://www.linkedin.com/company/fluentreads",
+		"youtube": "https://www.youtube.com/@fluentreads",
+		"twitter": "https://twitter.com/fluentreads"
+	},
+	"socialMediaHandles": {
+		"facebook": "@fluentreads",
+		"instagram": "@fluentreads",
+		"tiktok": "@fluentreads",
+		"linkedin": "@fluentreads",
+		"youtube": "@fluentreads",
+		"twitter": "@fluentreads"
+	},
+	"paymentMethods": {
+		"bankAccounts": [
+			{
+				"bank": "Banco de Crédito del Perú (BCP)",
+				"accountNumber": "123-4567890-0-12",
+				"interbankCode": "002-123-4567890123-00",
+				"holder": "Juan Pérez"
+			},
+			{
+				"bank": "Interbank",
+				"accountNumber": "200-789456-1",
+				"interbankCode": "003-200-7894561234-01",
+				"holder": "FluentReads SAC"
+			},
+			{
+				"bank": "BBVA",
+				"accountNumber": "123-4567890-0-12",
+				"interbankCode": "011-123-4567890123-00",
+				"holder": "Juan Pérez"
+			},
+			{
+				"bank": "Scotiabank",
+				"accountNumber": "123-4567890-0-12",
+				"interbankCode": "009-123-4567890123-00",
+				"holder": "Juan Pérez"
+			}
+		],
+		"digitalWallets": {
+			"yape": "+51 987 654 321",
+			"plin": "+51 987 654 321",
+			"paypal": "paypal.me/fluentreads"
+		}
+	},
+	"seo": {
+		"metaTitle": "FluentReads - Libros Digitales para Aprender Inglés",
+		"metaDescription": "Compra libros digitales, packs y material para exámenes de inglés como IELTS, TOEFL y Cambridge. Aprende inglés de manera efectiva con FluentReads.",
+		"keywords": "libros en inglés, aprender inglés, material educativo, inglés para negocios, e-books, ejercicios de inglés, exámenes internacionales, FluentReads",
+		"author": "FluentReads Team",
+		"geoRegion": "PE",
+		"geoPlacename": "Piura",
+		"defaultImage": "/images/default-og-image.jpg",
+		"twitterHandle": "@fluentreads",
+		"facebookAppID": "1234567890",
+		"twitterCard": "summary_large_image",
+		"twitterSite": "@fluentreads",
+		"twitterCreator": "@fluentreads",
+		"fbAppId": "1234567890",
+		"languageAlternates": [
+			{
+				"language": "es",
+				"url": "https://fluentreads.com/es/"
+			},
+			{
+				"language": "en",
+				"url": "https://fluentreads.com/en/"
+			}
+		],
+		"organizationInfo": {
+			"name": "FluentReads",
+			"legalName": "FluentReads S.A.C.",
+			"foundingDate": "2022",
+			"founders": ["Juan Pérez", "María López"],
+			"address": {
+				"street": "Av. Principal 123",
+				"city": "Piura",
+				"region": "Piura",
+				"postalCode": "20001",
+				"country": "Perú"
+			}
+		}
+	}
+}
