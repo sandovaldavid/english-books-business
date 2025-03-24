@@ -36,7 +36,8 @@ export interface Book {
 	title: string;
 	description: string;
 	price: number;
-	discount?: number;
+	editorialId: string;
+	discount?: number | 0;
 	coverImage: string;
 	images?: string[];
 	video?: string;
