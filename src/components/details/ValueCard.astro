@@ -26,6 +26,7 @@ interface Props {
 	totalBooksValue?: number; // Optional retail/total value
 	currency?: string;
 	productType?: 'book' | 'pack' | 'exam';
+	offerDays?: number; // New parameter for offer duration
 }
 
 const {
@@ -36,6 +37,7 @@ const {
 	totalBooksValue,
 	currency = 'S/',
 	productType = 'book',
+	offerDays = 7, // Default to 7 days if not specified
 } = Astro.props;
 
 // Determine if we have a discount
@@ -84,11 +86,11 @@ const valueLabel = {
 	pack: 'Valor de los productos por separado:',
 }[productType];
 
-// Get current date for the "Oferta válida" text
+// Get current date for the "Oferta válida" text with dynamic duration
 const today = new Date();
-const tomorrow = new Date(today);
-tomorrow.setDate(tomorrow.getDate() + 7);
-const formattedDate = tomorrow.toLocaleDateString('es-ES', {
+const offerEndDate = new Date(today);
+offerEndDate.setDate(offerEndDate.getDate() + offerDays);
+const formattedDate = offerEndDate.toLocaleDateString('es-ES', {
 	day: 'numeric',
 	month: 'long',
 });
