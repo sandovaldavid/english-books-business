@@ -19,7 +19,7 @@ export interface Exam {
 	title: string;
 	description: string;
 	price: number;
-	discount?: number;
+	discount?: number | 0;
 	coverImage: string;
 	images?: string[];
 	video?: string;

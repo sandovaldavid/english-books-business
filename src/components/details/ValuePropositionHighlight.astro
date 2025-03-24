@@ -1,10 +1,15 @@
 ---
+import BadgeIcon from '../icons/Badge.astro';
+import SparklesIcon from '../icons/Sparkles.astro';
+import CheckIcon from '../icons/Check.astro';
+
 interface Props {
 	totalBooksValue: number;
 	originalPrice: number;
 	discountedPrice?: number;
 	discount?: number;
 	currency?: string;
+	productType?: 'book' | 'exam' | 'pack';
 }
 
 const {
@@ -13,6 +18,7 @@ const {
 	discountedPrice,
 	discount,
 	currency = 'S/',
+	productType = 'book',
 } = Astro.props;
 
 // Determine if we have a discount
@@ -21,8 +27,9 @@ const hasDiscount = discount && discount > 0 && discountedPrice !== undefined;
 // Calculate price to compare
 const priceToCompare = hasDiscount ? discountedPrice! : originalPrice;
 
-// Calculate bonus value (how much you save by buying the pack vs individual books)
+// Calculate bonus value (how much you save by buying vs retail)
 const bonusValue = totalBooksValue - priceToCompare;
+const savingsPercentage = Math.round((bonusValue / totalBooksValue) * 100);
 
 // Format currency values
 const formattedTotalBooksValue = `${currency}${totalBooksValue.toFixed(2)}`;
@@ -32,38 +39,138 @@ const formattedDiscountedPrice = discountedPrice
 	: formattedOriginalPrice;
 const formattedBonusValue =
 	bonusValue > 0 ? `${currency}${bonusValue.toFixed(2)}` : `${currency}0.00`;
+
+// Product type specific content
+const titleByType = {
+	book: 'Valor del libro',
+	exam: 'Valor del examen',
+	pack: 'Valor del pack completo',
+};
+
+const labelByType = {
+	book: 'Precio Normal:',
+	exam: 'Precio de componentes individuales:',
+	pack: 'Valor de productos por separado:',
+};
+
+const colorSchemeByType = {
+	book: {
+		bg: 'bg-blue-50',
+		border: 'border-blue-100',
+		title: 'text-blue-800',
+		highlight: 'text-blue-700',
+		badge: 'bg-blue-100',
+		badgeText: 'text-blue-800',
+		savings: 'bg-green-100 text-green-800',
+	},
+	exam: {
+		bg: 'bg-purple-50',
+		border: 'border-purple-100',
+		title: 'text-purple-800',
+		highlight: 'text-purple-700',
+		badge: 'bg-purple-100',
+		badgeText: 'text-purple-800',
+		savings: 'bg-green-100 text-green-800',
+	},
+	pack: {
+		bg: 'bg-indigo-50',
+		border: 'border-indigo-100',
+		title: 'text-indigo-800',
+		highlight: 'text-indigo-700',
+		badge: 'bg-indigo-100',
+		badgeText: 'text-indigo-800',
+		savings: 'bg-green-100 text-green-800',
+	},
+};
+
+// Get the correct styling based on product type
+const colors = colorSchemeByType[productType];
 ---
 
-<!-- Value proposition highlight -->
+<!-- Value proposition highlight with improved UI -->
 <div
-	class='bg-indigo-50 rounded-xl p-5 border border-indigo-100 shadow-sm mb-6'>
-	<h3 class='text-lg font-bold text-indigo-800 mb-2'>Valor del pack</h3>
-	<div class='flex flex-wrap justify-between items-center'>
-		<div>
-			<p class='text-sm text-gray-700'>
-				Valor de productos individuales: <span
-					class='font-bold text-indigo-700'
-					>{formattedTotalBooksValue}</span
-				>
-			</p>
-			<p class='text-sm text-gray-700'>
-				Precio del pack: <span class='font-bold text-green-700'
-					>{
-						hasDiscount
-							? formattedDiscountedPrice
-							: formattedOriginalPrice
-					}</span
-				>
-			</p>
+	class={`${colors.bg} rounded-xl p-4 sm:p-5 border ${colors.border} shadow-sm mb-6 transform transition-all duration-300 hover:shadow-md`}>
+	<div class='flex items-center mb-3'>
+		<SparklesIcon class='w-5 h-5 mr-2 text-amber-500' />
+		<h3 class={`text-lg font-bold ${colors.title}`}>
+			{titleByType[productType]}
+		</h3>
+	</div>
+
+	<div
+		class='flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4'>
+		<div class='space-y-2'>
+			<div class='flex items-center'>
+				<CheckIcon class='w-4 h-4 mr-1.5 text-green-500' />
+				<p class='text-sm text-gray-700'>
+					{labelByType[productType]}
+					<span class={`font-bold ${colors.highlight}`}
+						>{formattedTotalBooksValue}</span
+					>
+				</p>
+			</div>
+			<div class='flex items-center'>
+				<CheckIcon class='w-4 h-4 mr-1.5 text-green-500' />
+				<p class='text-sm text-gray-700'>
+					{
+						productType === 'pack'
+							? 'Precio del pack:'
+							: 'Precio con descuento:'
+					}
+					<span class='font-bold text-green-700'>
+						{
+							hasDiscount
+								? formattedDiscountedPrice
+								: formattedOriginalPrice
+						}
+					</span>
+					{
+						hasDiscount && (
+							<span class='text-xs line-through text-gray-500 ml-1'>
+								{formattedOriginalPrice}
+							</span>
+						)
+					}
+				</p>
+			</div>
 		</div>
-		<div class='bg-indigo-100 px-4 py-2 rounded-lg'>
-			<p class='text-indigo-800 font-bold'>
+
+		<div class='flex flex-col items-center'>
+			<div
+				class={`${colors.savings} px-4 py-2 rounded-lg flex items-center font-bold value-badge`}>
+				<BadgeIcon class='w-4 h-4 mr-1.5' />
 				{
-					bonusValue > 0
-						? `Ahorras: ${formattedBonusValue}`
-						: 'Oferta Especial'
+					bonusValue > 0 ? (
+						<span>
+							Ahorras {formattedBonusValue}
+							<span class='text-xs whitespace-nowrap'>
+								({savingsPercentage}% menos)
+							</span>
+						</span>
+					) : (
+						<span>Oferta Especial</span>
+					)
 				}
-			</p>
+			</div>
 		</div>
 	</div>
 </div>
+
+<style>
+	/* Animation for the value badge */
+	.value-badge {
+		transition: transform 0.3s ease;
+	}
+	.value-badge:hover {
+		transform: scale(1.05);
+	}
+
+	/* Responsive adjustments */
+	@media (max-width: 640px) {
+		.value-badge {
+			width: 100%;
+			justify-content: center;
+			margin-top: 0.5rem;
+		}
+	}
+</style>

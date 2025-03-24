@@ -5,7 +5,7 @@ export interface Pack {
 	title: string;
 	description: string;
 	price: number;
-	discount?: number;
+	discount?: number | 0;
 	coverImage: string;
 	images?: string[];
 	video?: string;

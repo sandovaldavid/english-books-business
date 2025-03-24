@@ -14,26 +14,42 @@ const {
 	formatConfig,
 	popularityConfig,
 } = Astro.props;
+
+const isLikelyMobile = formatTags.length <= 1 && popularityTags.length <= 1;
+
+// Adjust tag styles for improved mobile display
+const tagBaseClasses = 'inline-flex items-center rounded-md border';
+const tagMobileClasses = 'text-[9px] px-1 py-0.5 mb-1 mr-1';
+const tagDesktopClasses = 'text-xs px-2 py-1 mb-2 mr-1.5';
+const tagClasses = `${tagBaseClasses} ${isLikelyMobile ? tagMobileClasses : tagDesktopClasses}`;
 ---
 
-<div class='mb-3 tag-container'>
+<div class='tag-container'>
 	{/* Format tags */}
 	{
 		formatTags && formatTags.length > 0 && (
-			<div class='mb-2'>
-				<div class='flex flex-wrap gap-1.5'>
-					{formatTags.map((tag) => {
-						const config =
-							formatConfig[tag as keyof typeof formatConfig];
-						return (
-							<span
-								class={`inline-flex items-center text-xs px-2 py-1 rounded-md border ${config?.color || ''} format-tag`}>
-								<span class='mr-1'>{config?.icon || ''}</span>{' '}
+			<div class='flex flex-wrap mb-1'>
+				{formatTags.map((tag) => {
+					const config =
+						formatConfig[tag as keyof typeof formatConfig];
+					const colorClass =
+						config?.color || 'bg-gray-100 text-gray-800';
+
+					return (
+						<span class={`${tagClasses} ${colorClass}`}>
+							{/* Always show icon if available */}
+							{config?.icon && (
+								<span class='mr-0.5 sm:mr-1'>
+									{config.icon}
+								</span>
+							)}
+							{/* Show label text only on larger screens */}
+							<span class='hidden xs:inline'>
 								{config?.label || tag}
 							</span>
-						);
-					})}
-				</div>
+						</span>
+					);
+				})}
 			</div>
 		)
 	}
@@ -41,23 +57,53 @@ const {
 	{/* Popularity tags */}
 	{
 		popularityTags && popularityTags.length > 0 && (
-			<div>
-				<div class='flex flex-wrap gap-1.5'>
-					{popularityTags.map((tag) => {
-						const config =
-							popularityConfig[
-								tag as keyof typeof popularityConfig
-							];
-						return (
-							<span
-								class={`inline-flex items-center text-xs px-2 py-1 rounded-md border ${config?.color || ''} popularity-tag`}>
-								<span class='mr-1'>{config?.icon || ''}</span>{' '}
+			<div class='flex flex-wrap'>
+				{popularityTags.map((tag) => {
+					const config =
+						popularityConfig[tag as keyof typeof popularityConfig];
+					const colorClass =
+						config?.color || 'bg-gray-100 text-gray-800';
+
+					return (
+						<span class={`${tagClasses} ${colorClass}`}>
+							{/* Always show emoji icon if available */}
+							{config?.icon && (
+								<span class='mr-0.5 sm:mr-1'>
+									{config.icon}
+								</span>
+							)}
+							{/* Show label text only on larger screens */}
+							<span class='hidden xs:inline'>
 								{config?.label || tag}
 							</span>
-						);
-					})}
-				</div>
+						</span>
+					);
+				})}
 			</div>
 		)
 	}
 </div>
+
+<style>
+	.tag-container {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+
+	@media (min-width: 400px) {
+		.xs\:inline {
+			display: inline;
+		}
+
+		.tag-container {
+			gap: 0.5rem;
+		}
+	}
+
+	@media (max-width: 640px) {
+		.tag-container {
+			margin-bottom: 0.25rem;
+		}
+	}
+</style>

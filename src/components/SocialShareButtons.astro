@@ -1,155 +1,185 @@
 ---
-import Button from './Button.astro';
-import WhatsAppIcon from './icons/WhatsApp.astro';
 import FacebookIcon from './icons/Facebook.astro';
-import TelegramIcon from './icons/Telegram.astro';
 import TwitterIcon from './icons/X.astro';
-import SiteInfo from '../database/pageInformation.json';
+import WhatsAppIcon from './icons/WhatsApp.astro';
+import LinkedInIcon from './icons/LinkedIn.astro';
+import EmailIcon from './icons/Email.astro';
+import ShareIcon from './icons/Share.astro';
+import PageInfo from '../database/pageInformation.json';
 
 interface Props {
-	url: string;
-	title: string;
-	description: string;
-	image?: string;
-	productType: 'book' | 'pack' | 'exam';
-	price?: number;
-	currency?: string;
+    url?: string;
+    title?: string;
+    description?: string;
+    image?: string;
+    productType?: 'book' | 'exam' | 'pack';
+    price?: number;
+    currency?: string;
+    size?: 'small' | 'medium' | 'large';
+    className?: string;
 }
 
 const {
-	url,
-	title,
-	description,
-	image,
-	productType,
-	price,
-	currency = 'PEN',
+    url = Astro.url.href,
+    title = PageInfo.seo.metaTitle,
+    description = PageInfo.seo.metaDescription,
+    image = PageInfo.seo.defaultImage,
+    productType = 'book',
+    price,
+    currency = 'PEN',
+    size = 'medium',
+    className = '',
 } = Astro.props;
 
-// Create product type in Spanish
-const productTypeSpanish =
-	{
-		book: 'libro',
-		pack: 'pack',
-		exam: 'examen',
-	}[productType] || 'producto';
+// Prepare share URLs
+const encodedUrl = encodeURIComponent(url);
+const encodedTitle = encodeURIComponent(title);
+const encodedDescription = encodeURIComponent(description);
+const encodedImage = encodeURIComponent(image);
 
-// Format price for display if available
-const priceText = price ? `S/${price.toFixed(2)}` : '';
+// Create share messages with pricing if available
+const priceText = price ? `${currency === 'PEN' ? 'S/' : currency}${price.toFixed(2)}` : '';
+const shareText = price 
+    ? `${title} ${priceText} - ${description}` 
+    : `${title} - ${description}`;
+const encodedShareText = encodeURIComponent(shareText);
 
-// Create share message for WhatsApp and Telegram
-const shareMessage = `¡Mira este ${productTypeSpanish} en ${priceText ? priceText : `${SiteInfo.siteName}`}! "${title}": ${description}`;
+// Social share URLs
+const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+const twitterUrl = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedShareText}`;
+const whatsappUrl = `https://wa.me/?text=${encodedShareText} ${encodedUrl}`;
+const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
+const emailUrl = `mailto:?subject=${encodedTitle}&body=${encodedShareText} ${url}`;
 
-// Create share URLs
-const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`${shareMessage} ${url}`)}`;
-const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(shareMessage)}`;
-const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
-const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(`${title} ${priceText ? '- ' + priceText : ''} vía @${SiteInfo.socialMediaHandles.twitter}`)}`;
+// Size classes
+const buttonSize = {
+    small: 'w-8 h-8',
+    medium: 'w-9 h-9',
+    large: 'w-10 h-10',
+}[size];
 
-// Set icons sizes
-const iconSize = 'w-5 h-5';
+const iconSize = {
+    small: 'w-4 h-4',
+    medium: 'w-5 h-5',
+    large: 'w-5 h-5',
+}[size];
 ---
 
-<div class='social-share-container my-8 px-4 lg:w-3xl mx-auto'>
-	<div
-		class='flex flex-col bg-gray-50 border border-gray-200 rounded-lg p-5 shadow-sm'>
-		<h3 class='text-lg font-bold text-gray-700 mb-4 text-center'>
-			Compartir este {productTypeSpanish}
-		</h3>
+<div class={`social-share-buttons inline-flex items-center ${className}`}>
+    <span class="text-xs sm:text-sm text-gray-600 mr-2 whitespace-nowrap hidden sm:inline-block">
+        <ShareIcon class="w-4 h-4 inline-block mr-1" />
+        Compartir
+    </span>
+    <span class="text-xs sm:text-sm text-gray-600 mr-2 whitespace-nowrap sm:hidden">
+        <ShareIcon class="w-4 h-4 inline-block" />
+    </span>
+    <div class="flex space-x-1.5">
+        <!-- Facebook -->
+        <a 
+            href={facebookUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class={`share-button facebook-share ${buttonSize} flex items-center justify-center rounded-full bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors duration-200`}
+            aria-label="Compartir en Facebook"
+            title="Compartir en Facebook">
+            <FacebookIcon class={iconSize} />
+        </a>
 
-		<div class='grid grid-cols-2 md:grid-cols-4 gap-3'>
-			<!-- WhatsApp -->
-			<Button
-				variant='custom'
-				href={whatsappUrl}
-				target='_blank'
-				rel='noopener noreferrer'
-				className='bg-[#25D366] hover:bg-[#20BC5A] text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-all duration-300'
-				aria-label='Compartir por WhatsApp'>
-				<WhatsAppIcon class={iconSize} />
-				<span class='hidden md:inline'>WhatsApp</span>
-			</Button>
+        <!-- Twitter -->
+        <a 
+            href={twitterUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class={`share-button twitter-share ${buttonSize} flex items-center justify-center rounded-full bg-sky-100 text-sky-500 hover:bg-sky-500 hover:text-white transition-colors duration-200`}
+            aria-label="Compartir en Twitter"
+            title="Compartir en Twitter">
+            <TwitterIcon class={iconSize} />
+        </a>
 
-			<!-- Telegram -->
-			<Button
-				variant='custom'
-				href={telegramUrl}
-				target='_blank'
-				rel='noopener noreferrer'
-				className='bg-[#0088CC] hover:bg-[#0077B5] text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-all duration-300'
-				aria-label='Compartir por Telegram'>
-				<TelegramIcon class={iconSize} />
-				<span class='hidden md:inline'>Telegram</span>
-			</Button>
+        <!-- WhatsApp -->
+        <a 
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class={`share-button whatsapp-share ${buttonSize} flex items-center justify-center rounded-full bg-green-100 text-green-600 hover:bg-green-600 hover:text-white transition-colors duration-200`}
+            aria-label="Compartir en WhatsApp"
+            title="Compartir en WhatsApp">
+            <WhatsAppIcon class={iconSize} />
+        </a>
 
-			<!-- Facebook -->
-			<Button
-				variant='custom'
-				href={facebookUrl}
-				target='_blank'
-				rel='noopener noreferrer'
-				className='bg-[#1877F2] hover:bg-[#0C63D4] text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-all duration-300'
-				aria-label='Compartir por Facebook'>
-				<FacebookIcon class={iconSize} />
-				<span class='hidden md:inline'>Facebook</span>
-			</Button>
+        <!-- LinkedIn -->
+        <a 
+            href={linkedinUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class={`share-button linkedin-share ${buttonSize} flex items-center justify-center rounded-full bg-blue-100 text-blue-800 hover:bg-blue-800 hover:text-white transition-colors duration-200`}
+            aria-label="Compartir en LinkedIn"
+            title="Compartir en LinkedIn">
+            <LinkedInIcon class={iconSize} />
+        </a>
 
-			<!-- Twitter/X -->
-			<Button
-				variant='custom'
-				href={twitterUrl}
-				target='_blank'
-				rel='noopener noreferrer'
-				className='bg-[#000000] hover:bg-[#333333] text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-all duration-300'
-				aria-label='Compartir por Twitter/X'>
-				<TwitterIcon class={iconSize} />
-				<span class='hidden md:inline'>Twitter</span>
-			</Button>
-		</div>
-	</div>
+        <!-- Email -->
+        <a 
+            href={emailUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class={`share-button email-share ${buttonSize} flex items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-gray-600 hover:text-white transition-colors duration-200`}
+            aria-label="Compartir por correo"
+            title="Compartir por correo">
+            <EmailIcon class={iconSize} />
+        </a>
+    </div>
 </div>
 
 <script>
-	// TypeScript declaration for Google Analytics gtag function
-	declare const gtag: (
-		command: string,
-		action: string,
-		params: object
-	) => void;
-
-	// Track social share clicks with analytics if available
-	document.addEventListener('DOMContentLoaded', () => {
-		const shareButtons = document.querySelectorAll(
-			'.social-share-container a'
-		);
-
-		shareButtons.forEach((button) => {
-			button.addEventListener('click', (e) => {
-				// If Google Analytics is available
-				if (typeof gtag === 'function') {
-					const network =
-						button
-							.getAttribute('aria-label')
-							?.replace('Compartir por ', '') || 'unknown';
-					gtag('event', 'share', {
-						method: network,
-						content_type: 'product',
-						item_id: window.location.pathname,
-					});
-				}
-			});
-		});
-	});
+    // Track shares for analytics
+    document.addEventListener('DOMContentLoaded', () => {
+        const shareButtons = document.querySelectorAll('.share-button');
+        shareButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                // Get the network from the class
+                const classList = button.classList;
+                let network = '';
+                
+                if (classList.contains('facebook-share')) network = 'Facebook';
+                else if (classList.contains('twitter-share')) network = 'Twitter';
+                else if (classList.contains('whatsapp-share')) network = 'WhatsApp';
+                else if (classList.contains('linkedin-share')) network = 'LinkedIn';
+                else if (classList.contains('email-share')) network = 'Email';
+                
+                // You can replace this with your analytics tracking
+                console.log(`Product shared on ${network}`);
+            });
+        });
+    });
 </script>
 
 <style>
-	/* Animation for the social buttons */
-	.social-share-container button {
-		transform: translateY(0);
-		transition: transform 0.3s ease;
-	}
+    .social-share-buttons {
+        animation: fadeIn 0.5s ease;
+    }
 
-	.social-share-container button:hover {
-		transform: translateY(-3px);
-	}
+    .share-button {
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        transform: translateY(0);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .share-button:hover {
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* Make buttons more compact on very small screens */
+    @media (max-width: 360px) {
+        .social-share-buttons .share-button {
+            width: 1.75rem;
+            height: 1.75rem;
+        }
+    }
 </style>
