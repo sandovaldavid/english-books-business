@@ -1,6 +1,7 @@
 ---
 import ReviewStars from './ReviewStars.astro';
 import BookTags from './BookTags.astro';
+import Button from './Button.astro';
 import { levelConfig, formatConfig, popularityConfig } from '../utils/bookTags';
 import { difficultyConfig } from '../utils/examTags';
 import type { Product } from '../types/product';
@@ -241,11 +242,13 @@ const showEditorial = size !== 'small' && editorial;
 					)
 				}
 			</div>
-			<a
+			<Button
 				href={detailsLink}
-				class='bg-primary hover:bg-primary-dark text-white text-[10px] sm:text-xs py-0.5 px-2 sm:py-1 sm:px-3 rounded transition-colors duration-300'>
+				variant='primary'
+				size={size === 'small' ? 'xsmall' : 'small'}
+				newTab={false}>
 				{size === 'small' ? 'Ver' : 'Ver detalles'}
-			</a>
+			</Button>
 		</div>
 	</div>
 </div>
