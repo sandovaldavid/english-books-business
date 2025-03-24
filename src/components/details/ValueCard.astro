@@ -1,9 +1,29 @@
 ---
+import CheckIcon from '../icons/Check.astro';
+import ShippingIcon from '../icons/Shipping.astro';
+import SparklesIcon from '../icons/Sparkles.astro';
+import BadgeIcon from '../icons/Badge.astro';
+import ShieldCheckIcon from '../icons/ShieldCheck.astro';
+import PremiumCheckIcon from '../icons/PremiumCheck.astro';
+import Sales from '../icons/Sales.astro';
+
+// Payment methods
+import YapeIcon from '../../../public/images/paymentMethods/yape.webp';
+import PlinIcon from '../../../public/images/paymentMethods/plin.webp';
+import BCPIcon from '../../components/icons/payments/Bcp.astro';
+import BBVAIcon from '../../components/icons/payments/Bbva.astro';
+import PayPal_v2Icon from '../icons/payments/Paypal_v2.astro';
+import ScotiabankIcon from '../icons/payments/Scotiabank.astro';
+
+// Page information data
+import PageInformation from '../../database/pageInformation.json';
+
 interface Props {
 	originalPrice: number;
 	discountedPrice?: number;
 	discount?: number;
 	savingsAmount?: number;
+	totalBooksValue?: number; // Optional retail/total value
 	currency?: string;
 	productType?: 'book' | 'pack' | 'exam';
 }
@@ -13,6 +33,7 @@ const {
 	discountedPrice,
 	discount,
 	savingsAmount,
+	totalBooksValue,
 	currency = 'S/',
 	productType = 'book',
 } = Astro.props;
@@ -29,45 +50,372 @@ const formattedSavingsAmount = savingsAmount
 	? `${currency}${savingsAmount.toFixed(2)}`
 	: undefined;
 
-// Product-specific message
+// Calculate total value savings if totalBooksValue is provided
+const showRetailValue =
+	totalBooksValue && totalBooksValue > (discountedPrice || originalPrice);
+const retailSavings = showRetailValue
+	? totalBooksValue - (discountedPrice || originalPrice)
+	: 0;
+const retailSavingsPercentage = showRetailValue
+	? Math.round((retailSavings / totalBooksValue) * 100)
+	: 0;
+const formattedRetailValue = showRetailValue
+	? `${currency}${totalBooksValue.toFixed(2)}`
+	: '';
+const formattedRetailSavings = showRetailValue
+	? `${currency}${retailSavings.toFixed(2)}`
+	: '';
+
+// Product-specific messages
 const deliveryMessage =
 	productType === 'exam'
-		? '✓ Acceso inmediato tras la compra'
-		: '✓ Entrega inmediata por correo electrónico';
+		? 'Acceso inmediato tras la compra'
+		: 'Entrega inmediata por correo electrónico';
+
+const deliveryTimeMessage =
+	productType === 'exam'
+		? 'Disponible al instante'
+		: 'Descarga digital en 5 minutos';
+
+// Product type specific labels
+const valueLabel = {
+	book: 'Valor del libro en mercado:',
+	exam: 'Valor del examen completo:',
+	pack: 'Valor de los productos por separado:',
+}[productType];
+
+// Get current date for the "Oferta válida" text
+const today = new Date();
+const tomorrow = new Date(today);
+tomorrow.setDate(tomorrow.getDate() + 7);
+const formattedDate = tomorrow.toLocaleDateString('es-ES', {
+	day: 'numeric',
+	month: 'long',
+});
+
+// Color styles based on product type
+const colorScheme = {
+	book: {
+		bgGradient: 'from-blue-50 to-white',
+		accentBg: 'bg-blue-50',
+		accentBorder: 'border-blue-100',
+		accentText: 'text-blue-800',
+	},
+	exam: {
+		bgGradient: 'from-purple-50 to-white',
+		accentBg: 'bg-purple-50',
+		accentBorder: 'border-purple-100',
+		accentText: 'text-purple-800',
+	},
+	pack: {
+		bgGradient: 'from-indigo-50 to-white',
+		accentBg: 'bg-indigo-50',
+		accentBorder: 'border-indigo-100',
+		accentText: 'text-indigo-800',
+	},
+}[productType];
+
+// Organize payment methods for display
+const bankAccounts = PageInformation.paymentMethods.bankAccounts || [];
+const digitalWallets = PageInformation.paymentMethods.digitalWallets || {};
+
+// Map bank IDs to their components
+const bankIconComponents = {
+	BCP: BCPIcon,
+	BBVA: BBVAIcon,
+	Scotiabank: ScotiabankIcon,
+	// Add other banks as they become available
+};
+
+// Map digital wallet IDs to their components
+const walletIconComponents = {
+	yape: YapeIcon,
+	plin: PlinIcon,
+	paypal: PayPal_v2Icon,
+	// Add other wallets as they become available
+};
 ---
 
-<!-- Price section with better visual hierarchy -->
-<div class='bg-gray-50 rounded-xl p-5 border border-gray-200 shadow-sm mb-6'>
-	<div class='flex items-center mb-2'>
+<!-- Enhanced value card with better visual hierarchy and persuasive elements -->
+<div
+	class={`rounded-xl p-5 border border-gray-200 shadow-md mb-6 transform transition-all duration-300 hover:shadow-lg bg-gradient-to-br ${colorScheme.bgGradient}`}>
+	<!-- Price section with enhanced visual hierarchy -->
+	<div class='flex flex-col'>
+		<!-- Header section with value proposition -->
 		{
-			hasDiscount ? (
-				<>
-					<span class='text-3xl font-bold text-primary mr-3'>
-						{formattedDiscountedPrice}
-					</span>
-					<span class='text-xl text-gray-500 line-through'>
-						{formattedOriginalPrice}
-					</span>
-					{discount && (
-						<span class='ml-3 bg-accent/10 text-accent text-sm font-bold px-3 py-1 rounded-full'>
-							{discount}% DESCUENTO
-						</span>
-					)}
-				</>
-			) : (
-				<span class='text-3xl font-bold text-primary'>
-					{formattedOriginalPrice}
-				</span>
+			showRetailValue && (
+				<div class='mb-4 pb-3 border-b border-dashed border-gray-200'>
+					<div class='flex items-center'>
+						<SparklesIcon class='w-5 h-5 mr-2 text-amber-500' />
+						<h3 class='font-bold text-gray-800'>¡Gran valor!</h3>
+					</div>
+
+					<div class='mt-2 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4'>
+						<div class='flex items-center'>
+							<span class='text-sm text-gray-600'>
+								{valueLabel}
+							</span>
+							<span class='font-bold ml-1 line-through text-gray-500'>
+								{formattedRetailValue}
+							</span>
+						</div>
+
+						<div
+							class={`px-3 py-1 rounded-full flex items-center text-sm font-medium ${colorScheme.accentBg} ${colorScheme.accentText}`}>
+							<BadgeIcon class='w-4 h-4 mr-1.5' />
+							<span>
+								Ahorras {formattedRetailSavings} (
+								{retailSavingsPercentage}%)
+							</span>
+						</div>
+					</div>
+				</div>
 			)
 		}
-	</div>
 
-	{
-		hasDiscount && formattedSavingsAmount && (
-			<p class='text-accent font-medium text-sm mb-1'>
-				¡Ahorras {formattedSavingsAmount} con esta oferta!
-			</p>
-		)
-	}
-	<p class='text-green-700 font-medium text-sm'>{deliveryMessage}</p>
+		<!-- Price display with improved typography -->
+		<div class='flex flex-col'>
+			<div class='mb-1 text-gray-600 text-sm font-medium'>Precio:</div>
+			<div class='flex items-baseline flex-wrap gap-2 mb-1'>
+				{
+					hasDiscount ? (
+						<>
+							<span class='text-3xl font-bold text-primary price-highlight'>
+								{formattedDiscountedPrice}
+							</span>
+							<span class='text-xl text-gray-500 line-through opacity-75'>
+								{formattedOriginalPrice}
+							</span>
+						</>
+					) : (
+						<span class='text-3xl font-bold text-primary price-highlight'>
+							{formattedOriginalPrice}
+						</span>
+					)
+				}
+
+				<!-- Discount pill - more prominent -->
+				{
+					discount && hasDiscount && (
+						<span class='bg-accent/10 text-accent font-bold text-sm px-3 py-1 rounded-full flex-shrink-0 ml-auto self-start discount-badge'>
+							{discount}% DESCUENTO
+						</span>
+					)
+				}
+			</div>
+
+			<!-- Savings message with animation -->
+			{
+				hasDiscount && formattedSavingsAmount && (
+					<div class='mb-3 bg-accent/10 rounded-md p-2 border border-green-100 savings-highlight'>
+						<p class='text-green-700 font-medium text-sm flex items-center'>
+							<span class='mr-1.5'>
+								<Sales class='w-5 h-5' />
+							</span>
+							¡Ahorras {formattedSavingsAmount}!
+						</p>
+					</div>
+				)
+			}
+
+			<!-- Limited-time offer message with urgency -->
+			<div class='mb-4 flex items-center'>
+				<div
+					class='w-2 h-2 bg-red-500 rounded-full pulse-animation mr-2'>
+				</div>
+				<p class='text-sm text-gray-700 font-medium'>
+					Oferta válida hasta el <span class='font-bold'
+						>{formattedDate}</span
+					>
+				</p>
+			</div>
+
+			<!-- Delivery benefits with icons in a more organized layout -->
+			<div class='grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-5'>
+				<div class='flex items-center'>
+					<div class='flex-shrink-0 w-5 h-5 mr-2 text-accent'>
+						<ShippingIcon class='size-5' />
+					</div>
+					<p class='text-sm'>{deliveryMessage}</p>
+				</div>
+
+				<div class='flex items-center'>
+					<div class='flex-shrink-0 w-5 h-5 mr-2 text-accent'>
+						<CheckIcon />
+					</div>
+					<p class='text-sm'>{deliveryTimeMessage}</p>
+				</div>
+
+				<div class='flex items-center'>
+					<div class='flex-shrink-0 w-5 h-5 mr-2 text-accent'>
+						<CheckIcon />
+					</div>
+					<p class='text-sm'>Soporte técnico incluido</p>
+				</div>
+
+				<div class='flex items-center'>
+					<div class='flex-shrink-0 w-5 h-5 mr-2 text-accent'>
+						<CheckIcon />
+					</div>
+					<p class='text-sm'>Garantía de satisfacción</p>
+				</div>
+			</div>
+
+			<!-- Customer trust indicators -->
+			<div class='bg-white rounded-lg p-3 border border-gray-100 mb-4'>
+				<div class='flex items-center justify-center gap-3 text-center'>
+					<div class='flex items-center'>
+						<ShieldCheckIcon class='w-4 h-4 text-green-500' />
+						<span class='text-xs font-medium'>100% Seguro</span>
+					</div>
+					<div class='flex items-center'>
+						<span
+							class='rounded-full bg-green-100 mr-1 flex items-center p-0.5'>
+							<CheckIcon class='w-3 h-3 text-green-500' />
+						</span>
+						<span class='text-xs font-medium'
+							>Compra verificada</span
+						>
+					</div>
+					<div class='flex items-center'>
+						<PremiumCheckIcon class='w-4 h-4 text-blue-500 mr-1' />
+						<span class='text-xs font-medium'>Calidad premium</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- Payment methods with visual icons from PageInformation -->
+			<div class='pt-3 border-t border-gray-200'>
+				<p class='text-xs text-gray-600 mb-2'>
+					Métodos de pago aceptados:
+				</p>
+				<div class='flex flex-wrap gap-2'>
+					{/* Digital Wallets */}
+					{
+						Object.entries(digitalWallets).map(([key, value]) => (
+							<span class='bg-white text-gray-700 text-xs px-3 py-1.5 rounded-md border border-gray-200 shadow-sm flex items-center'>
+								{key === 'yape' && (
+									<img
+										src={YapeIcon.src}
+										alt='Yape'
+										class='w-4 h-4'
+									/>
+								)}
+								{key === 'plin' && (
+									<img
+										src={PlinIcon.src}
+										alt='Plin'
+										class='w-4 h-4'
+									/>
+								)}
+								{key === 'paypal' && (
+									<PayPal_v2Icon class='w-12 h-5' />
+								)}
+							</span>
+						))
+					}
+
+					{/* Bank Accounts */}
+					{
+						bankAccounts.map((bank) => (
+							<span class='bg-white text-gray-700 text-xs px-3 py-1.5 rounded-md border border-gray-200 shadow-sm flex items-center'>
+								{bank.bank === 'BCP' && (
+									<BCPIcon class='w-8 h-4' />
+								)}
+								{bank.bank === 'BBVA' && (
+									<BBVAIcon class='w-8 h-4' />
+								)}
+								{bank.bank === 'Scotiabank' && (
+									<ScotiabankIcon class='w-16 h-4' />
+								)}
+							</span>
+						))
+					}
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
+
+<style>
+	/* Enhanced animations and effects */
+	.price-highlight {
+		background: linear-gradient(
+			to right,
+			var(--color-primary),
+			var(--color-primary-dark)
+		);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		position: relative;
+	}
+
+	.discount-badge {
+		animation: pulse 2s infinite;
+	}
+
+	@keyframes pulse {
+		0% {
+			transform: scale(1);
+			box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.2);
+		}
+		70% {
+			transform: scale(1.05);
+			box-shadow: 0 0 0 10px rgba(22, 163, 74, 0);
+		}
+		100% {
+			transform: scale(1);
+			box-shadow: 0 0 0 0 rgba(22, 163, 74, 0);
+		}
+	}
+
+	.savings-highlight {
+		animation: slideIn 0.5s ease-out;
+	}
+
+	@keyframes slideIn {
+		from {
+			transform: translateY(-10px);
+			opacity: 0;
+		}
+		to {
+			transform: translateY(0);
+			opacity: 1;
+		}
+	}
+
+	/* Pulse animation for urgency indicator */
+	.pulse-animation {
+		box-shadow: 0 0 0 rgba(220, 38, 38, 0.4);
+		animation: pulse-red 2s infinite;
+	}
+
+	@keyframes pulse-red {
+		0% {
+			box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4);
+		}
+		70% {
+			box-shadow: 0 0 0 10px rgba(220, 38, 38, 0);
+		}
+		100% {
+			box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+		}
+	}
+
+	/* Better touch targets for mobile */
+	@media (max-width: 640px) {
+		.value-card {
+			padding: 1rem;
+			margin-bottom: 1rem;
+		}
+	}
+
+	/* Use global theme variables from global.css */
+	.text-primary {
+		color: var(--color-primary, #1e3a8a);
+	}
+
+	.text-accent {
+		color: var(--color-accent, #16a34a);
+	}
+</style>
