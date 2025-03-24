@@ -14,7 +14,10 @@ import ArrowRightIcon from '../icons/ArrowRight.astro';
 import CustomerSupport from '../CustomerSupport.astro';
 import { extractYoutubeId } from '../../utils/videoEmbeds';
 import { levelConfig, formatConfig } from '../../utils/bookTags';
+import { generateRecommendations } from '../../utils/RelatedProducts';
 import '../../styles/ProductDetail.css';
+import editorialData from '../../database/editorial.json';
+import ProductCard from '../ProductCard.astro';
 
 // Define proper interface for MediaItem
 interface MediaItem {
@@ -27,9 +30,11 @@ interface MediaItem {
 interface Props {
     book: Book;
     relatedBooks?: Book[];
+    relatedExams?: any[];
+    relatedPacks?: any[];
 }
 
-const { book, relatedBooks = [] } = Astro.props;
+const { book, relatedBooks = [], relatedExams = [], relatedPacks = [] } = Astro.props;
 
 // Prepare formatted price display
 const hasDiscount = book.discount && book.discount > 0;
@@ -105,7 +110,7 @@ if (book.video) {
 }
 
 // Determine level display for books
-const levelDisplay = book.level
+const levelDisplay = book.level && levelConfig[book.level as keyof typeof levelConfig]
     ? levelConfig[book.level as keyof typeof levelConfig]
     : null;
 
@@ -118,12 +123,24 @@ const shareUrl = currentUrl;
 const shareTitle = book.title;
 const shareDescription = book.description.substring(0, 100) + (book.description.length > 100 ? '...' : '');
 const shareImage = book.coverImage;
+
+// Get recommendations using the utility function
+const finalRecommendations = generateRecommendations(
+    book, 
+    relatedBooks, 
+    relatedExams, 
+    relatedPacks, 
+    4
+);
+
+// Get editorial information for books if available
+const editorialName = book.editorialId ? 
+    editorialData.find(e => e.id === book.editorialId)?.nombre : undefined;
 ---
 
 <div class="product-detail-container">
     <!-- JSON-LD Schema for SEO -->
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>
-
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         <!-- Breadcrumbs navigation -->
         <nav class="flex text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
@@ -141,6 +158,14 @@ const shareImage = book.coverImage;
                         </a>
                     </div>
                 </li>
+                <li>
+                    <div class="flex items-center">
+                        <span class="mx-2">/</span>
+                        <a href="/libros" class="hover:text-primary transition-colors">
+                            Libros
+                        </a>
+                    </div>
+                </li>
                 <li aria-current="page">
                     <div class="flex items-center">
                         <span class="mx-2">/</span>
@@ -149,7 +174,6 @@ const shareImage = book.coverImage;
                 </li>
             </ol>
         </nav>
-
         <!-- Product details grid with more contrast and visual separation -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
             <!-- Left column with media carousel -->
@@ -182,7 +206,6 @@ const shareImage = book.coverImage;
                         )}
                     </div>
                 )}
-
                 <!-- Customer support widget -->
                 <div class="mt-6">
                     <CustomerSupport />
@@ -194,7 +217,6 @@ const shareImage = book.coverImage;
                 <!-- Book title and main details -->
                 <div class="mb-6">
                     <h1 class="text-3xl md:text-4xl font-bold text-primary-dark mb-4 product-title">{book.title}</h1>
-                    
                     <!-- Level and format tags for books -->
                     <div class="flex flex-wrap gap-2 mb-4">
                         {levelDisplay && (
@@ -202,7 +224,6 @@ const shareImage = book.coverImage;
                                 {levelDisplay.label}
                             </span>
                         )}
-                        
                         {formatTags && formatTags.map(tag => (
                             <span class={`inline-flex items-center px-3 py-1 rounded-full border text-sm font-medium ${formatConfig[tag as keyof typeof formatConfig].color}`}>
                                 <span class="mr-1">{formatConfig[tag as keyof typeof formatConfig].icon}</span>
@@ -210,7 +231,6 @@ const shareImage = book.coverImage;
                             </span>
                         ))}
                     </div>
-                    
                     <!-- Rating and reviews with stars -->
                     {book.rating && (
                         <div class="flex items-center mb-4">
@@ -222,7 +242,6 @@ const shareImage = book.coverImage;
                             </span>
                         </div>
                     )}
-                    
                     <!-- Book description with better readability -->
                     <div class="prose prose-lg max-w-none text-gray-700 mb-6">
                         <p>{book.description}</p>
@@ -237,9 +256,8 @@ const shareImage = book.coverImage;
                             discount={book.discount}
                         />
                     )}
-                    
                     <!-- Price section now using the ValueCard component -->
-                    <ValueCard
+                    <ValueCard 
                         originalPrice={originalPrice}
                         discountedPrice={hasDiscount ? discountedPrice : undefined}
                         discount={book.discount}
@@ -277,7 +295,7 @@ const shareImage = book.coverImage;
                             </span>
                         </Button>
                     </div>
-                    
+
                     <!-- Book contents/included items with improved styling -->
                     <div class="border border-gray-200 rounded-xl bg-white p-5 shadow-sm">
                         <h2 class="text-xl font-bold text-primary-dark mb-4 flex items-center">
@@ -286,7 +304,7 @@ const shareImage = book.coverImage;
                             </span>
                             Contenido incluido
                         </h2>
-                        
+
                         <ul class="space-y-3 included-items-list">
                             {book.includedItems && book.includedItems.map(item => (
                                 <li class="flex items-start">
@@ -295,7 +313,7 @@ const shareImage = book.coverImage;
                                 </li>
                             ))}
                         </ul>
-                        
+
                         <div class="mt-5 bg-blue-50 rounded-lg p-4 border border-blue-100">
                             <p class="text-blue-800 text-sm">
                                 <strong>Importante:</strong> Al realizar tu compra, recibirás acceso inmediato a todos los materiales a través de un enlace de descarga enviado a tu correo electrónico o WhatsApp.
@@ -309,63 +327,26 @@ const shareImage = book.coverImage;
         <!-- Social sharing buttons for product pages -->
         <SocialShareButtons 
             url={shareUrl} 
-            title={shareTitle} 
-            description={shareDescription} 
+            title={shareTitle}
+            description={shareDescription}
             image={shareImage}
             productType="book"
             price={discountedPrice}
             currency="PEN"
         />
         
-        <!-- Related books section -->
-        {relatedBooks.length > 0 && (
+        <!-- Related products section - Now using the utility function -->
+        {finalRecommendations.length > 0 && (
             <div class="mt-16 related-section">
-                <SectionTitle>Libros relacionados</SectionTitle>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
-                    {relatedBooks.map(relatedBook => (
-                        <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100">
-                            <a href={`/libro/${relatedBook.id}`} class="block">
-                                <div class="relative overflow-hidden product-image-container">
-                                    <img 
-                                        src={relatedBook.coverImage} 
-                                        alt={relatedBook.altText || `Portada de ${relatedBook.title}`}
-                                        class="w-full h-48 object-cover transform transition-transform duration-500 hover:scale-105"
-                                    />
-                                    {relatedBook.discount && relatedBook.discount > 0 && (
-                                        <div class="absolute top-2 right-2 bg-accent text-white text-xs font-bold px-2 py-1 rounded-full">
-                                            {relatedBook.discount}% OFF
-                                        </div>
-                                    )}
-                                </div>
-                                <div class="p-4">
-                                    <h3 class="font-bold text-primary-dark text-lg mb-1 line-clamp-2">{relatedBook.title}</h3>
-                                    {relatedBook.level && levelConfig[relatedBook.level as keyof typeof levelConfig] && (
-                                        <div class="mb-2">
-                                            <span class={`text-xs px-2 py-1 rounded-full ${levelConfig[relatedBook.level as keyof typeof levelConfig].color}`}>
-                                                {levelConfig[relatedBook.level as keyof typeof levelConfig].label}
-                                            </span>
-                                        </div>
-                                    )}
-                                    <div class="mb-2 flex justify-between items-center">
-                                        {relatedBook.discount && relatedBook.discount > 0 ? (
-                                            <div class="flex items-center">
-                                                <span class="font-bold text-primary text-lg">
-                                                    S/{(relatedBook.price * (1 - relatedBook.discount / 100)).toFixed(2)}
-                                                </span>
-                                                <span class="text-gray-400 line-through text-sm ml-2">
-                                                    S/{relatedBook.price.toFixed(2)}
-                                                </span>
-                                            </div>
-                                        ) : (
-                                            <span class="font-bold text-primary text-lg">
-                                                S/{relatedBook.price.toFixed(2)}
-                                            </span>
-                                        )}
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    ))}
+                <SectionTitle>Recomendaciones para ti</SectionTitle>
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+                    {finalRecommendations.map(item => {                        
+                        return (
+                            <ProductCard
+                                product={item}
+                            />
+                        );
+                    })}
                 </div>
                 
                 <div class="text-center mt-8">
