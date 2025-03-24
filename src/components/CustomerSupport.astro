@@ -2,11 +2,12 @@
 import WhatsAppIcon from './icons/WhatsApp.astro';
 import ContactIcon from './icons/Contact.astro';
 import SupportIcon from './icons/Support.astro';
+import PageInfo from '../database/pageInformation.json';
 
 // WhatsApp contact information
-const whatsappNumber = '+51987654321';
+const whatsappNumber = PageInfo.contact.whatsapp;
 const whatsappMessage = 'Hola, tengo una consulta sobre los libros digitales.';
-const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
+const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/\+|\s/g, '')}?text=${encodeURIComponent(whatsappMessage)}`;
 const Schedule = 'Lun-Vie 9am-6pm | Sáb 9am-1pm';
 
 interface Props {
@@ -17,48 +18,35 @@ const { class: className = '' } = Astro.props;
 ---
 
 <div
-	class={`customer-support-widget rounded-xl bg-primary/5 p-5 border border-primary/20 shadow-sm ${className}`}>
-	<h3 class='text-lg font-bold text-primary-dark mb-3 flex items-center'>
-		<span class='bg-primary text-white p-1.5 rounded-full mr-2'>
-			<SupportIcon class='w-5 h-5' />
+	class={`customer-support-widget rounded-lg bg-primary/5 p-3 border border-primary/20 shadow-sm ${className}`}>
+	<h3 class='text-base font-bold text-primary-dark mb-2 flex items-center'>
+		<span class='bg-primary text-white p-1 rounded-full mr-2'>
+			<SupportIcon class='w-4 h-4' />
 		</span>
 		¿Necesitas ayuda?
 	</h3>
 
-	<p class='text-gray-600 text-sm mb-4'>
-		Estamos aquí para resolver todas tus dudas sobre nuestros productos o el
-		proceso de compra.
-	</p>
-
-	<div class='space-y-3'>
+	<div class='space-y-2'>
 		<a
 			href={whatsappUrl}
 			target='_blank'
 			rel='noopener noreferrer'
-			class='flex items-center p-3 bg-green-50 hover:bg-green-100 text-green-800 rounded-lg border border-green-200 transition-colors duration-300'>
-			<WhatsAppIcon class='w-6 h-6 mr-3 text-green-600' />
-			<div>
-				<div class='font-medium'>WhatsApp</div>
-				<div class='text-sm'>{whatsappNumber}</div>
-			</div>
+			class='flex items-center p-2 bg-green-50 hover:bg-green-100 text-green-800 rounded-lg border border-green-200 transition-colors duration-300'>
+			<WhatsAppIcon class='w-5 h-5 mr-2 text-green-600' />
+			<div class='font-medium'>{whatsappNumber}</div>
 		</a>
 
 		<a
 			href='/contacto'
-			class='flex items-center p-3 bg-blue-50 hover:bg-blue-100 text-blue-800 rounded-lg border border-blue-200 transition-colors duration-300'>
-			<ContactIcon class='w-6 h-6 mr-3 text-blue-600' />
-			<div>
-				<div class='font-medium'>Página de Contacto</div>
-				<div class='text-sm'>Formulario y más opciones</div>
-			</div>
+			class='text-sm text-primary hover:text-primary-dark flex items-center'>
+			<ContactIcon class='w-4 h-4 mr-1 text-primary' />
+			<span>Más opciones de contacto</span>
 		</a>
 	</div>
 
-	<div class='mt-4 pt-4 border-t border-gray-200'>
+	<div class='mt-2 pt-2 border-t border-gray-200'>
 		<p class='text-xs text-gray-500'>
-			Horario de atención: <span class='font-bold border-0'
-				>{Schedule}</span
-			>
+			Horario: <span class='font-bold border-0'>{Schedule}</span>
 		</p>
 	</div>
 </div>
