@@ -53,7 +53,7 @@ const thumbnails = mediaItems.map((item, index) => {
 		{
 			mediaItems.map((item, index) => (
 				<div
-					class={`carousel-slide w-full h-full absolute inset-0 ${index === 0 ? 'active' : ''}`}
+					class={`carousel-slide aspect-video absolute inset-0 ${index === 0 ? 'active' : ''}`}
 					data-index={index}
 					id={`slide-${index}`}>
 					{item.type === 'image' ? (
