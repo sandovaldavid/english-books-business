@@ -15,7 +15,7 @@ import CustomerSupport from '../CustomerSupport.astro';
 import { extractYoutubeId } from '../../utils/videoEmbeds';
 import { levelConfig, formatConfig } from '../../utils/bookTags';
 import { generateRecommendations } from '../../utils/RelatedProducts';
-import '../../styles/ProductDetail.css';
+import '../../styles/ProductDetail.css'; 
 import editorialData from '../../database/editorial.json';
 import ProductCard from '../ProductCard.astro';
 
@@ -40,12 +40,9 @@ const { book, relatedBooks = [], relatedExams = [], relatedPacks = [] } = Astro.
 const hasDiscount = book.discount && book.discount > 0;
 const originalPrice = book.price;
 const discountedPrice = hasDiscount ? book.price * (1 - (book.discount || 0) / 100) : book.price;
-const formattedDiscountedPrice = `S/${discountedPrice.toFixed(2)}`;
-const formattedOriginalPrice = `S/${originalPrice.toFixed(2)}`;
 
 // Calculate savings amount if there's a discount
 const savingsAmount = hasDiscount ? originalPrice - discountedPrice : 0;
-const formattedSavingsAmount = `S/${savingsAmount.toFixed(2)}`;
 
 // For books that might be part of a bundle or have a retail value
 const retailValue = book.price * 1.3;
