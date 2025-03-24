@@ -4,6 +4,7 @@
     "title": "Business English Master",
     "description": "Domina el inglés empresarial con este completo material que incluye vocabulario específico, frases comunes y ejercicios prácticos.",
     "price": 49.99,
+    "editorialId": "pearson",
     "coverImage": "/images/libros-template.jpg",
     "altText": "Portada del libro Business English Master",
     "video": "https://www.youtube.com/embed/u7kdVe8q5zs?si=r_AOVcnJOR1bRXhA",
@@ -36,6 +37,7 @@
     "title": "Grammar Fundamentals",
     "description": "Aprende las bases gramaticales del inglés con explicaciones claras y cientos de ejercicios prácticos para todos los niveles.",
     "price": 34.99,
+    "editorialId": "pearson",
     "coverImage": "/images/libros-template.jpg",
     "altText": "Portada del libro Grammar Fundamentals",
     "includedItems": [
@@ -62,6 +64,7 @@
     "title": "Professional Presentations",
     "description": "Aprende a realizar presentaciones profesionales en inglés con confianza. Incluye plantillas, frases útiles y técnicas de oratoria.",
     "price": 39.99,
+    "editorialId": "pearson",
     "coverImage": "/images/libros-template.jpg",
     "altText": "Portada del libro Professional Presentations",
     "includedItems": [
@@ -88,6 +91,7 @@
     "title": "TOEFL Preparation Guide",
     "description": "Prepárate para el examen TOEFL con esta guía completa que incluye estrategias, práctica para todas las secciones y exámenes simulados.",
     "price": 59.99,
+    "editorialId": "pearson",
     "coverImage": "/images/libros-template.jpg",
     "altText": "Portada del libro TOEFL Preparation Guide",
     "includedItems": [
@@ -114,6 +118,7 @@
     "title": "English for IT Professionals",
     "description": "Vocabulario especializado y comunicación efectiva para profesionales del sector tecnológico. Incluye términos técnicos y situaciones comunes.",
     "price": 44.99,
+    "editorialId": "pearson",
     "coverImage": "/images/libros-template.jpg",
     "altText": "Portada del libro English for IT Professionals",
     "includedItems": [
@@ -140,6 +145,7 @@
     "title": "Conversational English",
     "description": "Mejora tu fluidez verbal con este método basado en conversaciones reales. Perfecto para quienes necesitan comunicarse diariamente en inglés.",
     "price": 29.99,
+    "editorialId": "pearson",
     "coverImage": "/images/libros-template.jpg",
     "altText": "Portada del libro Conversational English",
     "includedItems": [
@@ -166,6 +172,7 @@
     "title": "English for Healthcare",
     "description": "Material especializado para profesionales de la salud. Vocabulario médico, interacción con pacientes y documentación clínica en inglés.",
     "price": 54.99,
+    "editorialId": "pearson",
     "coverImage": "/images/libros-template.jpg",
     "altText": "Portada del libro English for Healthcare",
     "includedItems": [
@@ -192,6 +199,7 @@
     "title": "Pronunciation Mastery",
     "description": "Perfecciona tu acento y pronunciación en inglés. Técnicas fonéticas, ejercicios prácticos y herramientas para sonar como un nativo.",
     "price": 36.99,
+    "editorialId": "pearson",
     "coverImage": "/images/libros-template.jpg",
     "altText": "Portada del libro Pronunciation Mastery",
     "includedItems": [
@@ -218,6 +226,7 @@
     "title": "Legal English",
     "description": "Inglés jurídico para abogados y profesionales del derecho. Terminología especializada, redacción de documentos y comunicación efectiva en entornos legales.",
     "price": 64.99,
+    "editorialId": "pearson",
     "coverImage": "/images/libros-template.jpg",
     "altText": "Portada del libro Legal English",
     "includedItems": [
@@ -244,6 +253,7 @@
     "title": "English for Kids",
     "description": "Método divertido para que los niños aprendan inglés desde cero. Actividades lúdicas, canciones, juegos y material visual atractivo.",
     "price": 24.99,
+    "editorialId": "pearson",
     "coverImage": "/images/libros-template.jpg",
     "altText": "Portada del libro English for Kids",
     "includedItems": [
@@ -270,6 +280,7 @@
     "title": "Job Interview English",
     "description": "Prepárate para entrevistas de trabajo en inglés. Frases clave, respuestas a preguntas comunes y vocabulario para destacar tus habilidades.",
     "price": 29.99,
+    "editorialId": "pearson",
     "coverImage": "/images/libros-template.jpg",
     "altText": "Portada del libro Job Interview English",
     "includedItems": [
@@ -296,6 +307,7 @@
     "title": "Academic Writing in English",
     "description": "Aprende a redactar ensayos, tesis y trabajos académicos en inglés con estructura correcta, estilo adecuado y vocabulario académico.",
     "price": 42.99,
+    "editorialId": "pearson",
     "coverImage": "/images/libros-template.jpg",
     "altText": "Portada del libro Academic Writing in English",
     "includedItems": [
