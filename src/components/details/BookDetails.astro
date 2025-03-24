@@ -247,7 +247,7 @@ const editorialName = book.editorialId ?
                     <!-- Value proposition highlight for books with retail value -->
                     {hasRetailValue && (
                         <ValuePropositionHighlight 
-                            totalBooksValue={retailValue}
+                            totalBooksValue={originalPrice}
                             originalPrice={originalPrice}
                             discountedPrice={hasDiscount ? discountedPrice : undefined}
                             discount={book.discount}
