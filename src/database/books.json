@@ -6,13 +6,13 @@
     "price": 49.99,
     "editorialId": "pearson",
     "offerDays": 30,
-    "coverImage": "/images/libros-template.jpg",
+    "coverImage": "https://res.cloudinary.com/didokliuv/image/upload/v1742848874/libros-template_fbmtoe.jpg",
     "altText": "Portada del libro Business English Master",
     "video": "https://www.youtube.com/embed/u7kdVe8q5zs?si=r_AOVcnJOR1bRXhA",
     "images": [
-      "/images/book-sample/book-sample-01.jpg",
-      "/images/book-sample/book-sample-02.jpg",
-      "/images/book-sample/book-sample-03.jpg"
+      "https://res.cloudinary.com/didokliuv/image/upload/v1742848807/book-sample-02_s2kr5g.jpg",
+      "https://res.cloudinary.com/didokliuv/image/upload/v1742848806/book-sample-03_tgi57l.jpg",
+      "https://res.cloudinary.com/didokliuv/image/upload/v1742848806/book-sample-01_zm2gtc.jpg"
     ],
     "includedItems": [
       "PDF del libro completo",
