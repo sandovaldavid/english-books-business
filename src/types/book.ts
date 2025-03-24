@@ -38,6 +38,7 @@ export interface Book {
 	price: number;
 	editorialId: string;
 	discount?: number | 0;
+	offerDays?: number | 0;
 	coverImage: string;
 	images?: string[];
 	video?: string;
