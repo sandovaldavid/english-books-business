@@ -28,16 +28,10 @@
 	"paymentMethods": {
 		"bankAccounts": [
 			{
-				"bank": "Banco de Crédito del Perú (BCP)",
+				"bank": "BCP",
 				"accountNumber": "123-4567890-0-12",
 				"interbankCode": "002-123-4567890123-00",
 				"holder": "Juan Pérez"
-			},
-			{
-				"bank": "Interbank",
-				"accountNumber": "200-789456-1",
-				"interbankCode": "003-200-7894561234-01",
-				"holder": "FluentReads SAC"
 			},
 			{
 				"bank": "BBVA",
