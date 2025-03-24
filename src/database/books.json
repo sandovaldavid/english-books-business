@@ -5,6 +5,7 @@
     "description": "Domina el inglés empresarial con este completo material que incluye vocabulario específico, frases comunes y ejercicios prácticos.",
     "price": 49.99,
     "editorialId": "pearson",
+    "offerDays": 30,
     "coverImage": "/images/libros-template.jpg",
     "altText": "Portada del libro Business English Master",
     "video": "https://www.youtube.com/embed/u7kdVe8q5zs?si=r_AOVcnJOR1bRXhA",
