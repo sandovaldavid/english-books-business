@@ -4,27 +4,27 @@
 		"description": "Libros de lectura para todos los niveles",
 		"icon": "📖",
 		"image": "/images/libros-template.jpg",
-		"link": "/catalogo/negocios"
+		"link": "/catalogo/libros"
 	},
 	{
 		"name": "Packs de Libros",
 		"description": "Paquetes de libros para todos los niveles",
 		"icon": "📚",
 		"image": "/images/libros-template.jpg",
-		"link": "/catalogo/gramatica"
+		"link": "/catalogo/packs"
 	},
 	{
 		"name": "Examenes Internacionales",
 		"description": "Preparación para exámenes internacionales",
 		"icon": "📗",
 		"image": "/images/libros-template.jpg",
-		"link": "/catalogo/certificaciones"
+		"link": "/catalogo/examenes'internacionales"
 	},
 	{
 		"name": "Diccionarios",
 		"description": "Diccionarios de diferentes idiomas",
 		"icon": "📕",
 		"image": "/images/libros-template.jpg",
-		"link": "/catalogo/gramatica"
+		"link": "/catalogo/diccionarios"
 	}
 ]
