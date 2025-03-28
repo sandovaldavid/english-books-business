@@ -4,6 +4,7 @@ import type { ExamType, ExamDifficulty } from './exam';
 export interface Product {
 	id: string;
 	title: string;
+	description?: string;
 	editorialId?: string;
 	price: number;
 	discount?: number | 0;
