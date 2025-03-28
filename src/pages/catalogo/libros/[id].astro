@@ -4,7 +4,9 @@ import BookDetails from '../../../components/details/BookDetails.astro';
 import booksData from '../../../database/books.json';
 import siteInfo from '../../../database/pageInformation.json';
 import type { Book } from '../../../types/book';
+import type { Product } from '../../../types/product';
 import { levelConfig } from '../../../utils/bookTags';
+import { bookToProduct } from '../../../utils/RelatedProducts';
 
 export async function getStaticPaths() {
 	return booksData.map((book) => ({
@@ -32,6 +34,11 @@ const relatedBooks = booksData
 					)))
 	)
 	.slice(0, 4);
+
+// Get related books and convert them to Product type for consistency
+const relatedProducts: Product[] = relatedBooks.map((book) =>
+	bookToProduct(book)
+);
 
 // Calculate discounted price if there's a discount
 const hasDiscount = book.discount !== undefined && book.discount > 0;
@@ -145,7 +152,7 @@ const breadcrumbJsonLd = {
 	twitterImage={book.coverImage}
 	structuredData={structuredData}
 	breadcrumbData={breadcrumbJsonLd}>
-	<BookDetails book={book} relatedBooks={relatedBooks} />
+	<BookDetails book={book} relatedProducts={relatedProducts} />
 
 	<!-- Add event listener for cart operations -->
 	<script>
