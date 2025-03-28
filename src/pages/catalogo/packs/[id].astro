@@ -5,6 +5,7 @@ import Breadcrumb from '../../../components/Breadcrumb.astro';
 import packsData from '../../../database/packs.json';
 import siteInfo from '../../../database/pageInformation.json';
 import type { Pack } from '../../../types/pack';
+import type { Product } from '../../../types/product';
 import { levelConfig } from '../../../utils/bookTags';
 
 export async function getStaticPaths() {
@@ -33,7 +34,13 @@ const relatedPacks = packsArray
 						pack.formatTags?.includes(tag)
 					)))
 	)
-	.slice(0, 4);
+	.slice(0, 4)
+	// Transform pack objects to include required Product interface properties
+	.map((relatedPack) => ({
+		...relatedPack,
+		productType: 'pack' as const, // Add the productType property
+		detailsLink: `/catalogo/packs/${relatedPack.id}`,
+	})) as Product[]; // Cast as Product[] to ensure TypeScript recognizes the transformation
 
 // Calculate discounted price if there's a discount
 const hasDiscount = pack.discount !== undefined && pack.discount > 0;
