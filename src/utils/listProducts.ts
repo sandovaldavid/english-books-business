@@ -24,13 +24,20 @@ export function getAllProducts(): Product[] {
 		: [];
 
 	// Process exams and add productType property
-	const processedExams: Product[] = Array.isArray(examsData)
-		? examsData.map((exam) => ({
-				...exam,
-				productType: 'exam' as const,
-				level: exam.difficulty, // Map difficulty to level for consistent filtering
-		  }))
-		: [];
+	// Fix: Ensure examsData is properly processed as an array
+	const examDataArray = Array.isArray(examsData) ? examsData : [examsData];
+	const processedExams: Product[] = examDataArray.map((exam) => ({
+		...exam,
+		productType: 'exam' as const,
+		level: exam.difficulty, // Map difficulty to level for consistent filtering
+		detailsLink:
+			exam.detailsLink || `/catalogo/examenes-internacionales/${exam.id}`, // Ensure proper link format
+	}));
+
+	// Log counts for debugging
+	console.log(`Processed ${processedBooks.length} books`);
+	console.log(`Processed ${processedPacks.length} packs`);
+	console.log(`Processed ${processedExams.length} exams`);
 
 	// Return the combined array of products
 	return [...processedBooks, ...processedPacks, ...processedExams];
