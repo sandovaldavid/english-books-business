@@ -22,8 +22,21 @@ export function filterProducts(
 	// Early return if no products
 	if (!products || !products.length) return [];
 
+	// Log for debugging
+	console.log(`Filtering ${products.length} products`);
+	console.log(
+		`Type filter: ${resourceType}, Level: ${level}, Format: ${format}`
+	);
+
+	// Count products by type before filtering
+	const typeCounts = products.reduce((acc, product) => {
+		acc[product.productType] = (acc[product.productType] || 0) + 1;
+		return acc;
+	}, {} as Record<string, number>);
+	console.log('Products by type before filtering:', typeCounts);
+
 	// Use Array.filter with combined conditions for better performance
-	return products.filter((product) => {
+	const filtered = products.filter((product) => {
 		// Type filter
 		if (resourceType !== 'any' && product.productType !== resourceType) {
 			return false;
@@ -58,9 +71,9 @@ export function filterProducts(
 
 			// Check editorial match for books - use proper type guard
 			const editorialMatch =
-				product.productType === 'book' && 
-				'editorialId' in product && 
-				product.editorialId && 
+				product.productType === 'book' &&
+				'editorialId' in product &&
+				product.editorialId &&
 				editorialMap.has(product.editorialId) &&
 				editorialMap
 					.get(product.editorialId)
@@ -74,6 +87,15 @@ export function filterProducts(
 
 		return true;
 	});
+
+	// Log filtered results for debugging
+	const filteredTypeCounts = filtered.reduce((acc, product) => {
+		acc[product.productType] = (acc[product.productType] || 0) + 1;
+		return acc;
+	}, {} as Record<string, number>);
+	console.log('Products by type after filtering:', filteredTypeCounts);
+
+	return filtered;
 }
 
 /**
