@@ -132,12 +132,39 @@ const CatalogFilter = ({
 	const [searchTerm, setSearchTerm] = useState('');
 	const [isSearchFocused, setIsSearchFocused] = useState(false);
 
+	// New state for showing resource type filter
+	const [showTypeFilter, setShowTypeFilter] = useState(enableResourceTypeFilter);
+
+	// State for displayed product count
+	const [displayedProductCount, setDisplayedProductCount] = useState(productCount);
+
 	// Update resource type when prop changes
 	useEffect(() => {
 		if (propResourceType !== resourceType) {
 			setResourceType(propResourceType);
 		}
 	}, [propResourceType]);
+
+	// Update showTypeFilter when enableResourceTypeFilter prop changes
+	useEffect(() => {
+		setShowTypeFilter(enableResourceTypeFilter);
+	}, [enableResourceTypeFilter]);
+
+	// Listen for product count updates from outside the component
+	useEffect(() => {
+		const handleProductCountUpdate = (event) => {
+			if (event.detail && typeof event.detail.count === 'number') {
+				setDisplayedProductCount(event.detail.count);
+			}
+		};
+
+		window.addEventListener('updateFilterCount', handleProductCountUpdate);
+
+		// Cleanup listener on component unmount
+		return () => {
+			window.removeEventListener('updateFilterCount', handleProductCountUpdate);
+		};
+	}, []);
 
 	// Filter options including "all" and enum values
 	const levelOptions = [
@@ -195,6 +222,14 @@ const CatalogFilter = ({
 		}),
 	];
 
+	// Resource type options
+	const resourceTypeOptions = [
+		{ value: 'any', label: 'Todos los tipos' },
+		{ value: 'book', label: 'Libros' },
+		{ value: 'pack', label: 'Packs' },
+		{ value: 'exam', label: 'Exámenes' },
+	];
+
 	const sortOptions = [
 		{ value: 'featured', label: 'Destacados' },
 		{ value: 'price-low', label: 'Precio: menor a mayor' },
@@ -209,6 +244,7 @@ const CatalogFilter = ({
 		format: 'Formato',
 		sort: 'Orden',
 		search: 'Búsqueda',
+		resourceType: 'Tipo',
 	};
 
 	// Default values that don't count as active filters
@@ -217,13 +253,15 @@ const CatalogFilter = ({
 		format: 'all',
 		sort: 'featured',
 		search: '',
+		resourceType: 'any',
 	};
 
-	// Calculate active filter count for badge - remove resourceType from here
+	// Calculate active filter count for badge - including resourceType when enabled
 	const activeFilterCount = [
 		level !== 'all' ? 1 : 0,
 		format !== 'all' ? 1 : 0,
 		searchTerm ? 1 : 0,
+		(showTypeFilter && resourceType !== 'any') ? 1 : 0,
 	].reduce((a, b) => a + b, 0);
 
 	// Update active tags when filter values change
@@ -266,10 +304,21 @@ const CatalogFilter = ({
 			}
 		}
 
-		// Don't add resource type to visible tags since it's hidden
+		// Add resource type tag if enabled and not default
+		if (showTypeFilter && resourceType !== 'any') {
+			const option = resourceTypeOptions.find((opt) => opt.value === resourceType);
+			if (option) {
+				newTags.push({
+					name: 'resourceType',
+					value: resourceType,
+					label: option.label,
+					displayName: filterLabels.resourceType,
+				});
+			}
+		}
 
 		setActiveTags(newTags);
-	}, [level, format, searchTerm]);
+	}, [level, format, searchTerm, resourceType, showTypeFilter]);
 
 	// Listen for reset filters event from outside this component
 	useEffect(() => {
@@ -278,7 +327,8 @@ const CatalogFilter = ({
 			setFormat('all');
 			setSort('featured');
 			setSearchTerm('');
-			applyFilters('all', 'all', 'featured', resourceType, '');
+			if (showTypeFilter) setResourceType('any');
+			applyFilters('all', 'all', 'featured', showTypeFilter ? 'any' : resourceType, '');
 		};
 
 		document.addEventListener('resetFilters', handleResetFilters);
@@ -287,7 +337,7 @@ const CatalogFilter = ({
 		return () => {
 			document.removeEventListener('resetFilters', handleResetFilters);
 		};
-	}, []);
+	}, [showTypeFilter, resourceType]);
 
 	// Handler for filter changes
 	const handleFilterChange = (name, value) => {
@@ -303,6 +353,9 @@ const CatalogFilter = ({
 				break;
 			case 'search':
 				setSearchTerm(value);
+				break;
+			case 'resourceType':
+				setResourceType(value);
 				break;
 		}
 	};
@@ -340,24 +393,23 @@ const CatalogFilter = ({
 				level: currentLevel,
 				format: currentFormat,
 				sort: currentSort,
-				resourceType: enableResourceTypeFilter
-					? currentResourceType
-					: 'any',
+				resourceType: showTypeFilter ? currentResourceType : 'any',
 				search: currentSearchTerm,
 			},
 		});
 		window.dispatchEvent(event);
 	};
 
-	// Clear all filters - don't reset resource type since it's prop-controlled
+	// Clear all filters - don't reset resource type if it's prop-controlled and filter is disabled
 	const clearFilters = () => {
 		setLevel('all');
 		setFormat('all');
 		setSort('featured');
 		setSearchTerm('');
+		if (showTypeFilter) setResourceType('any');
 
-		// Apply the cleared filters but keep resource type
-		applyFilters('all', 'all', 'featured', resourceType, '');
+		// Apply the cleared filters but keep resource type if not enabled
+		applyFilters('all', 'all', 'featured', showTypeFilter ? 'any' : resourceType, '');
 	};
 
 	// Remove a specific filter tag
@@ -365,18 +417,31 @@ const CatalogFilter = ({
 		const newLevel = name === 'level' ? 'all' : level;
 		const newFormat = name === 'format' ? 'all' : format;
 		const newSearchTerm = name === 'search' ? '' : searchTerm;
+		const newResourceType = name === 'resourceType' ? 'any' : resourceType;
 
 		if (name === 'level') setLevel('all');
 		if (name === 'format') setFormat('all');
 		if (name === 'search') setSearchTerm('');
+		if (name === 'resourceType') setResourceType('any');
 
 		// Apply the updated filters
-		applyFilters(newLevel, newFormat, sort, resourceType, newSearchTerm);
+		applyFilters(newLevel, newFormat, sort, newResourceType, newSearchTerm);
 	};
 
 	// Toggle mobile filters visibility
 	const toggleMobileFilters = () => {
 		setMobileFiltersVisible(!mobileFiltersVisible);
+	};
+
+	// Toggle resource type filter
+	const toggleTypeFilter = () => {
+		setShowTypeFilter(!showTypeFilter);
+
+		// If we're hiding the filter, reset to "any" and apply filters
+		if (showTypeFilter) {
+			setResourceType('any');
+			applyFilters(level, format, sort, 'any', searchTerm);
+		}
 	};
 
 	return (
@@ -423,12 +488,12 @@ const CatalogFilter = ({
 						</button>
 					</div>
 
-					{/* Filters count and results count */}
+					{/* Filters count, results count, and toggle for resource type filter */}
 					<div className='flex items-center justify-between mt-3 text-sm text-gray-500'>
 						<div className='flex items-center'>
 							<span>
-								{productCount}{' '}
-								{productCount === 1
+									{displayedProductCount}{' '}
+								{displayedProductCount === 1
 									? 'resultado'
 									: 'resultados'}
 							</span>
@@ -441,7 +506,21 @@ const CatalogFilter = ({
 							)}
 						</div>
 
-						{/* Remove resource type toggle switch */}
+						{/* Toggle switch for resource type filter */}
+						<div className='flex items-center'>
+							<span className='mr-2 text-xs'>Filtrar por tipo</span>
+							<button
+								type="button"
+								onClick={toggleTypeFilter}
+								className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${showTypeFilter ? 'bg-primary' : 'bg-gray-300'}`}
+								role="switch"
+								aria-checked={showTypeFilter}
+							>
+								<span
+									className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${showTypeFilter ? 'translate-x-6' : 'translate-x-1'}`}
+								/>
+							</button>
+						</div>
 					</div>
 				</div>
 
@@ -533,7 +612,37 @@ const CatalogFilter = ({
 								</div>
 							</div>
 
-							{/* Remove resource type filter from mobile UI */}
+							{/* Resource type filter in mobile - only shown when enabled */}
+							{showTypeFilter && (
+								<div className='space-y-2'>
+									<label className='block text-sm font-medium text-gray-700'>
+										Tipo de producto
+									</label>
+									<div className='relative'>
+										<select
+											name='resourceType'
+											value={resourceType}
+											onChange={(e) =>
+												handleFilterChange(
+													'resourceType',
+													e.target.value
+												)
+											}
+											className='w-full rounded-lg border-gray-300 shadow-sm py-2.5 px-4 appearance-none bg-neutral-light text-primary-dark focus:outline-none focus:ring-2 focus:ring-primary mobile-filter-select'>
+											{resourceTypeOptions.map((option) => (
+												<option
+													key={option.value}
+													value={option.value}>
+													{option.label}
+												</option>
+											))}
+										</select>
+										<span className='absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-primary'>
+											<ArrowDownIcon />
+										</span>
+									</div>
+								</div>
+							)}
 
 							<div className='space-y-2'>
 								<label className='block text-sm font-medium text-gray-700'>
@@ -637,7 +746,30 @@ const CatalogFilter = ({
 							</span>
 						</div>
 
-						{/* Remove resource type filter from desktop UI */}
+						{/* Resource type filter - only shown when enabled */}
+						{showTypeFilter && (
+							<div className='relative'>
+								<select
+									name='resourceType'
+									value={resourceType}
+									onChange={(e) =>
+										handleFilterChange('resourceType', e.target.value)
+									}
+									className='appearance-none bg-neutral-light text-primary-dark px-4 py-2.5 pr-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary shadow-sm transition-all duration-300 hover:shadow filter-select'
+									aria-label='Filtrar por tipo de producto'>
+									{resourceTypeOptions.map((option) => (
+										<option
+											key={option.value}
+											value={option.value}>
+											{option.label}
+										</option>
+									))}
+								</select>
+								<span className='absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-primary'>
+									<ArrowDownIcon />
+								</span>
+							</div>
+						)}
 
 						<div className='relative'>
 							<div className='absolute left-3 top-1/2 -translate-y-1/2 z-10'>
