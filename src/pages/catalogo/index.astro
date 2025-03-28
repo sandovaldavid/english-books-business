@@ -22,7 +22,8 @@ const sort = searchParams.get('sort') || 'featured';
 
 // Determine page title based on filters
 let pageTitle = 'Catálogo de Libros en Inglés';
-let pageDescription = 'Explora nuestra amplia selección de materiales educativos en inglés para todos los niveles. Encuentra el recurso perfecto para tus necesidades de aprendizaje.';
+let pageDescription =
+	'Explora nuestra amplia selección de materiales educativos en inglés para todos los niveles. Encuentra el recurso perfecto para tus necesidades de aprendizaje.';
 
 // Define level name mapping with proper type checking
 const levelNames: Record<string, string> = {
@@ -74,6 +75,7 @@ const safeBooks: Book[] = booksData.map((book) => ({
 	featured: book.featured || false,
 	formatTags: (book.formatTags || []) as FormatTag[],
 	popularityTags: (book.popularityTags || []) as PopularityTag[],
+	editorialId: book.editorialId || '',
 }));
 ---
 
@@ -122,11 +124,11 @@ const safeBooks: Book[] = booksData.map((book) => ({
 
 	<!-- Promotional Section with updated props -->
 	<PromoSection
-		title="Ofertas y Promociones Exclusivas" 
-		subtitle="Ofertas Especiales"
-		className="bg-gradient-to-br from-primary/5 to-accent/5 py-16"
+		title='Ofertas y Promociones Exclusivas'
+		subtitle='Ofertas Especiales'
+		className='bg-gradient-to-br from-primary/5 to-accent/5 py-16'
 		countdownDays={5}
-		cardSize="large"
+		cardSize='large'
 	/>
 
 	<!-- FAQ Section -->
