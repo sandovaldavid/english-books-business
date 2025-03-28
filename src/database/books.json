@@ -63,7 +63,7 @@
 		"detailsLink": "/catalogo/libros/everyday-conversations",
 		"discount": 10,
 		"level": "beginner",
-		"featured": false,
+		"featured": true,
 		"formatTags": ["pdf", "audio"],
 		"popularityTags": ["specialOffer", "conversation"]
 	},
