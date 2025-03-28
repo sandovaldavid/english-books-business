@@ -5,6 +5,7 @@ import TestimoniesCard from '../../components/TestimoniesCard.astro';
 import Button from '../../components/Button.astro';
 import FAQ from '../../components/FAQ.astro';
 import CTABanner from '../../components/CTA-Banner.astro';
+import siteInfo from '../../database/pageInformation.json';
 
 // Import testimonies data
 import testimonies from '../../database/testimonies.json';
@@ -21,7 +22,10 @@ const satisfactionRate = '98%';
 const pageTitle = 'Testimonios de Clientes | FluentReads';
 const pageDescription =
 	'Descubre qué opinan nuestros clientes sobre nuestros libros y materiales en inglés. Historias reales de éxito y experiencias positivas con FluentReads.';
-const canonicalUrl = new URL('/testimonios', Astro.site).toString();
+const canonicalUrl = new URL('/testimonios', siteInfo.siteURL).toString();
+
+// Get OG image from site info or use default
+const ogImage = siteInfo.seo.images.testimonials || siteInfo.seo.defaultImage;
 
 // Structured data for testimonials page
 const structuredData = {
@@ -51,13 +55,44 @@ const structuredData = {
 		})),
 	},
 };
+
+// Create breadcrumbs data
+const breadcrumbData = {
+	'@context': 'https://schema.org',
+	'@type': 'BreadcrumbList',
+	itemListElement: [
+		{
+			'@type': 'ListItem',
+			position: 1,
+			name: 'Inicio',
+			item: siteInfo.siteURL,
+		},
+		{
+			'@type': 'ListItem',
+			position: 2,
+			name: 'Testimonios',
+			item: canonicalUrl,
+		},
+	],
+};
 ---
 
 <Layout
 	title={pageTitle}
 	description={pageDescription}
 	canonicalURL={canonicalUrl}
-	structuredData={structuredData}>
+	ogType='website'
+	ogTitle={pageTitle}
+	ogDescription={pageDescription}
+	ogImage={ogImage}
+	ogSiteName={siteInfo.siteName}
+	twitterCard={siteInfo.seo.images.testimonials}
+	twitterTitle={pageTitle}
+	twitterDescription={pageDescription}
+	twitterImage={ogImage}
+	twitterSite={siteInfo.socialMediaHandles.twitter}
+	structuredData={structuredData}
+	breadcrumbData={breadcrumbData}>
 	<!-- Hero section with statistics -->
 	<section
 		class='py-12 bg-gradient-to-br from-primary/10 to-secondary/5 relative overflow-hidden'>
