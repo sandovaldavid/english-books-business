@@ -36,44 +36,35 @@
 .catalog-section {
     position: relative;
     overflow: hidden;
+    background-color: #fafafa;
 }
 
+/* Decorative accent shape */
 .accent-shape {
     position: absolute;
-    top: -100px;
-    right: -100px;
-    width: 500px;
-    height: 500px;
-    background: radial-gradient(
-        circle,
-        var(--color-secondary-light) 0%,
-        rgba(250, 204, 21, 0) 70%
-    );
-    border-radius: 100%;
-    opacity: 0.4;
-    z-index: 0;
-    animation: pulse-slow 8s infinite alternate;
-}
-
-@keyframes pulse-slow {
-    0% {
-        opacity: 0.2;
-        transform: scale(0.8);
-    }
-    100% {
-        opacity: 0.4;
-        transform: scale(1.2);
-    }
+    top: 0;
+    right: 0;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(30, 64, 175, 0.08) 100%);
+    clip-path: polygon(100% 0, 100% 100%, 30% 100%, 70% 0);
+    z-index: 1;
 }
 
 /* Category cards animations */
 .category-card {
     opacity: 0;
     transform: translateY(20px);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .category-card.animate-fade-in {
     animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.category-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 .category-icon {
@@ -99,6 +90,9 @@
 /* Filter styles */
 .filter-container {
     transition: all 0.3s ease;
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .filter-container:hover {
@@ -112,6 +106,18 @@
 
 .filter-select:focus {
     transform: translateY(-1px);
+}
+
+.filter-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #1e40af;
+    background-color: #dbeafe;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 /* Improved filter tag styles */
@@ -236,6 +242,7 @@
 .fade-in {
     opacity: 0;
     transform: translateY(20px);
+    animation: fadeIn 0.8s ease forwards;
     transition: opacity 0.6s ease-out, transform 0.6s ease-out;
 }
 
@@ -244,9 +251,14 @@
     transform: translateY(0);
 }
 
+.fade-in:not(.in-view) {
+    opacity: 0;
+}
+
 .slide-up {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(20px);
+    animation: slideUp 0.8s ease forwards;
     transition: opacity 0.6s ease-out, transform 0.6s ease-out;
 }
 
@@ -255,12 +267,17 @@
     transform: translateY(0);
 }
 
+.slide-up:not(.in-view) {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
 /* Animation keyframes */
 @keyframes fadeIn {
-    from {
+    0% {
         opacity: 0;
     }
-    to {
+    100% {
         opacity: 1;
     }
 }
@@ -282,6 +299,17 @@
         transform: translateY(30px);
     }
     to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
         opacity: 1;
         transform: translateY(0);
     }
@@ -365,6 +393,69 @@ body.filters-loading .books-grid::before {
 #reset-filters:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Catalog Banner */
+.catalog-banner {
+    position: relative;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+}
+
+.catalog-banner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(30, 58, 138, 0.85) 0%, rgba(30, 58, 138, 0.7) 100%);
+    z-index: 1;
+}
+
+/* Educational-looking elements */
+.educational-card {
+    position: relative;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.educational-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 2rem 2rem 0;
+    border-color: transparent #dbeafe transparent transparent;
+    z-index: 1;
+}
+
+/* Book-like elements */
+.book-spine {
+    position: relative;
+    height: 200px;
+    width: 30px;
+    background: linear-gradient(to right, #1e3a8a, #3b82f6);
+    border-radius: 3px 0 0 3px;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+    transform: perspective(500px) rotateY(25deg);
+    transform-origin: right center;
+}
+
+.book-spine::after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    bottom: 10px;
+    left: 5px;
+    width: 2px;
+    background: rgba(255, 255, 255, 0.3);
 }
 
 /* Responsive adjustments */
