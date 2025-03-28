@@ -1,10 +1,20 @@
 ---
+interface OfferReference {
+    id: string;
+    type: "book" | "pack" | "exam";
+    expiration?: string;
+    customLink?: string;
+}
+
 interface Offer {
+    id: string;
     title: string;
     description: string;
     image: string;
     discount?: string;
     expiration?: string;
+    link: string;
+    type: "book" | "pack" | "exam";
 }
 
 interface Props {
@@ -12,8 +22,8 @@ interface Props {
     subtitle?: string;
     ctaText?: string;
     ctaLink?: string;
-    offers?: Offer[];
     showCarousel?: boolean;
+    maxOffersToShow?: number;
 }
 
 const { 
@@ -21,41 +31,89 @@ const {
     subtitle = "Tu fuente principal de recursos para aprender inglés",
     ctaText = "Explorar Catálogo",
     ctaLink = "/catalogo",
-    offers = [
-        {
-            title: "Oferta de Verano",
-            description: "20% de descuento en todos los libros de inglés para negocios",
-            image: "/images/libros-template.jpg",
-            discount: "20%",
-            expiration: "30 de agosto"
-        },
-        {
-            title: "Pack Emprendedor",
-            description: "Lleva 3 libros especializados y paga solo 2",
-            image: "/images/libros-template.jpg",
-            discount: "3x2",
-            expiration: "Tiempo limitado"
-        },
-        {
-            title: "Curso + Libro",
-            description: "Por la compra de cualquier libro, acceso gratis a un curso online",
-            image: "/images/libros-template.jpg",
-            discount: "GRATIS",
-            expiration: "Hasta agotar existencias"
-        }
-    ],
-    showCarousel = true
+    showCarousel = true,
+    maxOffersToShow = 4
 } = Astro.props;
+
+// Import references from offerHeroBanner.json
+import offerReferences from '../database/offerHeroBanner.json';
+// Import source data files
+import booksData from '../database/books.json';
+import packsData from '../database/packs.json';
+import examsData from '../database/exams.json';
+
+// Function to get product details based on type and ID
+function getProductDetails(reference: OfferReference): Offer | null {
+    let product;
+    
+    switch (reference.type) {
+        case "book":
+            product = booksData.find(book => book.id === reference.id);
+            if (product) {
+                return {
+                    id: product.id,
+                    title: product.title,
+                    description: product.description,
+                    image: product.coverImage,
+                    discount: product.discount ? `${product.discount}%` : undefined,
+                    expiration: reference.expiration,
+                    link: reference.customLink || product.detailsLink,
+                    type: "book"
+                };
+            }
+            break;
+        
+        case "pack":
+            product = packsData.find(pack => pack.id === reference.id);
+            if (product) {
+                return {
+                    id: product.id,
+                    title: product.title,
+                    description: product.description,
+                    image: product.coverImage,
+                    discount: product.discount ? `${product.discount}%` : undefined,
+                    expiration: reference.expiration,
+                    link: reference.customLink || product.detailsLink,
+                    type: "pack"
+                };
+            }
+            break;
+        
+        case "exam":
+            product = examsData.find(exam => exam.id === reference.id);
+            if (product) {
+                return {
+                    id: product.id,
+                    title: product.title,
+                    description: product.description,
+                    image: product.coverImage,
+                    discount: product.discount ? `${product.discount}%` : undefined,
+                    expiration: reference.expiration,
+                    link: reference.customLink || product.detailsLink,
+                    type: "exam"
+                };
+            }
+            break;
+    }
+    
+    return null;
+}
+
+// Process offer references to get complete offer data
+const offerReferencesLimited = offerReferences.slice(0, maxOffersToShow);
+const offers: Offer[] = offerReferencesLimited
+    .map(ref => getProductDetails(ref as OfferReference))
+    .filter((offer): offer is Offer => offer !== null);
 
 import { fade } from 'astro:transitions';
 import '../styles/HeroBanner.css';
 import ArrowRightIcon from './icons/ArrowRight.astro';
-import CarruselButtonsIcon from './CarruselButtons.astro';
+import CarruselButtons from './CarruselButtons.astro';
 import Button from './Button.astro';
 ---
 
 <section class="hero-banner bg-primary-dark text-white py-6 md:py-18 lg:py-10 overflow-hidden relative lg:px-8">
-    <!-- Fondo con efecto de partículas animadas -->
+    <!-- Animated particles background effect -->
     <div class="particles-background absolute inset-0 opacity-20"></div>
     
     <div class="container mx-auto px-4 mt-6 relative z-10">
@@ -83,21 +141,27 @@ import Button from './Button.astro';
             </Button>
         </div>
 
-        {showCarousel && (
-            <div class="offers-carousel mt-12 relative">
+        {showCarousel && offers.length > 0 && (
+            <div class="offers-carousel mt-12 relative" data-offers-count={offers.length}>
                 <div class="carousel-container overflow-hidden rounded-xl shadow-2xl">
                     <div class="carousel-track flex transition-transform duration-500">
                         {offers.map((offer, index) => (
-                            <div class="carousel-slide w-full flex-shrink-0 p-6 md:p-8 bg-gradient-to-r from-primary to-primary-light rounded-xl overflow-hidden relative">
+                            <div class="carousel-slide w-full flex-shrink-0 p-6 md:p-8 bg-gradient-to-r from-primary to-primary-light rounded-xl overflow-hidden relative" data-offer-id={offer.id} data-offer-type={offer.type}>
                                 <div class="flex flex-col md:flex-row items-center gap-8">
                                     <div class="md:w-2/5 relative">
-                                        <div class="absolute -top-2 -left-2 bg-accent text-white px-4 py-1 rounded-lg font-bold z-20 animate-pulse">
-                                            {offer.discount}
+                                        {offer.discount && (
+                                            <div class="absolute -top-2 -left-2 bg-accent text-white px-4 py-1 rounded-lg font-bold z-20 animate-pulse">
+                                                {offer.discount}
+                                            </div>
+                                        )}
+                                        <div class="absolute -top-2 -right-2 bg-primary-light text-white px-3 py-1 rounded-lg font-bold z-20">
+                                            {offer.type === "book" ? "Libro" : offer.type === "pack" ? "Pack" : "Examen"}
                                         </div>
                                         <img 
                                             src={offer.image} 
                                             alt={offer.title} 
                                             class="rounded-lg shadow-lg object-cover w-full h-60 md:h-80 transform transition-transform hover:scale-105"
+                                            loading={index === 0 ? "eager" : "lazy"}
                                         />
                                     </div>
                                     <div class="md:w-3/5 text-left">
@@ -107,12 +171,14 @@ import Button from './Button.astro';
                                             <Button 
                                                 variant="accent"
                                                 size="medium"
-                                                href="/promociones"
+                                                href={offer.link}
                                                 class="animate-button-slide">
                                                 <span>Ver detalles</span>
                                                 <ArrowRightIcon class='h-5 w-5 ml-2 animate-arrow'/>
                                             </Button>
-                                            <p class="text-sm opacity-80">Expira: {offer.expiration}</p>
+                                            {offer.expiration && (
+                                                <p class="text-sm opacity-80">Expira: {offer.expiration}</p>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -121,16 +187,20 @@ import Button from './Button.astro';
                     </div>
                 </div>
 
-                <!-- Controles del carrusel -->
-                <CarruselButtonsIcon/>
+                <!-- Carousel controls with proper aria labels -->
+                <CarruselButtons 
+                    ariaLabelPrev="Ver oferta anterior"
+                    ariaLabelNext="Ver oferta siguiente"
+                    className="carousel-buttons"
+                />
 
-                <!-- Indicadores -->
+                <!-- Carousel indicators -->
                 <div class="carousel-indicators flex justify-center gap-2 mt-6">
                     {offers.map((_, index) => (
                         <button 
-                            class="indicator-dot h-3 w-3 rounded-full bg-gray-400 hover:bg-secondary transition-colors duration-300" 
+                            class={`indicator-dot h-3 w-3 rounded-full ${index === 0 ? 'bg-secondary' : 'bg-gray-400'} hover:bg-secondary transition-colors duration-300`} 
                             data-index={index}
-                            aria-label={`Go to slide ${index + 1}`}
+                            aria-label={`Ver oferta ${index + 1}`}
                         ></button>
                     ))}
                 </div>
