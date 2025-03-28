@@ -17,7 +17,12 @@ import TestimoniesList from '../components/TestimoniesList.astro';
 		ctaText="Explorar Catálogo"
 		ctaLink="/catalogo"
 	/>
-	<FeaturedCatalog />
+	<FeaturedCatalog 
+		maxBooks={4}
+		showOnlyFeatured={true}
+		title="Libros Destacados"
+		subtitle="Explora nuestra selección de recursos educativos premium diseñados para ayudarte a dominar el inglés"
+	/>
 	<Benefits />
 	<TestimoniesList count={3} />
 

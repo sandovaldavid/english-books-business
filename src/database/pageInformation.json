@@ -1,6 +1,6 @@
 {
 	"siteName": "FluentReads",
-	"siteURL": "https://fluentreads.com",
+	"siteURL": "https://fluentreads.devsolution.software",
 	"siteDescription": "La mejor tienda online para aprender inglés con libros digitales, packs de estudio y material para exámenes internacionales.",
 	"logo": "/images/logo.png",
 	"contact": {
@@ -69,11 +69,11 @@
 		"languageAlternates": [
 			{
 				"language": "es",
-				"url": "https://fluentreads.com/es/"
+				"url": "https://fluentreads.devsolution.software/es/"
 			},
 			{
 				"language": "en",
-				"url": "https://fluentreads.com/en/"
+				"url": "https://fluentreads.devsolution.software/en/"
 			}
 		],
 		"organizationInfo": {
