@@ -19,12 +19,5 @@
 		"icon": "📗",
 		"image": "/images/libros-template.jpg",
 		"link": "/catalogo/examenes-internacionales"
-	},
-	{
-		"name": "Diccionarios",
-		"description": "Diccionarios de diferentes idiomas",
-		"icon": "📕",
-		"image": "/images/libros-template.jpg",
-		"link": "/catalogo/diccionarios"
 	}
 ]
