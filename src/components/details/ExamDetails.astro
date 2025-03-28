@@ -4,7 +4,6 @@ import ReviewStars from '../ReviewStars.astro';
 import SectionTitle from '../SectionTitle.astro';
 import MediaCarousel from '../MediaCarousel.astro';
 import SocialShareButtons from '../SocialShareButtons.astro';
-import ValuePropositionHighlight from './ValuePropositionHighlight.astro';
 import ValueCard from './ValueCard.astro';
 import type { Exam } from '../../types/exam';
 import WhatsAppIcon from '../icons/WhatsApp.astro';
@@ -13,8 +12,14 @@ import CheckIcon from '../icons/Check.astro';
 import ArrowRightIcon from '../icons/ArrowRight.astro';
 import CustomerSupport from '../CustomerSupport.astro';
 import { extractYoutubeId } from '../../utils/videoEmbeds';
-import { levelConfig, formatConfig } from '../../utils/bookTags';
+import { difficultyConfig } from '../../utils/examTags';
+import { formatConfig } from '../../utils/bookTags';
+import { generateRecommendations } from '../../utils/RelatedProducts';
 import '../../styles/ProductDetail.css';
+import editorialData from '../../database/editorial.json';
+import ProductCard from '../ProductCard.astro';
+import DiscountBadge from '../DiscountBadge.astro';
+import type { Product } from '../../types/product';
 
 // Define proper interface for MediaItem
 interface MediaItem {
@@ -26,51 +31,31 @@ interface MediaItem {
 
 interface Props {
 	exam: Exam;
-	relatedExams?: Exam[];
+	relatedProducts?: Product[];
 }
 
-const { exam, relatedExams = [] } = Astro.props;
+const { exam, relatedProducts = [] } = Astro.props;
 
-// Prepare pricing information
+// Prepare formatted price display
 const hasDiscount = exam.discount && exam.discount > 0;
 const originalPrice = exam.price;
 const discountedPrice = hasDiscount
 	? exam.price * (1 - (exam.discount || 0) / 100)
 	: exam.price;
-
-// Calculate savings amount if there's a discount
 const savingsAmount = hasDiscount ? originalPrice - discountedPrice : 0;
-
-// For exams that might have a retail/market value
 const retailValue = exam.price * 1.3;
 const hasRetailValue = retailValue > exam.price;
 
-// Generate JSON-LD for SEO
-const jsonLd = {
-	'@context': 'https://schema.org',
-	'@type': 'Product',
-	name: exam.title,
-	description: exam.description,
-	image: exam.coverImage,
-	offers: {
-		'@type': 'Offer',
-		price: discountedPrice,
-		priceCurrency: 'PEN',
-		availability: 'https://schema.org/InStock',
-	},
-	aggregateRating: exam.rating
-		? {
-				'@type': 'AggregateRating',
-				ratingValue: exam.rating.score,
-				reviewCount: exam.rating.reviewCount,
-			}
-		: undefined,
-};
+// Extract YouTube video ID if present
+let youtubeVideoId = '';
+if (exam.video) {
+	youtubeVideoId = extractYoutubeId(exam.video);
+}
 
 // Prepare media items for carousel
 const mediaItems: MediaItem[] = [];
 
-// Add images if available
+// Add up to 3 images if available
 if (exam.images && Array.isArray(exam.images)) {
 	exam.images.forEach((img) => {
 		mediaItems.push({
@@ -102,51 +87,90 @@ if (exam.video) {
 	});
 }
 
-// Get exam display metadata
-const levelDisplay = exam.difficulty
-	? levelConfig[exam.difficulty as keyof typeof levelConfig]
-	: null;
-
-// Get format tags
+// Get level display and format tags
+const levelDisplay =
+	exam.difficulty &&
+	difficultyConfig[exam.difficulty as keyof typeof difficultyConfig]
+		? difficultyConfig[exam.difficulty as keyof typeof difficultyConfig]
+		: null;
 const formatTags = exam.formatTags || [];
+
+// Get recommendations
+const finalRecommendations = generateRecommendations(exam, relatedProducts, 4);
 
 // Prepare social share data
 const currentUrl = Astro.url.href;
+const shareUrl = currentUrl;
 const shareTitle = exam.title;
 const shareDescription =
 	exam.description.substring(0, 100) +
 	(exam.description.length > 100 ? '...' : '');
 const shareImage = exam.coverImage;
+
+// SEO JSON-LD
+const jsonLd = {
+	'@context': 'https://schema.org',
+	'@type': 'Product',
+	name: exam.title,
+	description: exam.description,
+	image: exam.coverImage,
+	offers: {
+		'@type': 'Offer',
+		price: discountedPrice,
+		priceCurrency: 'PEN',
+		availability: 'https://schema.org/InStock',
+	},
+	category: `Examen ${exam.examType}`,
+	aggregateRating: exam.rating
+		? {
+				'@type': 'AggregateRating',
+				ratingValue: exam.rating.score,
+				reviewCount: exam.rating.reviewCount,
+			}
+		: undefined,
+};
 ---
 
-<div class='product-detail-container'>
+<div class='product-detail-container bg-gray-50'>
 	<!-- JSON-LD Schema for SEO -->
 	<script type='application/ld+json' set:html={JSON.stringify(jsonLd)} />
 
-	<div class='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12'>
-		<!-- Breadcrumbs navigation -->
-		<nav class='flex text-sm text-gray-500 mb-6' aria-label='Breadcrumb'>
+	<div class='max-w-6xl mx-auto px-4 sm:px-6 py-6 md:py-8'>
+		<!-- Breadcrumbs -->
+		<nav
+			class='flex text-xs sm:text-sm text-gray-500 mb-4 overflow-x-auto pb-1'
+			aria-label='Breadcrumb'>
 			<ol class='inline-flex items-center space-x-1 md:space-x-3'>
 				<li class='inline-flex items-center'>
-					<a href='/' class='hover:text-primary transition-colors'>
-						Inicio
-					</a>
+					<a href='/' class='hover:text-primary transition-colors'
+						>Inicio</a
+					>
 				</li>
 				<li>
 					<div class='flex items-center'>
-						<span class='mx-2'>/</span>
+						<span class='mx-1 md:mx-2'>/</span>
 						<a
-							href='/examenes'
-							class='hover:text-primary transition-colors'>
-							Exámenes Internacionales
-						</a>
+							href='/catalogo'
+							class='hover:text-primary transition-colors'
+							>Catálogo</a
+						>
+					</div>
+				</li>
+				<li>
+					<div class='flex items-center'>
+						<span class='mx-1 md:mx-2'>/</span>
+						<a
+							href='/catalogo/examenes-internacionales'
+							class='hover:text-primary transition-colors'
+							>Exámenes</a
+						>
 					</div>
 				</li>
 				<li aria-current='page'>
 					<div class='flex items-center'>
-						<span class='mx-2'>/</span>
+						<span class='mx-1 md:mx-2'>/</span>
 						<span
-							class='text-gray-600 font-medium truncate max-w-[200px]'
+							class='text-gray-600 font-medium truncate max-w-[120px] sm:max-w-[200px]'
 							>{exam.title}</span
 						>
 					</div>
@@ -154,191 +178,306 @@ const shareImage = exam.coverImage;
 			</ol>
 		</nav>
 
-		<!-- Product details grid -->
-		<div class='grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12'>
-			<!-- Left column with media carousel -->
-			<div class='flex flex-col'>
-				{
-					mediaItems.length > 0 ? (
-						<MediaCarousel
-							mediaItems={mediaItems}
-							title={exam.title}
-							height={exam.video ? '500px' : '450px'}
-						/>
-					) : (
-						<div class='relative overflow-hidden rounded-2xl shadow-xl mb-6 product-cover-container group'>
-							<img
-								src={exam.coverImage}
-								alt={exam.altText || `Portada de ${exam.title}`}
-								class='w-full h-auto object-cover transition-transform duration-700 transform group-hover:scale-105'
-							/>
-
-							{hasDiscount && exam.discount && (
-								<div class='absolute top-4 right-4 bg-accent text-white font-bold py-2 px-4 rounded-full shadow-md text-lg animate-pulse-slow'>
-									{exam.discount}% OFF
-								</div>
-							)}
-
-							{exam.featured && (
-								<div class='absolute top-4 left-4 bg-secondary text-primary font-bold py-2 px-4 rounded-full shadow-md text-sm'>
-									Recomendado
-								</div>
-							)}
-						</div>
-					)
-				}
-
-				<!-- Customer support widget -->
-				<div class='mt-6'>
-					<CustomerSupport />
-				</div>
-			</div>
-
-			<!-- Right column with exam details -->
-			<div class='flex flex-col'>
-				<!-- Exam title and main details -->
-				<div class='mb-6'>
-					<h1
-						class='text-3xl md:text-4xl font-bold text-primary-dark mb-4 product-title'>
+		<div class='bg-white rounded-xl shadow-sm overflow-hidden'>
+			<!-- Main product content grid - Reorganized for desktop -->
+			<div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-0'>
+				<!-- UNIFIED PRODUCT TITLE FOR MOBILE - Shown only on small screens -->
+				<div class='p-4 bg-primary/5 md:hidden col-span-full'>
+					<h1 class='text-2xl font-bold text-primary-dark'>
 						{exam.title}
 					</h1>
 
-					<!-- Level and format tags for exams -->
-					<div class='flex flex-wrap gap-2 mb-4'>
+					<!-- Exam Type & Level Tags - Mobile -->
+					<div class='flex flex-wrap gap-2 mt-2 mb-3'>
 						{
-							levelDisplay && (
-								<span
-									class={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${levelDisplay.color}`}>
-									{levelDisplay.label}
+							exam.examType && (
+								<span class='bg-cyan-100 text-cyan-800 text-xs px-2 py-1 rounded-full'>
+									{exam.examType}
 								</span>
 							)
 						}
 
-						<span
-							class='inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border bg-blue-100 text-blue-800 border-blue-200'>
-							Examen Internacional
-						</span>
-
 						{
-							formatTags &&
-								formatTags.map((tag) => (
-									<span
-										class={`inline-flex items-center px-3 py-1 rounded-full border text-sm font-medium ${formatConfig[tag as keyof typeof formatConfig]?.color || 'bg-gray-100 text-gray-800 border-gray-200'}`}>
-										<span class='mr-1'>
-											{formatConfig[
-												tag as keyof typeof formatConfig
-											]?.icon || ''}
-										</span>
-										{formatConfig[
-											tag as keyof typeof formatConfig
-										]?.label || tag}
-									</span>
-								))
+							levelDisplay && (
+								<span
+									class={`text-xs px-2 py-1 rounded-full ${levelDisplay.color}`}>
+									{levelDisplay.label}
+								</span>
+							)
 						}
 					</div>
 
-					<!-- Rating and reviews with stars -->
+					<!-- Rating - Mobile -->
 					{
 						exam.rating && (
-							<div class='flex items-center mb-4'>
-								<div class='flex text-yellow-400'>
-									<ReviewStars score={exam.rating.score} />
-								</div>
-								<span class='ml-2 text-gray-600'>
-									{exam.rating.score}/5 (
-									{exam.rating.reviewCount} reseñas)
+							<div class='flex items-center'>
+								<ReviewStars
+									score={exam.rating.score}
+									size='small'
+								/>
+								<span class='ml-2 text-sm text-gray-600'>
+									({exam.rating.reviewCount} reseñas)
 								</span>
 							</div>
 						)
 					}
+				</div>
 
-					<!-- Exam description -->
-					<div class='prose prose-lg max-w-none text-gray-700 mb-6'>
-						<p>{exam.description}</p>
-					</div>
-
-					<!-- Value proposition highlight for exams with retail value -->
-					{
-						hasRetailValue && (
-							<ValuePropositionHighlight
-								totalBooksValue={retailValue}
-								originalPrice={originalPrice}
-								discountedPrice={
-									hasDiscount ? discountedPrice : undefined
-								}
-								discount={exam.discount}
-							/>
-						)
-					}
-
-					<!-- Price section using ValueCard component -->
-					<ValueCard
-						originalPrice={originalPrice}
-						discountedPrice={hasDiscount
-							? discountedPrice
-							: undefined}
-						discount={exam.discount}
-						savingsAmount={hasDiscount ? savingsAmount : undefined}
-						productType='exam'
-					/>
-
-					<!-- Call to action buttons -->
-					<div class='flex flex-col sm:flex-row gap-4 mb-8'>
-						<Button
-							variant='primary'
-							size='large'
-							class='add-to-cart-btn flex-1 shadow-lg hover:shadow-xl transform transition-all duration-300 hover:-translate-y-1 group cursor-pointer'
-							data-id={exam.id}
-							data-title={exam.title}
-							data-price={discountedPrice}
-							data-image={exam.coverImage}
-							data-type='exam'>
-							<span class='flex items-center justify-center'>
-								<CartIcon class='w-5 h-5 mr-2' />
-								Agregar al carrito
-							</span>
-						</Button>
-
-						<Button
-							variant='accent'
-							size='large'
-							href='/checkout'
-							class='view-cart-btn flex-1 shadow-lg hover:shadow-xl transform transition-all duration-300 hover:-translate-y-1 group'>
-							<span class='flex items-center justify-center'>
-								<WhatsAppIcon class='w-5 h-5 mr-2' />
-								Ver carrito
-							</span>
-						</Button>
-					</div>
-
-					<!-- Exam contents/included items -->
-					<div
-						class='border border-gray-200 rounded-xl bg-white p-5 shadow-sm'>
-						<h2
-							class='text-xl font-bold text-primary-dark mb-4 flex items-center'>
-							<span
-								class='bg-primary text-white p-1 rounded-full mr-2'>
-								<CheckIcon class='w-5 h-5' />
-							</span>
-							Contenido incluido
-						</h2>
-
-						<ul class='space-y-3 included-items-list'>
-							{
-								exam.includedItems &&
-									exam.includedItems.map((item) => (
-										<li class='flex items-start'>
-											<span class='text-green-500 mr-2 mt-1'>
-												✓
-											</span>
-											<span>{item}</span>
-										</li>
-									))
-							}
-						</ul>
+				<!-- LEFT COLUMN FOR DESKTOP: Product Info - (spans 3 cols on lg) -->
+				<div
+					class='lg:col-span-3 order-2 md:order-1 p-4 sm:p-6 flex flex-col'>
+					<!-- DESKTOP HEADER -->
+					<div class='hidden md:block mb-6'>
+						<h1 class='text-3xl font-bold text-primary-dark mb-3'>
+							{exam.title}
+						</h1>
 
 						<div
-							class='mt-5 bg-blue-50 rounded-lg p-4 border border-blue-100'>
+							class='flex flex-wrap items-center gap-x-6 gap-y-2 mb-4'>
+							{/* Exam Type */}
+							{
+								exam.examType && (
+									<div class='flex items-center'>
+										<span class='text-gray-700 text-sm bg-cyan-100 py-1 px-3 rounded-full'>
+											{exam.examType}
+										</span>
+									</div>
+								)
+							}
+
+							{/* Level */}
+							{
+								levelDisplay && (
+									<span
+										class={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${levelDisplay.color}`}>
+										{levelDisplay.label}
+									</span>
+								)
+							}
+
+							{/* Rating */}
+							{
+								exam.rating && (
+									<div class='flex items-center'>
+										<ReviewStars
+											score={exam.rating.score}
+											size='medium'
+										/>
+										<span class='ml-2 text-sm text-gray-600'>
+											({exam.rating.reviewCount})
+										</span>
+									</div>
+								)
+							}
+						</div>
+
+						{/* Format Tags - Desktop */}
+						<div class='hidden md:flex flex-wrap gap-2 mb-4'>
+							{
+								formatTags &&
+									formatTags.map((tag) => (
+										<span
+											class={`inline-flex items-center px-3 py-1 rounded-full border text-sm font-medium ${formatConfig[tag as keyof typeof formatConfig].color}`}>
+											<span class='mr-1'>
+												{
+													formatConfig[
+														tag as keyof typeof formatConfig
+													].icon
+												}
+											</span>
+											{
+												formatConfig[
+													tag as keyof typeof formatConfig
+												].label
+											}
+										</span>
+									))
+							}
+						</div>
+					</div>
+
+					<!-- Description -->
+					<div class='mb-6'>
+						<h2 class='text-lg font-bold text-primary-dark mb-2'>
+							Descripción
+						</h2>
+						<div
+							class='prose prose-sm sm:prose-base max-w-none text-gray-700'>
+							<p>{exam.description}</p>
+						</div>
+					</div>
+
+					<!-- UNIFIED Price & Actions - Visible on all devices -->
+					<div class='mb-6'>
+						<!-- Use the ValueCard component with all pricing details -->
+						<ValueCard
+							originalPrice={originalPrice}
+							discountedPrice={hasDiscount
+								? discountedPrice
+								: undefined}
+							discount={exam.discount}
+							savingsAmount={hasDiscount
+								? savingsAmount
+								: undefined}
+							productType='exam'
+							offerDays={30}
+							totalBooksValue={hasRetailValue
+								? retailValue
+								: undefined}
+						/>
+
+						<!-- Universal CTA Buttons -->
+						<div class='flex gap-4 mb-4'>
+							<Button
+								variant='primary'
+								size='large'
+								class='add-to-cart-btn flex-1 shadow-md hover:shadow-lg transform transition-all duration-300 hover:-translate-y-1 group cursor-pointer'
+								data-id={exam.id}
+								data-title={exam.title}
+								data-price={discountedPrice}
+								data-image={exam.coverImage}
+								data-type='exam'>
+								<span class='flex items-center justify-center'>
+									<CartIcon class='w-5 h-5 mr-2' />
+									Agregar al carrito
+								</span>
+							</Button>
+
+							<Button
+								variant='accent'
+								size='large'
+								href='/checkout'
+								class='flex-1 shadow-md hover:shadow-lg transform transition-all duration-300 hover:-translate-y-1 group'>
+								<span class='flex items-center justify-center'>
+									<WhatsAppIcon class='w-5 h-5 mr-2' />
+									Ver carrito
+								</span>
+							</Button>
+						</div>
+					</div>
+
+					<!-- Mobile: Social & Support footer -->
+					<div class='md:hidden border-t border-gray-100 pt-4 mt-2'>
+						<CustomerSupport class='mb-4' />
+						<SocialShareButtons
+							url={shareUrl}
+							title={shareTitle}
+							description={shareDescription}
+							image={shareImage}
+							productType='exam'
+							price={discountedPrice}
+							currency='PEN'
+							className='w-full flex justify-center'
+						/>
+					</div>
+				</div>
+
+				<!-- RIGHT COLUMN FOR DESKTOP: Media and Details - (spans 2 cols on lg) -->
+				<div class='lg:col-span-2 order-1 md:order-2'>
+					<!-- Media Carousel Container -->
+					<div class='relative'>
+						{
+							mediaItems.length > 0 ? (
+								<MediaCarousel
+									mediaItems={mediaItems}
+									title={exam.title}
+									height='auto'
+								/>
+							) : (
+								<div class='relative product-cover-container aspect-[4/3] sm:aspect-[3/2] lg:aspect-[4/3]'>
+									<img
+										src={exam.coverImage}
+										alt={
+											exam.altText ||
+											`Portada de ${exam.title}`
+										}
+										class='w-full h-full object-cover'
+									/>
+								</div>
+							)
+						}
+
+						{
+							hasDiscount && exam.discount && (
+								<DiscountBadge
+									discount={`${exam.discount}% OFF`}
+									position='absolute top-2 right-2 z-10'
+									size='medium'
+									animate={true}
+								/>
+							)
+						}
+
+						{
+							exam.featured && (
+								<div class='absolute top-4 left-4 bg-secondary text-primary font-bold py-2 px-4 rounded-full shadow-md text-sm'>
+									Recomendado
+								</div>
+							)
+						}
+					</div>
+
+					<!-- Format Tags - Mobile display under image -->
+					<div class='p-4 border-b md:hidden'>
+						<div class='flex flex-wrap gap-2'>
+							{
+								formatTags &&
+									formatTags.map((tag) => (
+										<span
+											class={`inline-flex items-center px-2 py-1 rounded-full border text-xs ${formatConfig[tag as keyof typeof formatConfig].color}`}>
+											<span class='mr-1'>
+												{
+													formatConfig[
+														tag as keyof typeof formatConfig
+													].icon
+												}
+											</span>
+											{
+												formatConfig[
+													tag as keyof typeof formatConfig
+												].label
+											}
+										</span>
+									))
+							}
+						</div>
+					</div>
+
+					<!-- Desktop: Additional details section -->
+					<div class='hidden md:block p-4 sm:p-6'>
+						<!-- Included items -->
+						<div
+							class='border border-gray-100 rounded-xl bg-gray-50 p-4 mb-6'>
+							<h2
+								class='text-lg font-bold text-primary-dark mb-3 flex items-center'>
+								<span
+									class='bg-primary text-white p-1 rounded-full mr-2 flex-shrink-0'>
+									<CheckIcon class='w-4 h-4' />
+								</span>
+								Contenido incluido
+							</h2>
+
+							<ul
+								class='space-y-2 included-items-list pl-2 grid grid-cols-1 gap-x-4 gap-y-2'>
+								{
+									exam.includedItems &&
+										exam.includedItems.map((item) => (
+											<li class='flex items-start text-sm sm:text-base'>
+												<span class='text-green-500 mr-2 mt-0.5 flex-shrink-0'>
+													✓
+												</span>
+												<span class='text-gray-700'>
+													{item}
+												</span>
+											</li>
+										))
+								}
+							</ul>
+						</div>
+
+						<!-- Important note -->
+						<div
+							class='bg-blue-50 rounded-lg p-4 border border-blue-100 mb-6'>
 							<p class='text-blue-800 text-sm'>
 								<strong>Importante:</strong> Al realizar tu compra,
 								recibirás acceso inmediato a todos los materiales
@@ -346,102 +485,93 @@ const shareImage = exam.coverImage;
 								electrónico o WhatsApp.
 							</p>
 						</div>
+
+						<!-- Desktop: Customer support and sharing -->
+						<div class='space-y-4'>
+							<CustomerSupport class='w-full' />
+							<SocialShareButtons
+								url={shareUrl}
+								title={shareTitle}
+								description={shareDescription}
+								image={shareImage}
+								productType='exam'
+								price={discountedPrice}
+								currency='PEN'
+								className='w-full flex justify-center'
+							/>
+						</div>
+					</div>
+				</div>
+
+				<!-- Mobile: Included items -->
+				<div class='md:hidden order-3 p-4 sm:px-6'>
+					<div
+						class='border border-gray-100 rounded-xl bg-gray-50 p-4 mb-6'>
+						<h2
+							class='text-lg font-bold text-primary-dark mb-3 flex items-center'>
+							<span
+								class='bg-primary text-white p-1 rounded-full mr-2 flex-shrink-0'>
+								<CheckIcon class='w-4 h-4' />
+							</span>
+							Contenido incluido
+						</h2>
+
+						<ul
+							class='space-y-2 included-items-list pl-2 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2'>
+							{
+								exam.includedItems &&
+									exam.includedItems.map((item) => (
+										<li class='flex items-start text-sm sm:text-base'>
+											<span class='text-green-500 mr-2 mt-0.5 flex-shrink-0'>
+												✓
+											</span>
+											<span class='text-gray-700'>
+												{item}
+											</span>
+										</li>
+									))
+							}
+						</ul>
+					</div>
+
+					<!-- Mobile: Important note -->
+					<div
+						class='bg-blue-50 rounded-lg p-4 border border-blue-100 mb-6'>
+						<p class='text-blue-800 text-sm'>
+							<strong>Importante:</strong> Al realizar tu compra, recibirás
+							acceso inmediato a todos los materiales a través de un
+							enlace de descarga enviado a tu correo electrónico o
+							WhatsApp.
+						</p>
 					</div>
 				</div>
 			</div>
 		</div>
 
-		<!-- Social sharing buttons -->
-		<SocialShareButtons
-			url={currentUrl}
-			title={shareTitle}
-			description={shareDescription}
-			image={shareImage}
-			productType='exam'
-			price={discountedPrice}
-			currency='PEN'
-		/>
-
-		<!-- Related exams section -->
+		<!-- Related products section with improved responsive grid -->
 		{
-			relatedExams.length > 0 && (
-				<div class='mt-16 related-section'>
-					<SectionTitle>
-						Otros exámenes que podrían interesarte
-					</SectionTitle>
-					<div class='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8'>
-						{relatedExams.map((relatedExam) => (
-							<div class='bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100'>
-								<a
-									href={`/examen/${relatedExam.id}`}
-									class='block'>
-									<div class='relative overflow-hidden product-image-container'>
-										<img
-											src={relatedExam.coverImage}
-											alt={
-												relatedExam.altText ||
-												`Portada de ${relatedExam.title}`
-											}
-											class='w-full h-48 object-cover transform transition-transform duration-500 hover:scale-105'
-										/>
-										{relatedExam.discount &&
-											relatedExam.discount > 0 && (
-												<div class='absolute top-2 right-2 bg-accent text-white text-xs font-bold px-2 py-1 rounded-full'>
-													{relatedExam.discount}% OFF
-												</div>
-											)}
-									</div>
-									<div class='p-4'>
-										<h3 class='font-bold text-primary-dark text-lg mb-1 line-clamp-2'>
-											{relatedExam.title}
-										</h3>
-										{relatedExam.difficulty &&
-											levelConfig[
-												relatedExam.difficulty as keyof typeof levelConfig
-											] && (
-												<div class='mb-2'>
-													<span
-														class={`text-xs px-2 py-1 rounded-full ${levelConfig[relatedExam.difficulty as keyof typeof levelConfig].color}`}>
-														{
-															levelConfig[
-																relatedExam.difficulty as keyof typeof levelConfig
-															].label
-														}
-													</span>
-												</div>
-											)}
-										<div class='mb-2 flex justify-between items-center'>
-											{relatedExam.discount &&
-											relatedExam.discount > 0 ? (
-												<div class='flex items-center'>
-													<span class='font-bold text-primary text-lg'>
-														S/
-														{(
-															relatedExam.price *
-															(1 -
-																relatedExam.discount /
-																	100)
-														).toFixed(2)}
-													</span>
-													<span class='text-gray-400 line-through text-sm ml-2'>
-														S/
-														{relatedExam.price.toFixed(
-															2
-														)}
-													</span>
-												</div>
-											) : (
-												<span class='font-bold text-primary text-lg'>
-													S/
-													{relatedExam.price.toFixed(
-														2
-													)}
-												</span>
-											)}
-										</div>
-									</div>
-								</a>
-							</div>
+			finalRecommendations.length > 0 && (
+				<div class='mt-12 related-section'>
+					<SectionTitle>Recomendaciones para ti</SectionTitle>
+					<p class='text-gray-600 mb-6 max-w-3xl text-center mx-auto'>
+						Basado en tus intereses, estos productos podrían
+						complementar tu experiencia de aprendizaje
+					</p>
+
+					<div class='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6'>
+						{finalRecommendations.map((item) => (
+							<ProductCard
+								product={item}
+								size='medium'
+								className='h-full'
+								editorial={
+									item.editorialId && editorialData
+										? editorialData.find(
+												(e) => e.id === item.editorialId
+											)?.nombre
+										: undefined
+								}
+							/>
 						))}
 					</div>
 
@@ -449,9 +579,9 @@ const shareImage = exam.coverImage;
 						<Button
 							variant='outline'
 							size='medium'
-							href='/examenes'
+							href='/catalogo'
 							class='inline-flex items-center group'>
-							Ver todos los exámenes
+							Ver catálogo completo
 							<ArrowRightIcon class='ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform' />
 						</Button>
 					</div>
@@ -465,14 +595,15 @@ const shareImage = exam.coverImage;
 	import { CartManager } from '../../utils/cartManager';
 
 	document.addEventListener('DOMContentLoaded', () => {
-		const addToCartBtn = document.querySelector('.add-to-cart-btn');
-		if (addToCartBtn) {
-			addToCartBtn.addEventListener('click', () => {
-				const productId = addToCartBtn.getAttribute('data-id');
-				const productTitle = addToCartBtn.getAttribute('data-title');
-				const productPriceStr = addToCartBtn.getAttribute('data-price');
-				const productImage = addToCartBtn.getAttribute('data-image');
-				const productType = addToCartBtn.getAttribute('data-type');
+		// Add event listeners to "Add to Cart" buttons
+		const addToCartBtns = document.querySelectorAll('.add-to-cart-btn');
+		addToCartBtns.forEach((btn) => {
+			btn.addEventListener('click', () => {
+				const productId = btn.getAttribute('data-id');
+				const productTitle = btn.getAttribute('data-title');
+				const productPriceStr = btn.getAttribute('data-price');
+				const productImage = btn.getAttribute('data-image');
+				const productType = btn.getAttribute('data-type');
 
 				if (
 					productId &&
@@ -483,6 +614,7 @@ const shareImage = exam.coverImage;
 				) {
 					const productPrice = parseFloat(productPriceStr);
 
+					// Add item to cart using CartManager
 					CartManager.addItem({
 						id: productId,
 						title: productTitle,
@@ -491,17 +623,21 @@ const shareImage = exam.coverImage;
 						type: productType as 'book' | 'exam' | 'pack',
 					});
 
+					// Show success message
 					CartManager.showNotification(
 						`"${productTitle}" agregado al carrito`
 					);
+
+					// Dispatch event to notify other components about cart update
 					window.dispatchEvent(new CustomEvent('cartUpdated'));
 				}
 			});
-		}
+		});
 	});
 </script>
 
 <style>
+	/* Animation for included items */
 	.included-items-list li {
 		animation: fadeInUp 0.5s ease forwards;
 		opacity: 0;
@@ -522,6 +658,15 @@ const shareImage = exam.coverImage;
 	.included-items-list li:nth-child(5) {
 		animation-delay: 0.5s;
 	}
+	.included-items-list li:nth-child(6) {
+		animation-delay: 0.6s;
+	}
+	.included-items-list li:nth-child(7) {
+		animation-delay: 0.7s;
+	}
+	.included-items-list li:nth-child(8) {
+		animation-delay: 0.8s;
+	}
 
 	@keyframes fadeInUp {
 		from {
@@ -531,6 +676,19 @@ const shareImage = exam.coverImage;
 		to {
 			opacity: 1;
 			transform: translateY(0);
+		}
+	}
+
+	/* Improve tap targets on mobile */
+	@media (max-width: 640px) {
+		.included-items-list li {
+			padding: 6px 0;
+		}
+
+		button,
+		a.bg-primary,
+		a.bg-accent {
+			min-height: 42px;
 		}
 	}
 </style>

@@ -1,0 +1,348 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import SectionTitle from '../../../components/SectionTitle.astro';
+import Breadcrumb from '../../../components/Breadcrumb.astro';
+import CatalogExamContainer from '../../../components/catalog/CatalogExamContainer.astro';
+import PromoSection from '../../../components/catalog/PromoSection.astro';
+import FAQ from '../../../components/FAQ.astro';
+import CTABanner from '../../../components/CTA-Banner.astro';
+import CategoryCards from '../../../components/catalog/CategoryCards.astro';
+import '../../../styles/catalog.css';
+
+// Import data and proper types
+import type { Exam } from '../../../types/exam';
+import { ExamType, ExamDifficulty } from '../../../types/exam';
+import { getProductsByType } from '../../../utils/listProducts';
+
+// Get filter parameters from URL if any
+const { searchParams } = Astro.url;
+const difficulty = searchParams.get('difficulty') || 'all';
+const examType = searchParams.get('examType') || 'all';
+const sort = searchParams.get('sort') || 'featured';
+
+// Define type-safe mapping objects
+const difficultyNames: Record<string, string> = {
+	[ExamDifficulty.BEGINNER]: 'Principiante',
+	[ExamDifficulty.INTERMEDIATE]: 'Nivel Intermedio',
+	[ExamDifficulty.ADVANCED]: 'Nivel Avanzado',
+};
+
+const examTypeNames: Record<string, string> = {
+	[ExamType.IELTS]: 'IELTS',
+	[ExamType.TOEFL]: 'TOEFL',
+	[ExamType.CAMBRIDGE]: 'Cambridge',
+	[ExamType.SAT]: 'SAT',
+	[ExamType.OTHER]: 'Otros Exámenes',
+};
+
+// Determine page title and description based on filters
+let pageTitle = 'Exámenes Internacionales de Inglés';
+let pageDescription =
+	'Prepárate para exámenes internacionales de inglés con nuestros materiales de estudio. Recursos para IELTS, TOEFL, Cambridge y más.';
+let canonicalUrl = new URL(
+	'/catalogo/examenes-internacionales',
+	Astro.site
+).toString();
+let categoryHeroImage = '/images/book-sample/exam-hero.jpg';
+
+// If difficulty filter is applied, customize title
+if (difficulty !== 'all') {
+	const difficultyName = difficultyNames[difficulty] || difficulty;
+	pageTitle = `Exámenes de Inglés - ${difficultyName}`;
+	pageDescription = `Materiales de preparación para exámenes internacionales de inglés de nivel ${difficultyName}. Recursos para certificar tu nivel.`;
+	canonicalUrl = new URL(
+		`/catalogo/examenes-internacionales?difficulty=${difficulty}`,
+		Astro.site
+	).toString();
+}
+
+// If exam type filter is applied, customize further
+if (examType !== 'all') {
+	const examTypeName = examTypeNames[examType] || examType;
+	pageTitle = `${examTypeName} - ${pageTitle}`;
+	pageDescription = `Preparación para el examen ${examTypeName}. ${pageDescription}`;
+	canonicalUrl = new URL(
+		`/catalogo/examenes-internacionales?examType=${examType}`,
+		Astro.site
+	).toString();
+}
+
+// Get exams data using the utility function
+const allExams = getProductsByType('exam');
+
+// Convert to Exam[] type and ensure all required fields exist
+const safeExams: Exam[] = allExams.map((exam) => ({
+	id: exam.id,
+	title: exam.title,
+	description: exam.description || '',
+	price: exam.price,
+	coverImage: exam.coverImage,
+	altText: exam.altText || `${exam.title} Exam cover`,
+	includedItems: (exam as any).includedItems || [],
+	requirements: (exam as any).requirements || [],
+	rating: exam.rating || { score: 0, reviewCount: 0 },
+	buyLink: (exam as any).buyLink || `/checkout/${exam.id}`,
+	detailsLink:
+		exam.detailsLink || `/catalogo/examenes-internacionales/${exam.id}`,
+	discount: exam.discount || 0,
+	examType: (exam as any).examType || ExamType.OTHER,
+	difficulty: (exam.level as ExamDifficulty) || ExamDifficulty.INTERMEDIATE,
+	featured: exam.featured || false,
+	formatTags: exam.formatTags || [],
+	popularityTags: exam.popularityTags || [],
+	images: (exam as any).images || [],
+	video: (exam as any).video || '',
+}));
+
+// Define breadcrumb items
+const breadcrumbItems = [
+	{ label: 'Inicio', url: '/' },
+	{ label: 'Catálogo', url: '/catalogo' },
+	{
+		label: 'Exámenes Internacionales',
+		url: '/catalogo/examenes-internacionales',
+		active: true,
+	},
+];
+
+// Define structured data for SEO
+const structuredData = {
+	'@context': 'https://schema.org',
+	'@type': 'CollectionPage',
+	name: pageTitle,
+	description: pageDescription,
+	url: canonicalUrl,
+	hasPart: safeExams.map((exam) => ({
+		'@type': 'Product',
+		name: exam.title,
+		description: exam.description,
+		url: new URL(
+			`/catalogo/examenes-internacionales/${exam.id}`,
+			Astro.site
+		).toString(),
+		image: exam.coverImage,
+		offers: {
+			'@type': 'Offer',
+			price: exam.discount
+				? exam.price * (1 - exam.discount / 100)
+				: exam.price,
+			priceCurrency: 'PEN',
+			availability: 'https://schema.org/InStock',
+		},
+	})),
+};
+
+// Log exam count for debugging
+console.log(`Loaded ${safeExams.length} exams for display`);
+---
+
+<Layout
+	title={`${pageTitle} | FluentReads`}
+	description={pageDescription}
+	canonicalURL={canonicalUrl}
+	structuredData={structuredData}>
+	<!-- Hero Banner -->
+	<section
+		class='catalog-hero py-12 bg-primary bg-cover bg-center text-white relative overflow-hidden'
+		style={`background-image: linear-gradient(to bottom, rgba(30, 58, 138, 0.8), rgba(30, 58, 138, 0.5)), url(${categoryHeroImage});`}>
+		<div
+			class='absolute inset-0 bg-gradient-to-r from-primary-dark/80 to-primary/40'>
+		</div>
+		<div class='container mx-auto px-8 relative z-10'>
+			<div class='grid grid-cols-1 md:grid-cols-3 gap-8 h-full'>
+				<!-- Text content -->
+				<div class='md:col-span-2 text-center md:text-left'>
+					<!-- Breadcrumbs -->
+					<Breadcrumb
+						items={breadcrumbItems}
+						class='mb-6 text-white/90'
+					/>
+					<div>
+						<div
+							class='inline-block mb-4 text-4xl p-4 bg-white/10 backdrop-blur-sm rounded-lg shadow-lg fade-in'>
+							🎓
+						</div>
+						<h1
+							class='text-3xl md:text-4xl lg:text-5xl font-bold mb-4 slide-in-left'>
+							Exámenes Internacionales de Inglés
+						</h1>
+						<p
+							class='text-lg md:text-xl text-white/90 max-w-2xl mb-6 slide-in-left delay-100'>
+							Material de preparación para certificaciones
+							internacionales. Mejora tus resultados en IELTS,
+							TOEFL, Cambridge y más con recursos completos y
+							actualizados.
+						</p>
+						<div
+							class='flex flex-wrap justify-center md:justify-start gap-4 slide-in-left delay-200'>
+							<a
+								href='#catalog-section'
+								class='bg-secondary hover:bg-secondary-dark text-primary-dark font-bold py-3 px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl'>
+								Ver Exámenes
+							</a>
+							<a
+								href='#contact-form'
+								class='bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300'>
+								Consultar Disponibilidad
+							</a>
+						</div>
+					</div>
+				</div>
+
+				<!-- Decorative element -->
+				<div
+					class='hidden md:flex items-center justify-center relative overflow-hidden rounded-lg shadow-2xl border-4 border-white/20 fade-in delay-300'>
+					<div
+						class='aspect-[3/4] bg-gradient-to-br from-primary/40 to-accent/30 backdrop-blur-sm flex items-center justify-center w-full h-full'>
+						<img
+							src='/images/book-sample/exam-sample-01.jpg'
+							alt='Muestra de material de examen internacional'
+							class='object-cover w-full h-full'
+						/>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Decorative shapes -->
+		<div
+			class='absolute -bottom-8 left-0 right-0 h-16 bg-white'
+			style='clip-path: polygon(0 0, 100% 100%, 100% 100%, 0% 100%);'>
+		</div>
+		<div
+			class='absolute -bottom-8 left-0 right-0 h-16 bg-white/20 backdrop-blur-sm'
+			style='clip-path: polygon(0 0, 100% 100%, 100% 100%, 0% 100%);'>
+		</div>
+	</section>
+
+	<!-- Main Catalog Section -->
+	<section class='py-12 relative catalog-section' id='catalog-section'>
+		<div class='absolute inset-0 catalog-pattern opacity-[0.03]'></div>
+		<div class='container mx-auto px-4 relative z-10'>
+			<!-- Main catalog container component -->
+			<CatalogExamContainer
+				exams={safeExams}
+				initialDifficulty={difficulty}
+				initialExamType={examType}
+				initialSort={sort}
+				gridCols={4}
+				productSize='medium'
+			/>
+		</div>
+	</section>
+
+	<!-- Related Categories Section -->
+	<section class='py-12 bg-neutral-light'>
+		<div class='container mx-auto px-4'>
+			<div class='text-center mb-10'>
+				<SectionTitle>Explora otras categorías</SectionTitle>
+				<p class='text-gray-600 max-w-3xl mx-auto'>
+					Descubre nuestra selección completa de materiales educativos
+					en inglés
+				</p>
+			</div>
+			<CategoryCards />
+		</div>
+	</section>
+
+	<!-- Promotional Section -->
+	<PromoSection
+		title='Ofertas en Materiales de Preparación'
+		subtitle='Ofertas Especiales'
+		className='bg-gradient-to-br from-primary/5 to-accent/5 py-16'
+		countdownDays={5}
+		cardSize='large'
+	/>
+
+	<!-- FAQ Section -->
+	<FAQ
+		className='py-16'
+		dataset='catalog'
+		title='Preguntas frecuentes sobre exámenes internacionales'
+		description='Resuelve tus dudas sobre nuestros materiales de preparación para exámenes.'
+	/>
+
+	<!-- CTA Banner -->
+	<div class='container mx-auto px-4 mb-16'>
+		<CTABanner type='default' />
+	</div>
+</Layout>
+
+<style>
+	.catalog-hero {
+		background-position: center;
+		background-size: cover;
+		position: relative;
+	}
+
+	.catalog-pattern {
+		background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.2'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+	}
+
+	.slide-in-left {
+		animation: slideInLeft 0.8s ease forwards;
+		opacity: 0;
+		transform: translateX(-20px);
+	}
+
+	.delay-100 {
+		animation-delay: 0.1s;
+	}
+
+	.delay-200 {
+		animation-delay: 0.2s;
+	}
+
+	.delay-300 {
+		animation-delay: 0.3s;
+	}
+
+	.fade-in {
+		animation: fadeIn 1s ease forwards;
+		opacity: 0;
+	}
+
+	@keyframes slideInLeft {
+		from {
+			opacity: 0;
+			transform: translateX(-20px);
+		}
+		to {
+			opacity: 1;
+			transform: translateX(0);
+		}
+	}
+
+	@keyframes fadeIn {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+</style>
+
+<script>
+	document.addEventListener('DOMContentLoaded', () => {
+		// Smooth scroll to sections when clicking navigation links
+		document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+			anchor.addEventListener(
+				'click',
+				function (this: HTMLAnchorElement, e) {
+					e.preventDefault();
+					const targetId = this.getAttribute('href');
+					if (targetId) {
+						const targetElement = document.querySelector(targetId);
+						if (targetElement) {
+							targetElement.scrollIntoView({
+								behavior: 'smooth',
+								block: 'start',
+							});
+						}
+					}
+				}
+			);
+		});
+	});
+</script>

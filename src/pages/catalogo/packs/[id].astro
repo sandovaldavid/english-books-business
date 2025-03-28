@@ -1,14 +1,15 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import PackDetails from '../../components/details/PackDetails.astro';
-import packsData from '../../database/packs.json';
-import siteInfo from '../../database/pageInformation.json';
-import type { Pack } from '../../types/pack';
+import Layout from '../../../layouts/Layout.astro';
+import PackDetails from '../../../components/details/PackDetails.astro';
+import Breadcrumb from '../../../components/Breadcrumb.astro';
+import packsData from '../../../database/packs.json';
+import siteInfo from '../../../database/pageInformation.json';
+import type { Pack } from '../../../types/pack';
+import type { Product } from '../../../types/product';
+import { levelConfig } from '../../../utils/bookTags';
 
 export async function getStaticPaths() {
-	const packsArray = Array.isArray(packsData) ? packsData : [packsData];
-
-	return packsArray.map((pack) => ({
+	return packsData.map((pack) => ({
 		params: { id: pack.id },
 		props: { pack },
 	}));
@@ -26,14 +27,20 @@ const relatedPacks = packsArray
 	.filter(
 		(item) =>
 			item.id !== pack.id &&
-			((item.formatTags &&
-				pack.formatTags &&
-				item.formatTags.some((tag: string) =>
-					pack.formatTags?.includes(tag)
-				)) ||
-				item.level === pack.level)
+			(item.level === pack.level ||
+				(item.formatTags &&
+					pack.formatTags &&
+					item.formatTags.some((tag) =>
+						pack.formatTags?.includes(tag)
+					)))
 	)
-	.slice(0, 3);
+	.slice(0, 4)
+	// Transform pack objects to include required Product interface properties
+	.map((relatedPack) => ({
+		...relatedPack,
+		productType: 'pack' as const, // Add the productType property
+		detailsLink: `/catalogo/packs/${relatedPack.id}`,
+	})) as Product[]; // Cast as Product[] to ensure TypeScript recognizes the transformation
 
 // Calculate discounted price if there's a discount
 const hasDiscount = pack.discount !== undefined && pack.discount > 0;
@@ -43,15 +50,24 @@ const discountedPrice = hasDiscount
 	: pack.price;
 
 // SEO metadata
-const title = `${pack.title} | Pack de materiales en inglés | ${siteInfo.siteName}`;
+const packLevel = pack.level
+	? levelConfig[pack.level as keyof typeof levelConfig]?.label || pack.level
+	: '';
+const formatTags = pack.formatTags?.join(', ') || '';
+
+// Improved title with keywords
+const title = `${pack.title} | Pack de libros en inglés ${packLevel ? `- ${packLevel}` : ''}`;
+
+// Enhanced description
 const description =
 	pack.description?.length > 160
 		? `${pack.description.substring(0, 157)}...`
-		: pack.description || `Pack de materiales en inglés: ${pack.title}`;
+		: pack.description ||
+			`Pack de libros de inglés: ${pack.title}. Material educativo ideal para aprender inglés.`;
 
 // Canonical URL
 const siteUrl = new URL(siteInfo.siteURL);
-const canonicalURL = new URL(`/pack/${pack.id}`, siteUrl);
+const canonicalURL = new URL(`/catalogo/packs/${pack.id}`, siteUrl);
 
 // Structured data for rich snippets
 const structuredData = {
@@ -75,7 +91,7 @@ const structuredData = {
 	},
 	brand: {
 		'@type': 'Brand',
-		name: `${siteInfo.siteName} - Packs de inglés`,
+		name: siteInfo.siteName,
 	},
 	aggregateRating: pack.rating
 		? {
@@ -102,17 +118,31 @@ const breadcrumbJsonLd = {
 		{
 			'@type': 'ListItem',
 			position: 2,
-			name: 'Packs',
-			item: new URL('/packs', siteUrl).toString(),
+			name: 'Catálogo',
+			item: new URL('/catalogo', siteUrl).toString(),
 		},
 		{
 			'@type': 'ListItem',
 			position: 3,
+			name: 'Packs',
+			item: new URL('/catalogo/packs', siteUrl).toString(),
+		},
+		{
+			'@type': 'ListItem',
+			position: 4,
 			name: pack.title,
 			item: canonicalURL.toString(),
 		},
 	],
 };
+
+// Breadcrumb navigation items
+const breadcrumbItems = [
+	{ label: 'Inicio', url: '/' },
+	{ label: 'Catálogo', url: '/catalogo' },
+	{ label: 'Packs', url: '/catalogo/packs' },
+	{ label: pack.title, url: `/catalogo/packs/${pack.id}`, active: true },
+];
 ---
 
 <Layout
@@ -131,11 +161,16 @@ const breadcrumbJsonLd = {
 	twitterImage={pack.coverImage}
 	structuredData={structuredData}
 	breadcrumbData={breadcrumbJsonLd}>
+	<!-- Breadcrumb component for navigation -->
+	<div class='container mx-auto px-4 py-4'>
+		<Breadcrumb items={breadcrumbItems} />
+	</div>
+
+	<!-- Pack details section -->
 	<PackDetails pack={pack} relatedProducts={relatedPacks} />
 
-	<!-- Add event listener for cart operations -->
 	<script>
-		import { CartManager } from '../../utils/cartManager';
+		import { CartManager } from '../../../utils/cartManager';
 
 		// Initialize cart functionality
 		document.addEventListener('DOMContentLoaded', () => {

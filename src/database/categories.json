@@ -1,30 +1,30 @@
 [
 	{
-		"name": "Inglés empresarial",
-		"description": "Materiales específicos para negocios y entornos corporativos",
-		"icon": "💼",
+		"name": "Libros",
+		"description": "Libros de lectura para todos los niveles",
+		"icon": "📖",
 		"image": "/images/libros-template.jpg",
-		"link": "/catalogo/negocios"
+		"link": "/catalogo/libros"
 	},
 	{
-		"name": "Gramática y vocabulario",
-		"description": "Fundamentos esenciales del idioma inglés",
-		"icon": "📝",
+		"name": "Packs de Libros",
+		"description": "Paquetes de libros para todos los niveles",
+		"icon": "📚",
 		"image": "/images/libros-template.jpg",
-		"link": "/catalogo/gramatica"
+		"link": "/catalogo/packs"
 	},
 	{
-		"name": "Certificaciones",
-		"description": "Preparación para exámenes oficiales de inglés",
-		"icon": "🎓",
+		"name": "Examenes Internacionales",
+		"description": "Preparación para exámenes internacionales",
+		"icon": "📗",
 		"image": "/images/libros-template.jpg",
-		"link": "/catalogo/certificaciones"
+		"link": "/catalogo/examenes-internacionales"
 	},
 	{
-		"name": "Inglés profesional",
-		"description": "Especializado por sectores: tecnología, medicina, legal",
-		"icon": "👨‍💻",
+		"name": "Diccionarios",
+		"description": "Diccionarios de diferentes idiomas",
+		"icon": "📕",
 		"image": "/images/libros-template.jpg",
-		"link": "/catalogo/profesional"
+		"link": "/catalogo/diccionarios"
 	}
 ]

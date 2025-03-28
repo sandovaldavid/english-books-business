@@ -1,21 +1,28 @@
-{
-	"id": "ielts-preparation-guide",
-	"title": "IELTS Preparation Guide",
-	"description": "Guía completa para obtener una puntuación alta en el IELTS.",
-	"price": 39.99,
-	"coverImage": "/images/exam-template.jpg",
-	"examType": "IELTS",
-	"difficulty": "intermediate",
-	"duration": "4 semanas",
-	"formatTags": ["pdf", "simulacro", "audio"],
-	"popularityTags": ["recommended"],
-	"featured": true,
-	"buyLink": "/checkout/ielts-prep-guide",
-	"detailsLink": "/examenes-internacionales/ielts-prep-guide",
-	"includedItems": [
-		"Simulacros oficiales",
-		"Ejercicios de listening",
-		"Guía de writing",
-		"Clases en video"
-	]
-}
+[
+	{
+		"id": "ielts-preparation-guide",
+		"title": "IELTS Preparation Guide",
+		"description": "Guía completa para obtener una puntuación alta en el IELTS.",
+		"price": 39.99,
+		"coverImage": "/images/exam-template.jpg",
+		"examType": "IELTS",
+		"difficulty": "intermediate",
+		"duration": "4 semanas",
+		"formatTags": ["pdf", "audio"],
+		"popularityTags": ["recommended"],
+		"featured": true,
+		"buyLink": "/checkout/ielts-prep-guide",
+		"detailsLink": "/catalogo/examenes-internacionales/ielts-preparation-guide",
+		"includedItems": [
+			"Simulacros oficiales",
+			"Ejercicios de listening",
+			"Guía de writing",
+			"Clases en video"
+		],
+		"discount": 10,
+		"rating": {
+			"score": 4.5,
+			"reviewCount": 32
+		}
+	}
+]

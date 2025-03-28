@@ -1,29 +1,136 @@
 ---
-import Button from "./Button.astro"
-import ArrowRight from "./icons/ArrowRight.astro"
+import EmailIcon from './icons/Email.astro';
+import BookIcon from './icons/Book.astro';
+import HandshakeIcon from './icons/Handshake.astro';
+import CTABackground from './icons/background/CTA.astro';
+interface Props {
+	title?: string;
+	subtitle?: string;
+	buttonText?: string;
+	buttonLink?: string;
+	className?: string;
+	type?: 'default' | 'newsletter' | 'consultation';
+}
+
+const {
+	title = 'Impulsa tu carrera con el inglés que necesitas',
+	subtitle = 'No esperes más para empezar a mejorar tu inglés con nuestros materiales de alta calidad',
+	buttonText = 'Explorar materiales',
+	buttonLink = '/catalogo',
+	className = '',
+	type = 'default',
+} = Astro.props;
+
+// Different CTA types
+const ctaConfig = {
+	default: {
+		title: title,
+		subtitle: subtitle,
+		buttonText: buttonText,
+		buttonLink: buttonLink,
+		bgClass: 'bg-gradient-to-r from-primary to-primary-dark',
+		icon: 'BookIcon',
+	},
+	newsletter: {
+		title: 'Mantente actualizado con nuestras novedades',
+		subtitle:
+			'Suscríbete a nuestro boletín para recibir ofertas exclusivas y nuevos materiales',
+		buttonText: 'Suscribirme',
+		buttonLink: '#newsletter-form',
+		bgClass: 'bg-gradient-to-r from-accent-dark to-accent',
+		icon: 'EmailIcon',
+	},
+	consultation: {
+		title: '¿Necesitas asesoramiento personalizado?',
+		subtitle:
+			'Nuestros especialistas pueden ayudarte a encontrar los materiales perfectos para tus necesidades',
+		buttonText: 'Solicitar consulta',
+		buttonLink: '/contacto',
+		bgClass: 'bg-gradient-to-r from-secondary-dark to-secondary',
+		icon: 'HandshakeIcon',
+	},
+};
+
+const currentCta = ctaConfig[type];
 ---
 
 <div
-	class='cta-banner rounded-2xl p-6 md:p-10 bg-gradient-to-r from-primary to-primary-dark text-white mb-12 shadow-xl'>
-	<div class='flex flex-col md:flex-row items-center justify-between'>
-		<div class='mb-6 md:mb-0 md:mr-8'>
-			<h3 class='text-2xl md:text-3xl font-bold mb-3'>
-				¿Listo para dominar el inglés?
-			</h3>
-			<p class='text-white/90 max-w-xl'>
-				Nuestro catálogo completo te ofrece recursos adaptados a todos
-				los niveles, desde principiantes hasta profesionales.
-			</p>
+	class={`cta-banner ${currentCta.bgClass} rounded-xl overflow-hidden shadow-xl ${className}`}>
+	<div class='container mx-auto px-6 py-10 relative'>
+		<!-- Background decoration -->
+		<CTABackground
+			class='absolute top-0 right-0 w-64 h-64 opacity-10 text-amber-50'
+		/>
+		<div
+			class='flex flex-col md:flex-row items-center justify-between relative z-10'>
+			<!-- Left Content -->
+			<div
+				class='mb-6 md:mb-0 md:mr-6 text-white text-center md:text-left'>
+				{
+					type === 'newsletter' ? (
+						<EmailIcon class='w-10 h-10 md:w-15 md:h-15 mb-4' />
+					) : type === 'consultation' ? (
+						<HandshakeIcon class='w-16 h-16 md:w-20 md:h-20 mb-4' />
+					) : (
+						<BookIcon class='w-10 h-10 md:w-15 md:h-15 mb-4' />
+					)
+				}
+				<h3 class='text-2xl md:text-3xl font-bold mb-2'>
+					{currentCta.title}
+				</h3>
+				<p class='text-white/90 max-w-xl'>{currentCta.subtitle}</p>
+			</div>
+
+			<!-- Right Content -->
+			<div class='flex-shrink-0'>
+				{
+					type === 'newsletter' ? (
+						<form
+							id='newsletter-form'
+							class='flex flex-col sm:flex-row gap-3 items-center'>
+							<input
+								type='email'
+								placeholder='Tu correo electrónico'
+								class='px-4 py-3 rounded-lg border-2 border-white/30 bg-white/10 text-white placeholder:text-white/70 focus:outline-none focus:border-white'
+								required
+							/>
+							<button
+								type='submit'
+								class='bg-white text-primary-dark hover:bg-neutral-light transition-colors px-6 py-3 rounded-lg font-bold shadow-md'>
+								{currentCta.buttonText}
+							</button>
+						</form>
+					) : (
+						<a
+							href={currentCta.buttonLink}
+							class='inline-block px-6 py-3 bg-white text-primary-dark hover:bg-neutral-light transition-colors rounded-lg font-bold shadow-md'>
+							{currentCta.buttonText}
+						</a>
+					)
+				}
+			</div>
 		</div>
-		<Button
-			variant='secondary'
-			size='large'
-			href='/catalogo'
-			class='group shadow-lg hover:shadow-xl transform transition-all duration-300 whitespace-nowrap animated-cta'>
-			<span>Explorar Todos los Libros</span>
-			<ArrowRight
-				class='w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform'
-			/>
-		</Button>
 	</div>
 </div>
+
+<script>
+	// Newsletter form handling
+	document.addEventListener('DOMContentLoaded', () => {
+		const newsletterForm = document.getElementById('newsletter-form');
+		if (newsletterForm) {
+			newsletterForm.addEventListener('submit', (e) => {
+				e.preventDefault();
+				const emailInput = newsletterForm.querySelector(
+					'input[type="email"]'
+				);
+				if (emailInput) {
+					const email = (emailInput as HTMLInputElement).value;
+					alert(
+						`¡Gracias por suscribirte con ${email}! Pronto recibirás nuestras novedades.`
+					);
+					(emailInput as HTMLInputElement).value = '';
+				}
+			});
+		}
+	});
+</script>

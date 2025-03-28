@@ -8,23 +8,25 @@ import PromoSection from '../../components/catalog/PromoSection.astro';
 import FAQ from '../../components/FAQ.astro';
 import CTABanner from '../../components/CTA-Banner.astro';
 import '../../styles/catalog.css';
+import type { Product } from '../../types/product';
 
-// Import book data and types
-import booksData from '../../database/books.json';
-import type { Book } from '../../types/book';
-import { BookLevel, FormatTag, PopularityTag } from '../../types/book';
+// Import our products utility functions
+import { getAllProducts } from '../../utils/listProducts';
+import editorialsData from '../../database/editorial.json';
 
 // Get filter parameters from URL if any
 const { searchParams } = Astro.url;
 const level = searchParams.get('level') || 'all';
 const format = searchParams.get('format') || 'all';
 const sort = searchParams.get('sort') || 'featured';
+const type = searchParams.get('type') || 'any'; // Default to 'any' for showing all products
 
 // Determine page title based on filters
-let pageTitle = 'Catálogo de Libros en Inglés';
-let pageDescription = 'Explora nuestra amplia selección de materiales educativos en inglés para todos los niveles. Encuentra el recurso perfecto para tus necesidades de aprendizaje.';
+let pageTitle = 'Catálogo Completo de Materiales en Inglés';
+let pageDescription =
+	'Explora nuestra amplia selección de materiales educativos en inglés para todos los niveles. Encuentra el recurso perfecto para tus necesidades de aprendizaje.';
 
-// Define level name mapping with proper type checking
+// Define level name mapping
 const levelNames: Record<string, string> = {
 	basic: 'Nivel Básico',
 	intermediate: 'Nivel Intermedio',
@@ -33,14 +35,14 @@ const levelNames: Record<string, string> = {
 	'all-levels': 'Multi-nivel',
 };
 
-// If level filter is applied, customize title
+// Apply level filter to title if specified
 if (level !== 'all') {
 	const levelName = levelNames[level] || level;
-	pageTitle = `Libros en Inglés - ${levelName}`;
+	pageTitle = `Materiales en Inglés - ${levelName}`;
 	pageDescription = `Materiales educativos en inglés para ${levelName}. Encuentra los recursos perfectos para tu nivel de aprendizaje.`;
 }
 
-// Define format name mapping with proper type checking
+// Define format name mapping
 const formatNames: Record<string, string> = {
 	pdf: 'PDF',
 	workbook: 'Workbooks',
@@ -50,31 +52,54 @@ const formatNames: Record<string, string> = {
 	exams: 'Exámenes de Práctica',
 };
 
-// If format filter is applied, customize further
+// Apply format filter to title if specified
 if (format !== 'all') {
 	const formatName = formatNames[format] || format;
 	pageTitle = `${formatName} - ${pageTitle}`;
 	pageDescription = `${formatName} ${pageDescription}`;
 }
 
-// Validate book data and transform to proper Book type
-const safeBooks: Book[] = booksData.map((book) => ({
-	id: book.id || '',
-	title: book.title || '',
-	description: book.description || '',
-	price: book.price || 0,
-	coverImage: book.coverImage || '',
-	altText: book.altText || `${book.title} Book cover`,
-	includedItems: book.includedItems || [],
-	rating: book.rating || { score: 0, reviewCount: 0 },
-	buyLink: book.buyLink || '#',
-	detailsLink: book.detailsLink || '#',
-	discount: book.discount || 0,
-	level: book.level as BookLevel,
-	featured: book.featured || false,
-	formatTags: (book.formatTags || []) as FormatTag[],
-	popularityTags: (book.popularityTags || []) as PopularityTag[],
-}));
+// Define product type mapping
+const typeNames: Record<string, string> = {
+	book: 'Libros',
+	exam: 'Exámenes',
+	pack: 'Packs',
+};
+
+// Apply product type filter to title if specified
+if (type !== 'any') {
+	const typeName = typeNames[type as keyof typeof typeNames] || type;
+	pageTitle = `${typeName} - ${pageTitle}`;
+	pageDescription = `${typeName} de inglés. ${pageDescription}`;
+}
+
+// Create editorial lookup map
+const editorialMap = new Map();
+editorialsData.forEach((editorial) => {
+	editorialMap.set(editorial.id, editorial.nombre);
+});
+
+// Get all products with our utility function
+const allProducts: Product[] = getAllProducts();
+
+// Log the count of each product type for debugging
+console.log(`Total products: ${allProducts.length}`);
+console.log(
+	`Books: ${allProducts.filter((p) => p.productType === 'book').length}`
+);
+console.log(
+	`Exams: ${allProducts.filter((p) => p.productType === 'exam').length}`
+);
+console.log(
+	`Packs: ${allProducts.filter((p) => p.productType === 'pack').length}`
+);
+
+// Add a check to see if we have exam products
+const haveExams = allProducts.some((p) => p.productType === 'exam');
+console.log(`Have exam products: ${haveExams}`);
+if (!haveExams) {
+	console.warn('No exam products found - check exams.json format');
+}
 ---
 
 <Layout title={`${pageTitle} | FluentReads`} description={pageDescription}>
@@ -94,39 +119,44 @@ const safeBooks: Book[] = booksData.map((book) => ({
 	</section>
 
 	<!-- Main Catalog Section -->
-	<section class='py-12 relative catalog-section' id='full-catalog'>
+	<section class='py-12 relative catalog-section' id='catalog'>
 		<!-- Background decorative elements -->
-		<div class='absolute inset-0'></div>
+		<div class='absolute inset-0 catalog-pattern opacity-[0.03]'></div>
 		<div class='accent-shape'></div>
 
 		<div class='container mx-auto px-4 relative z-10'>
-			<div class='flex flex-col items-center fade-in'>
+			<div class='flex flex-col items-center fade-in mb-8'>
 				<SectionTitle tag='h2' class='mb-4 text-center'>
 					Explora nuestro catálogo completo
 				</SectionTitle>
-				<p class='text-gray-600 max-w-3xl mx-auto text-center mb-8'>
+				<p class='text-gray-600 max-w-3xl mx-auto text-center'>
 					Encuentra los mejores materiales para dominar el inglés,
 					desde nivel principiante hasta profesional.
 				</p>
 			</div>
 
-			<!-- Integrated Catalog Container with Filter -->
+			<!-- Integrated Catalog Container with a unified products array -->
 			<CatalogContainer
-				books={safeBooks}
+				products={allProducts}
 				initialLevel={level}
 				initialFormat={format}
 				initialSort={sort}
+				initialResourceType={type}
+				editorialMap={editorialMap}
+				gridCols={4}
+				productSize='medium'
+				enableResourceTypeFilter={true}
 			/>
 		</div>
 	</section>
 
-	<!-- Promotional Section with updated props -->
+	<!-- Promotional Section -->
 	<PromoSection
-		title="Ofertas y Promociones Exclusivas" 
-		subtitle="Ofertas Especiales"
-		className="bg-gradient-to-br from-primary/5 to-accent/5 py-16"
+		title='Ofertas y Promociones Exclusivas'
+		subtitle='Ofertas Especiales'
+		className='bg-gradient-to-br from-primary/5 to-accent/5 py-16'
 		countdownDays={5}
-		cardSize="large"
+		cardSize='large'
 	/>
 
 	<!-- FAQ Section -->
@@ -148,10 +178,10 @@ const safeBooks: Book[] = booksData.map((book) => ({
 	document.addEventListener('DOMContentLoaded', () => {
 		// Get the hash from URL to check if we need to scroll to catalog section
 		const hash = window.location.hash;
-		if (hash === '#full-catalog') {
+		if (hash === '#catalog') {
 			// Delay scrolling slightly to ensure the page is loaded
 			setTimeout(() => {
-				const catalogSection = document.getElementById('full-catalog');
+				const catalogSection = document.getElementById('catalog');
 				if (catalogSection) {
 					catalogSection.scrollIntoView({ behavior: 'smooth' });
 				}
@@ -182,3 +212,26 @@ const safeBooks: Book[] = booksData.map((book) => ({
 			.forEach((el) => observer.observe(el));
 	});
 </script>
+
+<style>
+	/* Add any additional specific styles for this page */
+	.catalog-pattern {
+		background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+	}
+
+	.accent-shape {
+		position: absolute;
+		width: 500px;
+		height: 500px;
+		border-radius: 50%;
+		background: linear-gradient(
+			135deg,
+			rgba(59, 130, 246, 0.05) 0%,
+			rgba(147, 51, 234, 0.05) 100%
+		);
+		top: -200px;
+		right: -200px;
+		z-index: -1;
+		filter: blur(70px);
+	}
+</style>

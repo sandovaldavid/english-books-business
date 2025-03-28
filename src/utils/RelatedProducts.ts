@@ -71,56 +71,58 @@ export function packToProduct(pack: Pack): Product {
 }
 
 /**
- * Generates recommendations based on a main product and related products
- *
- * @param mainProduct - The main product (book, exam, or pack)
- * @param relatedBooks - Related book products
- * @param relatedExams - Related exam products
- * @param relatedPacks - Related pack products
- * @param maxRecommendations - Maximum number of recommendations to return
- * @returns Array of Product objects as recommendations
+ * Generate recommendations based on a product and related products
+ * 
+ * @param product The main product (book, pack, or exam)
+ * @param relatedProducts Array of related products to choose from
+ * @param count Maximum number of recommendations to return
+ * @returns Array of recommended products
  */
 export function generateRecommendations(
-	mainProduct: Book | Exam | Pack,
-	relatedBooks: Book[] = [],
-	relatedExams: Exam[] = [],
-	relatedPacks: Pack[] = [],
-	maxRecommendations: number = 4
+  product: Book | Pack | Exam | Product,
+  relatedProducts: Product[] = [],
+  count: number = 4
 ): Product[] {
-	const recommendations: Product[] = [];
-
-	// Add related books
-	if (relatedBooks.length > 0) {
-		recommendations.push(
-			...relatedBooks.map((book) => bookToProduct(book))
-		);
-	}
-
-	// Additional logic for books - suggest exams for advanced/professional level
-	if (
-		'level' in mainProduct &&
-		(mainProduct.level === 'advanced' ||
-			mainProduct.level === 'professional' ||
-			mainProduct.level === 'internationalExam')
-	) {
-		// Add exam recommendations with higher priority for advanced levels
-		if (relatedExams.length > 0) {
-			// Insert at beginning to prioritize
-			recommendations.unshift(
-				...relatedExams.slice(0, 1).map((exam) => examToProduct(exam))
-			);
-		}
-	}
-
-	// Add pack recommendations if available
-	if (relatedPacks.length > 0) {
-		recommendations.push(
-			...relatedPacks.slice(0, 1).map((pack) => packToProduct(pack))
-		);
-	}
-
-	// Return limited number of recommendations
-	return recommendations.slice(0, maxRecommendations);
+  // Filter out the current product from related products
+  const filteredRelated = relatedProducts.filter(p => p.id !== product.id);
+  
+  // If we don't have enough related products, return what we have
+  if (filteredRelated.length <= count) {
+    return filteredRelated;
+  }
+  
+  // Sort related products by relevance
+  // First prioritize those that match the same level
+  const sameLevel = filteredRelated.filter(p => p.level === product.level);
+  
+  // Then prioritize those that match any format tags
+  const hasMatchingFormat = filteredRelated.filter(p => {
+    if (!product.formatTags || !p.formatTags) return false;
+    return p.formatTags.some(tag => product.formatTags?.includes(tag));
+  });
+  
+  // Combine and deduplicate
+  const prioritized = [...sameLevel];
+  
+  hasMatchingFormat.forEach(item => {
+    if (!prioritized.some(p => p.id === item.id)) {
+      prioritized.push(item);
+    }
+  });
+  
+  // Add any remaining items if we need more
+  let result = [...prioritized];
+  
+  if (result.length < count) {
+    filteredRelated.forEach(item => {
+      if (!result.some(p => p.id === item.id) && result.length < count) {
+        result.push(item);
+      }
+    });
+  }
+  
+  // If we have too many, trim to requested count
+  return result.slice(0, count);
 }
 
 /**
