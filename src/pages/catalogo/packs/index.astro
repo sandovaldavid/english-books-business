@@ -9,14 +9,10 @@ import CTABanner from '../../../components/CTA-Banner.astro';
 import CategoryCards from '../../../components/catalog/CategoryCards.astro';
 import '../../../styles/catalog.css';
 
-// Import data and types
-import packsData from '../../../database/packs.json';
+// Import types, utilities and data
 import type { Pack } from '../../../types/pack';
-import {
-	getFilteredPageTitle,
-	getSafePacks,
-	getBreadcrumbItems,
-} from '../../../utils/packsUtils';
+import { BookLevel, FormatTag } from '../../../types/book';
+import { getProductsByType } from '../../../utils/listProducts';
 
 // Get filter parameters from URL if any
 const { searchParams } = Astro.url;
@@ -24,26 +20,121 @@ const level = searchParams.get('level') || 'all';
 const format = searchParams.get('format') || 'all';
 const sort = searchParams.get('sort') || 'featured';
 
-// Get page metadata based on filters
-const { pageTitle, pageDescription, canonicalUrl, categoryHeroImage } =
-	getFilteredPageTitle({
-		level,
-		format,
-		baseUrl: '/catalogo/packs',
-		site: Astro.site as URL,
-	});
+// Define type-safe mapping objects
+const levelNames: Record<string, string> = {
+	[BookLevel.BASIC]: 'Nivel Básico',
+	[BookLevel.INTERMEDIATE]: 'Nivel Intermedio',
+	[BookLevel.ADVANCED]: 'Nivel Avanzado',
+	[BookLevel.PROFESSIONAL]: 'Nivel Profesional',
+	[BookLevel.ALL_LEVELS]: 'Multi-nivel',
+};
 
-// Transform raw data to properly validated Pack objects
-const safePacks: Pack[] = getSafePacks(packsData);
+const formatNames: Record<string, string> = {
+	[FormatTag.PDF]: 'PDF',
+	[FormatTag.WORKBOOK]: 'Workbooks',
+	[FormatTag.AUDIO]: 'Material con Audio',
+	[FormatTag.VIDEO]: 'Material con Video',
+	[FormatTag.SOFTWARE]: 'Software',
+	[FormatTag.EXAMS]: 'Exámenes de Práctica',
+};
 
-// Define breadcrumb navigation
-const breadcrumbItems = getBreadcrumbItems();
+// Determine page title and description based on filters
+let pageTitle = 'Packs de Libros en Inglés';
+let pageDescription =
+	'Explora nuestros packs de libros en inglés con materiales complementarios. Ahorra con nuestros paquetes especiales diseñados para maximizar tu aprendizaje.';
+let canonicalUrl = new URL('/catalogo/packs', Astro.site).toString();
+let categoryHeroImage = '/images/book-sample/pack-hero.jpg';
+
+// If level filter is applied, customize title
+if (level !== 'all') {
+	const levelName = levelNames[level] || level;
+	pageTitle = `Packs de Inglés - ${levelName}`;
+	pageDescription = `Conjuntos de materiales educativos en inglés para ${levelName}. Encuentra packs completos para tu nivel de aprendizaje.`;
+	canonicalUrl = new URL(
+		`/catalogo/packs?level=${level}`,
+		Astro.site
+	).toString();
+}
+
+// If format filter is applied, customize further
+if (format !== 'all') {
+	const formatName = formatNames[format] || format;
+	pageTitle = `${formatName} - ${pageTitle}`;
+	pageDescription = `${formatName} ${pageDescription}`;
+	canonicalUrl = new URL(
+		`/catalogo/packs?format=${format}`,
+		Astro.site
+	).toString();
+}
+
+// Get packs data using the utility function
+const allPacks = getProductsByType('pack');
+
+// Convert to Pack[] type and ensure all required fields exist
+const safePacks: Pack[] = allPacks.map((pack) => ({
+	id: pack.id,
+	title: pack.title,
+	description: pack.description || '',
+	price: pack.price,
+	coverImage: pack.coverImage,
+	altText: pack.altText || `${pack.title} Pack cover`,
+	includedItems:
+		'includedItems' in pack ? (pack.includedItems as string[]) : [],
+	booksIds: 'booksIds' in pack ? (pack.booksIds as string[]) : [],
+	rating: pack.rating || { score: 0, reviewCount: 0 },
+	buyLink:
+		'buyLink' in pack ? (pack.buyLink as string) : `/checkout/${pack.id}`,
+	detailsLink: pack.detailsLink || `/catalogo/packs/${pack.id}`,
+	discount: pack.discount || 0,
+	level: (pack.level as BookLevel) || BookLevel.INTERMEDIATE,
+	featured: pack.featured || false,
+	formatTags: pack.formatTags || [],
+	popularityTags: pack.popularityTags || [],
+	images: 'images' in pack ? (pack.images as string[]) : [],
+	video: 'video' in pack ? (pack.video as string) : '',
+	stock: 'stock' in pack ? (pack.stock as number) : 10,
+}));
+
+// Define breadcrumb items
+const breadcrumbItems = [
+	{ label: 'Inicio', url: '/' },
+	{ label: 'Catálogo', url: '/catalogo' },
+	{ label: 'Packs', url: '/catalogo/packs', active: true },
+];
+
+// Structured data for SEO
+const structuredData = {
+	'@context': 'https://schema.org',
+	'@type': 'CollectionPage',
+	name: pageTitle,
+	description: pageDescription,
+	url: canonicalUrl,
+	hasPart: safePacks.map((pack) => ({
+		'@type': 'Product',
+		name: pack.title,
+		description: pack.description,
+		url: new URL(`/catalogo/packs/${pack.id}`, Astro.site).toString(),
+		image: pack.coverImage,
+		offers: {
+			'@type': 'Offer',
+			price: pack.discount
+				? pack.price * (1 - pack.discount / 100)
+				: pack.price,
+			priceCurrency: 'PEN',
+			availability: 'https://schema.org/InStock',
+		},
+	})),
+};
+
+// Log pack count for debugging
+console.log(`Loaded ${safePacks.length} packs for display`);
 ---
 
 <Layout
 	title={`${pageTitle} | FluentReads`}
 	description={pageDescription}
-	canonicalURL={canonicalUrl}>
+	canonicalURL={canonicalUrl}
+	structuredData={structuredData}>
 	<!-- Hero Banner -->
 	<section
 		class='catalog-hero py-12 bg-primary bg-cover bg-center text-white relative overflow-hidden'
@@ -98,7 +189,7 @@ const breadcrumbItems = getBreadcrumbItems();
 						class='aspect-[3/4] bg-gradient-to-br from-primary/40 to-accent/30 backdrop-blur-sm flex items-center justify-center w-full h-full'>
 						<img
 							src='/images/book-sample/book-sample-01.jpg'
-							alt=''
+							alt='Muestra de pack de libros de inglés'
 							class='object-cover w-full h-full'
 						/>
 					</div>
@@ -121,7 +212,7 @@ const breadcrumbItems = getBreadcrumbItems();
 	<section class='py-12 relative catalog-section' id='catalog-section'>
 		<div class='absolute inset-0 catalog-pattern opacity-[0.03]'></div>
 		<div class='container mx-auto px-4 relative z-10'>
-			<!-- Main catalog - using our pack container component -->
+			<!-- Main catalog container component -->
 			<CatalogPackContainer
 				packs={safePacks}
 				initialLevel={level}
