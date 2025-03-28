@@ -1,49 +1,21 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
 import ExamDetails from '../../../components/details/ExamDetails.astro';
-import Breadcrumb from '../../../components/Breadcrumb.astro';
+import examsData from '../../../database/exams.json';
+import siteInfo from '../../../database/pageInformation.json';
 import type { Exam } from '../../../types/exam';
-import { ExamType, ExamDifficulty } from '../../../types/exam';
+import type { Product } from '../../../types/product';
 import { difficultyConfig } from '../../../utils/examTags';
 import { getProductsByType } from '../../../utils/listProducts';
-import siteInfo from '../../../database/pageInformation.json';
 
 export async function getStaticPaths() {
-	const examProducts = getProductsByType('exam');
+	// Ensure examsData is treated as an array
+	const examArray = Array.isArray(examsData) ? examsData : [examsData];
 
-	return examProducts.map((product) => {
-		// Convert general Product to Exam type with proper type safety
-		const exam: Exam = {
-			id: product.id,
-			title: product.title,
-			description: product.description || '',
-			price: product.price,
-			coverImage: product.coverImage,
-			examType: (product as any).examType || ExamType.OTHER,
-			difficulty:
-				(product.level as ExamDifficulty) ||
-				ExamDifficulty.INTERMEDIATE,
-			formatTags: product.formatTags || [],
-			popularityTags: product.popularityTags || [],
-			featured: product.featured || false,
-			buyLink: (product as any).buyLink || `/checkout/${product.id}`,
-			detailsLink:
-				product.detailsLink ||
-				`/catalogo/examenes-internacionales/${product.id}`,
-			includedItems: (product as any).includedItems || [],
-			requirements: (product as any).requirements || [],
-			altText: product.altText || `${product.title} - Exam cover`,
-			rating: product.rating || { score: 0, reviewCount: 0 },
-			discount: product.discount || 0,
-			images: (product as any).images || [],
-			video: (product as any).video || '',
-		};
-
-		return {
-			params: { id: exam.id },
-			props: { exam },
-		};
-	});
+	return examArray.map((exam) => ({
+		params: { id: exam.id },
+		props: { exam },
+	}));
 }
 
 interface Props {
@@ -52,43 +24,44 @@ interface Props {
 
 const { exam } = Astro.props;
 
-// Find related exams - use utility function for better type safety and consistency
-const allExams = getProductsByType('exam') as unknown as Exam[];
-const relatedExams = allExams
+// Get related exams and other products that might be related
+const productsData = getProductsByType('exam', 8);
+const relatedProducts: Product[] = productsData
 	.filter(
 		(item) =>
 			item.id !== exam.id &&
-			(item.examType === exam.examType ||
-				item.difficulty === exam.difficulty)
+			(item.level === exam.difficulty || // Match by difficulty/level
+				(item.formatTags &&
+					exam.formatTags &&
+					item.formatTags.some((tag) =>
+						exam.formatTags?.includes(tag as any)
+					)))
 	)
 	.slice(0, 4);
 
-// Calculate discounted price
+// Calculate discounted price if there's a discount
 const hasDiscount = exam.discount !== undefined && exam.discount > 0;
 const originalPrice = exam.price;
 const discountedPrice = hasDiscount
 	? exam.price * (1 - (exam.discount || 0) / 100)
 	: exam.price;
 
-// Get proper difficulty label using utility
-const examDifficultyLabel = exam.difficulty
+// SEO metadata
+const examLevel = exam.difficulty
 	? difficultyConfig[exam.difficulty as keyof typeof difficultyConfig]
 			?.label || exam.difficulty
 	: '';
+const formatTags = exam.formatTags?.join(', ') || '';
 
-// Build optimized metadata
-const examType = exam.examType || '';
-const seoKeywords = `${examType}, ${examDifficultyLabel}, preparación, examen inglés`;
-
-// Title with optimized SEO format
-const title = `${exam.title} | Preparación para ${examType} | FluentReads`;
+// Improved title with keywords
+const title = `${exam.title} | Examen de Inglés ${examLevel ? `- ${examLevel}` : ''}`;
 
 // Enhanced description
 const description =
 	exam.description?.length > 160
 		? `${exam.description.substring(0, 157)}...`
 		: exam.description ||
-			`Material de preparación para el examen ${exam.title}. Ideal para certificar tu nivel de inglés.`;
+			`Material de preparación para examen de inglés: ${exam.title}. Ideal para certificar tu nivel de inglés.`;
 
 // Canonical URL
 const siteUrl = new URL(siteInfo.siteURL);
@@ -104,7 +77,7 @@ const structuredData = {
 	name: exam.title,
 	description: exam.description,
 	image: exam.coverImage,
-	sku: exam.id,
+	category: `Examen ${exam.examType}`,
 	offers: {
 		'@type': 'Offer',
 		price: discountedPrice,
@@ -119,19 +92,17 @@ const structuredData = {
 	},
 	brand: {
 		'@type': 'Brand',
-		name: siteInfo.siteName,
+		name: exam.examType || siteInfo.siteName,
 	},
-	aggregateRating:
-		exam.rating && exam.rating.score && exam.rating.reviewCount
-			? {
-					'@type': 'AggregateRating',
-					ratingValue: exam.rating.score,
-					reviewCount: exam.rating.reviewCount,
-					bestRating: '5',
-					worstRating: '1',
-				}
-			: undefined,
-	keywords: seoKeywords,
+	aggregateRating: exam.rating
+		? {
+				'@type': 'AggregateRating',
+				ratingValue: exam.rating.score,
+				reviewCount: exam.rating.reviewCount,
+				bestRating: '5',
+				worstRating: '1',
+			}
+		: undefined,
 };
 
 // Breadcrumb structured data
@@ -168,25 +139,6 @@ const breadcrumbJsonLd = {
 		},
 	],
 };
-
-// Breadcrumb navigation items
-const breadcrumbItems = [
-	{ label: 'Inicio', url: '/' },
-	{ label: 'Catálogo', url: '/catalogo' },
-	{
-		label: 'Exámenes Internacionales',
-		url: '/catalogo/examenes-internacionales',
-	},
-	{
-		label: exam.title,
-		url: `/catalogo/examenes-internacionales/${exam.id}`,
-		active: true,
-	},
-];
-
-// Log some debugging information
-console.log(`Rendering exam details for: ${exam.id} (${exam.title})`);
-console.log(`Found ${relatedExams.length} related exams`);
 ---
 
 <Layout
@@ -205,64 +157,22 @@ console.log(`Found ${relatedExams.length} related exams`);
 	twitterImage={exam.coverImage}
 	structuredData={structuredData}
 	breadcrumbData={breadcrumbJsonLd}>
-	<!-- Breadcrumb component for navigation -->
-	<div class='container mx-auto px-4 py-4'>
-		<Breadcrumb items={breadcrumbItems} />
-	</div>
-
-	<!-- Exam details section -->
-	<ExamDetails exam={exam} relatedExams={relatedExams} />
+	<ExamDetails exam={exam} relatedProducts={relatedProducts} />
 
 	<!-- Add event listener for cart operations -->
 	<script>
 		import { CartManager } from '../../../utils/cartManager';
 
+		// Initialize cart functionality
 		document.addEventListener('DOMContentLoaded', () => {
-			// Initialize cart
-			CartManager.initializeCart();
-
-			// Add event listeners for add-to-cart buttons
-			document
-				.querySelectorAll('[data-add-to-cart]')
-				.forEach((button) => {
-					button.addEventListener('click', () => {
-						const productId =
-							button.getAttribute('data-product-id');
-						const productType =
-							button.getAttribute('data-product-type');
-						const productTitle =
-							button.getAttribute('data-product-title');
-						const productPrice = parseFloat(
-							button.getAttribute('data-product-price') || '0'
-						);
-						const productImage =
-							button.getAttribute('data-product-image');
-
-						if (productId) {
-							const validType = ['book', 'exam', 'pack'].includes(
-								productType || ''
-							)
-								? (productType as 'book' | 'exam' | 'pack')
-								: 'exam';
-
-							CartManager.addItem({
-								id: productId,
-								type: validType,
-								title: productTitle || 'Exam',
-								price: productPrice,
-								image: productImage || '',
-							});
-						}
-					});
-				});
+			// Make sure cart is initialized
+			if (typeof window !== 'undefined') {
+				CartManager.initializeCart();
+			}
 
 			// Listen for cart updates to refresh indicators
 			window.addEventListener('cartUpdated', () => {
-				const cartCount = CartManager.getItemCount();
-				document.querySelectorAll('.cart-count').forEach((element) => {
-					element.textContent = cartCount.toString();
-					element.classList.toggle('hidden', cartCount === 0);
-				});
+				console.log('Cart updated');
 			});
 		});
 	</script>
