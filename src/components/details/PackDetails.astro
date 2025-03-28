@@ -35,10 +35,7 @@ interface Props {
 	relatedProducts?: Product[];
 }
 
-const {
-	pack,
-	relatedProducts = [],
-} = Astro.props;
+const { pack, relatedProducts = [] } = Astro.props;
 
 // Prepare formatted price display
 const hasDiscount = pack.discount && pack.discount > 0;
@@ -109,11 +106,7 @@ const includedBooks = pack.booksIds
 	: [];
 
 // Get recommendations
-const finalRecommendations = generateRecommendations(
-	pack,
-	relatedProducts,
-	4
-);
+const finalRecommendations = generateRecommendations(pack, relatedProducts, 4);
 
 // Prepare social share data
 const currentUrl = Astro.url.href;
@@ -156,7 +149,8 @@ const jsonLd = {
 		<nav
 			class='flex text-xs sm:text-sm text-gray-500 mb-4 overflow-x-auto pb-1'
 			aria-label='Breadcrumb'>
-			<ol class='inline-flex items-center space-x-1 md:space-x-3'>
+			<ol
+				class='inline-flex items-center space-x-1 md:space-x-3 w-full overflow-hidden'>
 				<li class='inline-flex items-center'>
 					<a href='/' class='hover:text-primary transition-colors'
 						>Inicio</a
@@ -186,7 +180,7 @@ const jsonLd = {
 					<div class='flex items-center'>
 						<span class='mx-1 md:mx-2'>/</span>
 						<span
-							class='text-gray-600 font-medium truncate max-w-[120px] sm:max-w-[200px]'
+							class='text-gray-600 font-medium truncate max-w-max'
 							>{pack.title}</span
 						>
 					</div>
