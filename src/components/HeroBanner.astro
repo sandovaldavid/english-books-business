@@ -198,7 +198,7 @@ import Button from './Button.astro';
                 <div class="carousel-indicators flex justify-center gap-2 mt-6">
                     {offers.map((_, index) => (
                         <button 
-                            class={`indicator-dot h-3 w-3 rounded-full ${index === 0 ? 'bg-secondary' : 'bg-gray-400'} hover:bg-secondary transition-colors duration-300`} 
+                            class={`indicator-dot h-3 w-3 rounded-full ${index === 0 ? 'bg-secondary' : 'bg-gray-400'} hover:bg-secondary transition-colors duration-300 cursor-pointer`} 
                             data-index={index}
                             aria-label={`Ver oferta ${index + 1}`}
                         ></button>
