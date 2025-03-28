@@ -31,7 +31,7 @@
 		"level": "advanced",
 		"featured": true,
 		"formatTags": ["pdf", "workbook"],
-		"popularityTags": ["bestSeller", "grammar"]
+		"popularityTags": ["bestSeller"]
 	},
 	{
 		"id": "everyday-conversations",
@@ -65,7 +65,7 @@
 		"level": "beginner",
 		"featured": true,
 		"formatTags": ["pdf", "audio"],
-		"popularityTags": ["specialOffer", "conversation"]
+		"popularityTags": ["specialOffer"]
 	},
 	{
 		"id": "phrasal-verbs-in-context",
@@ -133,6 +133,6 @@
 		"level": "intermediate",
 		"featured": true,
 		"formatTags": ["pdf", "audio"],
-		"popularityTags": ["bestSeller", "pronunciation"]
+		"popularityTags": ["bestSeller"]
 	}
 ]
