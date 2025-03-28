@@ -13,6 +13,7 @@ import type { Product } from '../../types/product';
 // Import our products utility functions
 import { getAllProducts } from '../../utils/listProducts';
 import editorialsData from '../../database/editorial.json';
+import siteInfo from '../../database/pageInformation.json';
 
 // Get filter parameters from URL if any
 const { searchParams } = Astro.url;
@@ -100,9 +101,73 @@ console.log(`Have exam products: ${haveExams}`);
 if (!haveExams) {
 	console.warn('No exam products found - check exams.json format');
 }
+
+// Build canonical URL
+const canonicalURL = new URL('/catalogo', siteInfo.siteURL).toString();
+
+// Create structured data for catalog page
+const structuredData = {
+	'@context': 'https://schema.org',
+	'@type': 'CollectionPage',
+	name: pageTitle,
+	description: pageDescription,
+	url: canonicalURL,
+	isPartOf: {
+		'@type': 'WebSite',
+		name: siteInfo.siteName,
+		url: siteInfo.siteURL,
+	},
+	about: {
+		'@type': 'Thing',
+		name: 'Materiales educativos en inglés',
+	},
+	numberOfItems: allProducts.length,
+};
+
+// Create breadcrumbs data
+const breadcrumbData = {
+	'@context': 'https://schema.org',
+	'@type': 'BreadcrumbList',
+	itemListElement: [
+		{
+			'@type': 'ListItem',
+			position: 1,
+			name: 'Inicio',
+			item: siteInfo.siteURL,
+		},
+		{
+			'@type': 'ListItem',
+			position: 2,
+			name: 'Catálogo',
+			item: canonicalURL,
+		},
+	],
+};
+
+// Build OG image URL based on filters or use default
+const ogImage =
+	level !== 'all' || format !== 'all' || type !== 'any'
+		? `${siteInfo.siteURL}/api/og?title=${encodeURIComponent(pageTitle)}&filter=true`
+		: siteInfo.seo.images.home || siteInfo.seo.defaultImage;
 ---
 
-<Layout title={`${pageTitle} | FluentReads`} description={pageDescription}>
+<Layout
+	title={`${pageTitle} | ${siteInfo.siteName}`}
+	description={pageDescription}
+	canonicalURL={canonicalURL}
+	ogType='website'
+	ogTitle={pageTitle}
+	ogDescription={pageDescription}
+	ogImage={ogImage}
+	ogSiteName={siteInfo.siteName}
+	twitterCard='summary_large_image'
+	twitterTitle={pageTitle}
+	twitterDescription={pageDescription}
+	twitterImage={ogImage}
+	twitterSite={siteInfo.socialMediaHandles.twitter}
+	structuredData={structuredData}
+	breadcrumbData={breadcrumbData}
+	bodyClass='catalog-page'>
 	<!-- Hero Section -->
 	<CatalogHero />
 
