@@ -91,16 +91,15 @@ const allProductsJSON = JSON.stringify(products);
 // Maps a grid column count to responsive Tailwind classes
 const getGridClassFromColumns = (cols: number): string => {
 	const gridClasses = {
-		2: 'grid-cols-1 sm:grid-cols-2',
-		3: 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3',
-		4: 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4',
-		5: 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5',
-		6: 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6',
+		2: 'grid-cols-2',
+		3: 'grid-cols-2 md:grid-cols-3',
+		4: 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4',
+		5: 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5',
 	};
 
 	return (
 		gridClasses[cols as keyof typeof gridClasses] ||
-		'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
+		'grid-cols-2 grid-cols-3 lg:grid-cols-4'
 	);
 };
 
@@ -138,7 +137,7 @@ const gridClass = getGridClassFromColumns(gridCols);
 		<!-- Grid de productos -->
 		<div
 			id='products-grid'
-			class={`grid ${gridClass} gap-6 mt-8 min-h-[300px] px-4 md:px-8`}>
+			class={`grid ${gridClass} md:gap-6 mt-8 min-h-[300px] px-1 sm:px-4 md:px-8`}>
 			{
 				filteredProducts.map((product) => {
 					// Safely extract editorial information for book products
