@@ -32,16 +32,12 @@ interface MediaItem {
 
 interface Props {
 	pack: Pack;
-	relatedBooks?: any[];
-	relatedExams?: any[];
-	relatedPacks?: any[];
+	relatedProducts?: Product[];
 }
 
 const {
 	pack,
-	relatedBooks = [],
-	relatedExams = [],
-	relatedPacks = [],
+	relatedProducts = [],
 } = Astro.props;
 
 // Prepare formatted price display
@@ -115,9 +111,7 @@ const includedBooks = pack.booksIds
 // Get recommendations
 const finalRecommendations = generateRecommendations(
 	pack,
-	relatedBooks,
-	relatedExams,
-	relatedPacks,
+	relatedProducts,
 	4
 );
 
