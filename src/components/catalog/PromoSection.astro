@@ -160,8 +160,9 @@ const gapSize =
 			});
 	}
 
-	// Update every minute
+	// Initialize everything when the DOM is loaded
 	document.addEventListener('DOMContentLoaded', () => {
+		// Update countdown initially and set interval
 		updateCountdown();
 		setInterval(updateCountdown, 60000);
 
@@ -178,10 +179,25 @@ const gapSize =
 			{ threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
 		);
 
-		// Observe all promo items for scroll animations
-		document.querySelectorAll('.promo-grid-item').forEach((item) => {
-			observer.observe(item);
-		});
+		// Observe all elements that should animate on scroll
+		document
+			.querySelectorAll(
+				'.promo-grid-item, .fade-in, .slide-up, .category-card, .promo-item'
+			)
+			.forEach((el) => {
+				observer.observe(el);
+			});
+
+		// Scroll to section if needed based on URL hash
+		const hash = window.location.hash;
+		if (hash === '#full-catalog') {
+			setTimeout(() => {
+				const catalogSection = document.getElementById('full-catalog');
+				if (catalogSection) {
+					catalogSection.scrollIntoView({ behavior: 'smooth' });
+				}
+			}, 500);
+		}
 	});
 </script>
 
