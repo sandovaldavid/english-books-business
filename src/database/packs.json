@@ -10,7 +10,7 @@
 		"formatTags": ["pdf", "audio", "video"],
 		"popularityTags": ["completePack"],
 		"featured": true,
-		"detailsLink": "/packs/complete-english-pack",
+		"detailsLink": "/catalogo/packs/complete-english-pack",
 		"buyLink": "/checkout/english-complete-pack",
 		"includedItems": ["Audios adicionales", "Guía de estudio"],
 		"stock": 50,
