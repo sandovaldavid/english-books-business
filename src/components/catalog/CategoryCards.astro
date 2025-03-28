@@ -5,7 +5,7 @@ import ArrowRightIcon from '../icons/ArrowRight.astro'
 const categories = CategoriesData
 ---
 
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="catalog-categories">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="catalog-categories">
     {categories.map((category, index) => (
         <a href={category.link} class={`category-card group relative overflow-hidden rounded-xl shadow-lg transition-all duration-500 hover:-translate-y-2 hover:shadow-xl category-${index+1}`}>
             <!-- Background image with overlay -->
