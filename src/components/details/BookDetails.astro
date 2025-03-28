@@ -18,6 +18,7 @@ import '../../styles/ProductDetail.css';
 import editorialData from '../../database/editorial.json';
 import ProductCard from '../ProductCard.astro';
 import DiscountBadge from '../DiscountBadge.astro';
+import type { Product } from '../../types/product';
 
 // Define proper interface for MediaItem
 interface MediaItem {
@@ -29,17 +30,10 @@ interface MediaItem {
 
 interface Props {
 	book: Book;
-	relatedBooks?: Book[];
-	relatedExams?: any[];
-	relatedPacks?: any[];
+	relatedProducts?: Product[];
 }
 
-const {
-	book,
-	relatedBooks = [],
-	relatedExams = [],
-	relatedPacks = [],
-} = Astro.props;
+const { book, relatedProducts = [] } = Astro.props;
 
 // Prepare formatted price display
 const hasDiscount = book.discount && book.discount > 0;
@@ -105,13 +99,7 @@ const levelDisplay =
 const formatTags = book.formatTags || [];
 
 // Get recommendations
-const finalRecommendations = generateRecommendations(
-	book,
-	relatedBooks,
-	relatedExams,
-	relatedPacks,
-	4
-);
+const finalRecommendations = generateRecommendations(book, relatedProducts, 4);
 
 // Prepare social share data
 const currentUrl = Astro.url.href;
@@ -572,14 +560,14 @@ const jsonLd = {
 						complementar tu experiencia de aprendizaje
 					</p>
 
-					<div class='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mt-6'>
+					<div class='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6'>
 						{finalRecommendations.map((item) => (
 							<ProductCard
 								product={item}
 								size='medium'
 								className='h-full'
 								editorial={
-									item.editorialId
+									item.editorialId && editorialData
 										? editorialData.find(
 												(e) => e.id === item.editorialId
 											)?.nombre
