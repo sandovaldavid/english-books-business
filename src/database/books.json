@@ -1,333 +1,240 @@
 [
-  {
-    "id": "business-english-master",
-    "title": "Business English Master",
-    "description": "Domina el inglés empresarial con este completo material que incluye vocabulario específico, frases comunes y ejercicios prácticos.",
-    "price": 49.99,
-    "editorialId": "pearson",
-    "offerDays": 30,
-    "coverImage": "https://res.cloudinary.com/didokliuv/image/upload/v1742848874/libros-template_fbmtoe.jpg",
-    "altText": "Portada del libro Business English Master",
-    "video": "https://www.youtube.com/embed/u7kdVe8q5zs?si=r_AOVcnJOR1bRXhA",
-    "images": [
-      "https://res.cloudinary.com/didokliuv/image/upload/v1742848807/book-sample-02_s2kr5g.jpg",
-      "https://res.cloudinary.com/didokliuv/image/upload/v1742848806/book-sample-03_tgi57l.jpg",
-      "https://res.cloudinary.com/didokliuv/image/upload/v1742848806/book-sample-01_zm2gtc.jpg"
-    ],
-    "includedItems": [
-      "PDF del libro completo",
-      "Workbook con ejercicios",
-      "Audios de conversaciones",
-      "Glosario de términos empresariales",
-      "Certificado de finalización"
-    ],
-    "rating": {
-      "score": 4.8,
-      "reviewCount": 124
-    },
-    "buyLink": "/checkout/business-english-master",
-    "detailsLink": "/catalogo/libros/business-english-master",
-    "discount": 20,
-    "level": "intermediate",
-    "featured": true,
-    "formatTags": ["pdf", "workbook", "audio"],
-    "popularityTags": ["bestSeller", "specialOffer"]
-  },
-  {
-    "id": "grammar-fundamentals",
-    "title": "Grammar Fundamentals",
-    "description": "Aprende las bases gramaticales del inglés con explicaciones claras y cientos de ejercicios prácticos para todos los niveles.",
-    "price": 34.99,
-    "editorialId": "pearson",
-    "coverImage": "/images/libros-template.jpg",
-    "altText": "Portada del libro Grammar Fundamentals",
-    "includedItems": [
-      "Libro digital en PDF",
-      "Ejercicios interactivos",
-      "Tests de evaluación",
-      "Resumen de reglas gramaticales",
-      "Audios de pronunciación"
-    ],
-    "rating": {
-      "score": 4.6,
-      "reviewCount": 98
-    },
-    "buyLink": "/checkout/grammar-fundamentals",
-    "detailsLink": "/libro/grammar-fundamentals",
-    "discount": 0,
-    "level": "basic",
-    "featured": false,
-    "formatTags": ["pdf", "exams", "audio"],
-    "popularityTags": []
-  },
-  {
-    "id": "book-3",
-    "title": "Professional Presentations",
-    "description": "Aprende a realizar presentaciones profesionales en inglés con confianza. Incluye plantillas, frases útiles y técnicas de oratoria.",
-    "price": 39.99,
-    "editorialId": "pearson",
-    "coverImage": "/images/libros-template.jpg",
-    "altText": "Portada del libro Professional Presentations",
-    "includedItems": [
-      "Manual completo en PDF",
-      "Plantillas de PowerPoint",
-      "Videos de ejemplo",
-      "Frases y transiciones útiles",
-      "Ejercicios de pronunciación"
-    ],
-    "rating": {
-      "score": 4.9,
-      "reviewCount": 75
-    },
-    "buyLink": "/checkout/professional-presentations",
-    "detailsLink": "/libro/professional-presentations",
-    "discount": 15,
-    "level": "professional",
-    "featured": false,
-    "formatTags": ["pdf", "video", "software"],
-    "popularityTags": ["specialOffer"]
-  },
-  {
-    "id": "book-4",
-    "title": "TOEFL Preparation Guide",
-    "description": "Prepárate para el examen TOEFL con esta guía completa que incluye estrategias, práctica para todas las secciones y exámenes simulados.",
-    "price": 59.99,
-    "editorialId": "pearson",
-    "coverImage": "/images/libros-template.jpg",
-    "altText": "Portada del libro TOEFL Preparation Guide",
-    "includedItems": [
-      "Guía de estudio completa",
-      "5 exámenes de práctica",
-      "Audios para listening",
-      "Ejercicios de writing",
-      "Consejos para el día del examen"
-    ],
-    "rating": {
-      "score": 4.7,
-      "reviewCount": 142
-    },
-    "buyLink": "/checkout/toefl-guide",
-    "detailsLink": "/libro/toefl-guide",
-    "discount": 0,
-    "level": "advanced",
-    "featured": true,
-    "formatTags": ["pdf", "audio", "exams"],
-    "popularityTags": ["bestSeller", "recommended"]
-  },
-  {
-    "id": "book-5",
-    "title": "English for IT Professionals",
-    "description": "Vocabulario especializado y comunicación efectiva para profesionales del sector tecnológico. Incluye términos técnicos y situaciones comunes.",
-    "price": 44.99,
-    "editorialId": "pearson",
-    "coverImage": "/images/libros-template.jpg",
-    "altText": "Portada del libro English for IT Professionals",
-    "includedItems": [
-      "Libro digital interactivo",
-      "Diccionario técnico",
-      "Casos prácticos",
-      "Videos de reuniones técnicas",
-      "Templates para documentación"
-    ],
-    "rating": {
-      "score": 4.9,
-      "reviewCount": 87
-    },
-    "buyLink": "/checkout/english-it",
-    "detailsLink": "/libro/english-it",
-    "discount": 25,
-    "level": "professional",
-    "featured": true,
-    "formatTags": ["pdf", "video", "software"],
-    "popularityTags": ["specialOffer", "recommended"]
-  },
-  {
-    "id": "book-6",
-    "title": "Conversational English",
-    "description": "Mejora tu fluidez verbal con este método basado en conversaciones reales. Perfecto para quienes necesitan comunicarse diariamente en inglés.",
-    "price": 29.99,
-    "editorialId": "pearson",
-    "coverImage": "/images/libros-template.jpg",
-    "altText": "Portada del libro Conversational English",
-    "includedItems": [
-      "Libro en formato PDF",
-      "160 diálogos prácticos",
-      "Audios con hablantes nativos",
-      "Ejercicios de pronunciación",
-      "Frases idiomáticas comunes"
-    ],
-    "rating": {
-      "score": 4.5,
-      "reviewCount": 112
-    },
-    "buyLink": "/checkout/conversational-english",
-    "detailsLink": "/libro/conversational-english",
-    "discount": 0,
-    "level": "all-levels",
-    "featured": false,
-    "formatTags": ["pdf", "audio"],
-    "popularityTags": []
-  },
-  {
-    "id": "book-7",
-    "title": "English for Healthcare",
-    "description": "Material especializado para profesionales de la salud. Vocabulario médico, interacción con pacientes y documentación clínica en inglés.",
-    "price": 54.99,
-    "editorialId": "pearson",
-    "coverImage": "/images/libros-template.jpg",
-    "altText": "Portada del libro English for Healthcare",
-    "includedItems": [
-      "Manual completo digital",
-      "Diccionario de términos médicos",
-      "Plantillas de historias clínicas",
-      "Simulaciones de consultas",
-      "Certificado de especialización"
-    ],
-    "rating": {
-      "score": 4.8,
-      "reviewCount": 65
-    },
-    "buyLink": "/checkout/english-healthcare",
-    "detailsLink": "/libro/english-healthcare",
-    "discount": 10,
-    "level": "professional",
-    "featured": false,
-    "formatTags": ["pdf", "workbook", "exams"],
-    "popularityTags": ["specialOffer", "completePack"]
-  },
-  {
-    "id": "book-8",
-    "title": "Pronunciation Mastery",
-    "description": "Perfecciona tu acento y pronunciación en inglés. Técnicas fonéticas, ejercicios prácticos y herramientas para sonar como un nativo.",
-    "price": 36.99,
-    "editorialId": "pearson",
-    "coverImage": "/images/libros-template.jpg",
-    "altText": "Portada del libro Pronunciation Mastery",
-    "includedItems": [
-      "Libro digital completo",
-      "Grabaciones de audio HD",
-      "Ejercicios de repetición",
-      "Videos explicativos",
-      "Guía de fonética internacional"
-    ],
-    "rating": {
-      "score": 4.7,
-      "reviewCount": 93
-    },
-    "buyLink": "/checkout/pronunciation-mastery",
-    "detailsLink": "/libro/pronunciation-mastery",
-    "discount": 15,
-    "level": "intermediate",
-    "featured": false,
-    "formatTags": ["pdf", "audio", "video"],
-    "popularityTags": ["specialOffer"]
-  },
-  {
-    "id": "book-9",
-    "title": "Legal English",
-    "description": "Inglés jurídico para abogados y profesionales del derecho. Terminología especializada, redacción de documentos y comunicación efectiva en entornos legales.",
-    "price": 64.99,
-    "editorialId": "pearson",
-    "coverImage": "/images/libros-template.jpg",
-    "altText": "Portada del libro Legal English",
-    "includedItems": [
-      "Manual completo en PDF",
-      "Plantillas de documentos legales",
-      "Casos de estudio",
-      "Glosario jurídico extenso",
-      "Certificado de especialización"
-    ],
-    "rating": {
-      "score": 4.9,
-      "reviewCount": 58
-    },
-    "buyLink": "/checkout/legal-english",
-    "detailsLink": "/libro/legal-english",
-    "discount": 0,
-    "level": "professional",
-    "featured": true,
-    "formatTags": ["pdf", "workbook"],
-    "popularityTags": ["recommended", "completePack"]
-  },
-  {
-    "id": "book-10",
-    "title": "English for Kids",
-    "description": "Método divertido para que los niños aprendan inglés desde cero. Actividades lúdicas, canciones, juegos y material visual atractivo.",
-    "price": 24.99,
-    "editorialId": "pearson",
-    "coverImage": "/images/libros-template.jpg",
-    "altText": "Portada del libro English for Kids",
-    "includedItems": [
-      "Libro digital interactivo",
-      "Fichas imprimibles",
-      "Canciones y rimas",
-      "Juegos educativos",
-      "Guía para padres"
-    ],
-    "rating": {
-      "score": 4.8,
-      "reviewCount": 138
-    },
-    "buyLink": "/checkout/english-kids",
-    "detailsLink": "/libro/english-kids",
-    "discount": 20,
-    "level": "basic",
-    "featured": false,
-    "formatTags": ["pdf", "audio", "video", "software"],
-    "popularityTags": ["specialOffer", "new"]
-  },
-  {
-    "id": "book-11",
-    "title": "Job Interview English",
-    "description": "Prepárate para entrevistas de trabajo en inglés. Frases clave, respuestas a preguntas comunes y vocabulario para destacar tus habilidades.",
-    "price": 29.99,
-    "editorialId": "pearson",
-    "coverImage": "/images/libros-template.jpg",
-    "altText": "Portada del libro Job Interview English",
-    "includedItems": [
-      "Guía completa en PDF",
-      "Respuestas modelo",
-      "Simulaciones de entrevistas",
-      "Diccionario de competencias",
-      "Plantillas de CV y cartas"
-    ],
-    "rating": {
-      "score": 4.6,
-      "reviewCount": 102
-    },
-    "buyLink": "/checkout/interview-english",
-    "detailsLink": "/libro/interview-english",
-    "discount": 10,
-    "level": "intermediate",
-    "featured": false,
-    "formatTags": ["pdf", "audio", "exams"],
-    "popularityTags": ["specialOffer", "new"]
-  },
-  {
-    "id": "book-12",
-    "title": "Academic Writing in English",
-    "description": "Aprende a redactar ensayos, tesis y trabajos académicos en inglés con estructura correcta, estilo adecuado y vocabulario académico.",
-    "price": 42.99,
-    "editorialId": "pearson",
-    "coverImage": "/images/libros-template.jpg",
-    "altText": "Portada del libro Academic Writing in English",
-    "includedItems": [
-      "Manual completo en PDF",
-      "Ejemplos anotados",
-      "Ejercicios de redacción",
-      "Plantillas por tipo de documento",
-      "Guía de citas y referencias"
-    ],
-    "rating": {
-      "score": 4.7,
-      "reviewCount": 79
-    },
-    "buyLink": "/checkout/academic-writing",
-    "detailsLink": "/libro/academic-writing",
-    "discount": 15,
-    "level": "advanced",
-    "featured": true,
-    "formatTags": ["pdf", "workbook", "exams"],
-    "popularityTags": ["recommended", "new"]
-  }
+	{
+		"id": "business-english-master",
+		"title": "Business English Master",
+		"description": "Domina el inglés empresarial con este completo material que incluye vocabulario específico, frases comunes y ejercicios prácticos.",
+		"price": 49.99,
+		"editorialId": "pearson",
+		"offerDays": 30,
+		"coverImage": "https://res.cloudinary.com/didokliuv/image/upload/v1742848874/libros-template_fbmtoe.jpg",
+		"altText": "Portada del libro Business English Master",
+		"video": "https://www.youtube.com/embed/u7kdVe8q5zs?si=r_AOVcnJOR1bRXhA",
+		"images": [
+			"https://res.cloudinary.com/didokliuv/image/upload/v1742848807/book-sample-02_s2kr5g.jpg",
+			"https://res.cloudinary.com/didokliuv/image/upload/v1742848806/book-sample-03_tgi57l.jpg",
+			"https://res.cloudinary.com/didokliuv/image/upload/v1742848806/book-sample-01_zm2gtc.jpg"
+		],
+		"includedItems": [
+			"PDF del libro completo",
+			"Workbook con ejercicios",
+			"Audios de conversaciones",
+			"Glosario de términos empresariales",
+			"Certificado de finalización"
+		],
+		"rating": {
+			"score": 4.8,
+			"reviewCount": 124
+		},
+		"buyLink": "/checkout/business-english-master",
+		"detailsLink": "/catalogo/libros/business-english-master",
+		"discount": 20,
+		"level": "intermediate",
+		"featured": true,
+		"formatTags": ["pdf", "workbook", "audio"],
+		"popularityTags": ["bestSeller", "specialOffer"]
+	},
+	{
+		"id": "business-english-master",
+		"title": "Business English Master",
+		"description": "Domina el inglés empresarial con este completo material que incluye vocabulario específico, frases comunes y ejercicios prácticos.",
+		"price": 49.99,
+		"editorialId": "pearson",
+		"offerDays": 30,
+		"coverImage": "https://res.cloudinary.com/didokliuv/image/upload/v1742848874/libros-template_fbmtoe.jpg",
+		"altText": "Portada del libro Business English Master",
+		"video": "https://www.youtube.com/embed/u7kdVe8q5zs?si=r_AOVcnJOR1bRXhA",
+		"images": [
+			"https://res.cloudinary.com/didokliuv/image/upload/v1742848807/book-sample-02_s2kr5g.jpg",
+			"https://res.cloudinary.com/didokliuv/image/upload/v1742848806/book-sample-03_tgi57l.jpg",
+			"https://res.cloudinary.com/didokliuv/image/upload/v1742848806/book-sample-01_zm2gtc.jpg"
+		],
+		"includedItems": [
+			"PDF del libro completo",
+			"Workbook con ejercicios",
+			"Audios de conversaciones",
+			"Glosario de términos empresariales",
+			"Certificado de finalización"
+		],
+		"rating": {
+			"score": 4.8,
+			"reviewCount": 124
+		},
+		"buyLink": "/checkout/business-english-master",
+		"detailsLink": "/catalogo/libros/business-english-master",
+		"discount": 20,
+		"level": "intermediate",
+		"featured": true,
+		"formatTags": ["pdf", "workbook", "audio"],
+		"popularityTags": ["bestSeller", "specialOffer"]
+	},
+	{
+		"id": "business-english-master",
+		"title": "Business English Master",
+		"description": "Domina el inglés empresarial con este completo material que incluye vocabulario específico, frases comunes y ejercicios prácticos.",
+		"price": 49.99,
+		"editorialId": "pearson",
+		"offerDays": 30,
+		"coverImage": "https://res.cloudinary.com/didokliuv/image/upload/v1742848874/libros-template_fbmtoe.jpg",
+		"altText": "Portada del libro Business English Master",
+		"video": "https://www.youtube.com/embed/u7kdVe8q5zs?si=r_AOVcnJOR1bRXhA",
+		"images": [
+			"https://res.cloudinary.com/didokliuv/image/upload/v1742848807/book-sample-02_s2kr5g.jpg",
+			"https://res.cloudinary.com/didokliuv/image/upload/v1742848806/book-sample-03_tgi57l.jpg",
+			"https://res.cloudinary.com/didokliuv/image/upload/v1742848806/book-sample-01_zm2gtc.jpg"
+		],
+		"includedItems": [
+			"PDF del libro completo",
+			"Workbook con ejercicios",
+			"Audios de conversaciones",
+			"Glosario de términos empresariales",
+			"Certificado de finalización"
+		],
+		"rating": {
+			"score": 4.8,
+			"reviewCount": 124
+		},
+		"buyLink": "/checkout/business-english-master",
+		"detailsLink": "/catalogo/libros/business-english-master",
+		"discount": 20,
+		"level": "intermediate",
+		"featured": true,
+		"formatTags": ["pdf", "workbook", "audio"],
+		"popularityTags": ["bestSeller", "specialOffer"]
+	},
+	{
+		"id": "business-english-master",
+		"title": "Business English Master",
+		"description": "Domina el inglés empresarial con este completo material que incluye vocabulario específico, frases comunes y ejercicios prácticos.",
+		"price": 49.99,
+		"editorialId": "pearson",
+		"offerDays": 30,
+		"coverImage": "https://res.cloudinary.com/didokliuv/image/upload/v1742848874/libros-template_fbmtoe.jpg",
+		"altText": "Portada del libro Business English Master",
+		"video": "https://www.youtube.com/embed/u7kdVe8q5zs?si=r_AOVcnJOR1bRXhA",
+		"images": [
+			"https://res.cloudinary.com/didokliuv/image/upload/v1742848807/book-sample-02_s2kr5g.jpg",
+			"https://res.cloudinary.com/didokliuv/image/upload/v1742848806/book-sample-03_tgi57l.jpg",
+			"https://res.cloudinary.com/didokliuv/image/upload/v1742848806/book-sample-01_zm2gtc.jpg"
+		],
+		"includedItems": [
+			"PDF del libro completo",
+			"Workbook con ejercicios",
+			"Audios de conversaciones",
+			"Glosario de términos empresariales",
+			"Certificado de finalización"
+		],
+		"rating": {
+			"score": 4.8,
+			"reviewCount": 124
+		},
+		"buyLink": "/checkout/business-english-master",
+		"detailsLink": "/catalogo/libros/business-english-master",
+		"discount": 20,
+		"level": "intermediate",
+		"featured": true,
+		"formatTags": ["pdf", "workbook", "audio"],
+		"popularityTags": ["bestSeller", "specialOffer"]
+	},
+	{
+		"id": "business-english-master",
+		"title": "Business English Master",
+		"description": "Domina el inglés empresarial con este completo material que incluye vocabulario específico, frases comunes y ejercicios prácticos.",
+		"price": 49.99,
+		"editorialId": "pearson",
+		"offerDays": 30,
+		"coverImage": "https://res.cloudinary.com/didokliuv/image/upload/v1742848874/libros-template_fbmtoe.jpg",
+		"altText": "Portada del libro Business English Master",
+		"video": "https://www.youtube.com/embed/u7kdVe8q5zs?si=r_AOVcnJOR1bRXhA",
+		"images": [
+			"https://res.cloudinary.com/didokliuv/image/upload/v1742848807/book-sample-02_s2kr5g.jpg",
+			"https://res.cloudinary.com/didokliuv/image/upload/v1742848806/book-sample-03_tgi57l.jpg",
+			"https://res.cloudinary.com/didokliuv/image/upload/v1742848806/book-sample-01_zm2gtc.jpg"
+		],
+		"includedItems": [
+			"PDF del libro completo",
+			"Workbook con ejercicios",
+			"Audios de conversaciones",
+			"Glosario de términos empresariales",
+			"Certificado de finalización"
+		],
+		"rating": {
+			"score": 4.8,
+			"reviewCount": 124
+		},
+		"buyLink": "/checkout/business-english-master",
+		"detailsLink": "/catalogo/libros/business-english-master",
+		"discount": 20,
+		"level": "intermediate",
+		"featured": true,
+		"formatTags": ["pdf", "workbook", "audio"],
+		"popularityTags": ["bestSeller", "specialOffer"]
+	},
+	{
+		"id": "business-english-master",
+		"title": "Business English Master",
+		"description": "Domina el inglés empresarial con este completo material que incluye vocabulario específico, frases comunes y ejercicios prácticos.",
+		"price": 49.99,
+		"editorialId": "pearson",
+		"offerDays": 30,
+		"coverImage": "https://res.cloudinary.com/didokliuv/image/upload/v1742848874/libros-template_fbmtoe.jpg",
+		"altText": "Portada del libro Business English Master",
+		"video": "https://www.youtube.com/embed/u7kdVe8q5zs?si=r_AOVcnJOR1bRXhA",
+		"images": [
+			"https://res.cloudinary.com/didokliuv/image/upload/v1742848807/book-sample-02_s2kr5g.jpg",
+			"https://res.cloudinary.com/didokliuv/image/upload/v1742848806/book-sample-03_tgi57l.jpg",
+			"https://res.cloudinary.com/didokliuv/image/upload/v1742848806/book-sample-01_zm2gtc.jpg"
+		],
+		"includedItems": [
+			"PDF del libro completo",
+			"Workbook con ejercicios",
+			"Audios de conversaciones",
+			"Glosario de términos empresariales",
+			"Certificado de finalización"
+		],
+		"rating": {
+			"score": 4.8,
+			"reviewCount": 124
+		},
+		"buyLink": "/checkout/business-english-master",
+		"detailsLink": "/catalogo/libros/business-english-master",
+		"discount": 20,
+		"level": "intermediate",
+		"featured": true,
+		"formatTags": ["pdf", "workbook", "audio"],
+		"popularityTags": ["bestSeller", "specialOffer"]
+	},
+	{
+		"id": "business-english-master",
+		"title": "Business English Master",
+		"description": "Domina el inglés empresarial con este completo material que incluye vocabulario específico, frases comunes y ejercicios prácticos.",
+		"price": 49.99,
+		"editorialId": "pearson",
+		"offerDays": 30,
+		"coverImage": "https://res.cloudinary.com/didokliuv/image/upload/v1742848874/libros-template_fbmtoe.jpg",
+		"altText": "Portada del libro Business English Master",
+		"video": "https://www.youtube.com/embed/u7kdVe8q5zs?si=r_AOVcnJOR1bRXhA",
+		"images": [
+			"https://res.cloudinary.com/didokliuv/image/upload/v1742848807/book-sample-02_s2kr5g.jpg",
+			"https://res.cloudinary.com/didokliuv/image/upload/v1742848806/book-sample-03_tgi57l.jpg",
+			"https://res.cloudinary.com/didokliuv/image/upload/v1742848806/book-sample-01_zm2gtc.jpg"
+		],
+		"includedItems": [
+			"PDF del libro completo",
+			"Workbook con ejercicios",
+			"Audios de conversaciones",
+			"Glosario de términos empresariales",
+			"Certificado de finalización"
+		],
+		"rating": {
+			"score": 4.8,
+			"reviewCount": 124
+		},
+		"buyLink": "/checkout/business-english-master",
+		"detailsLink": "/catalogo/libros/business-english-master",
+		"discount": 20,
+		"level": "intermediate",
+		"featured": true,
+		"formatTags": ["pdf", "workbook", "audio"],
+		"popularityTags": ["bestSeller", "specialOffer"]
+	}
 ]
