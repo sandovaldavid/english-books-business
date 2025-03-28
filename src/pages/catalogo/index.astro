@@ -93,6 +93,13 @@ console.log(
 console.log(
 	`Packs: ${allProducts.filter((p) => p.productType === 'pack').length}`
 );
+
+// Add a check to see if we have exam products
+const haveExams = allProducts.some((p) => p.productType === 'exam');
+console.log(`Have exam products: ${haveExams}`);
+if (!haveExams) {
+	console.warn('No exam products found - check exams.json format');
+}
 ---
 
 <Layout title={`${pageTitle} | FluentReads`} description={pageDescription}>
