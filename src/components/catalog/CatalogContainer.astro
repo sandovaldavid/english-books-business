@@ -300,10 +300,13 @@ const gridClass = getGridClassFromColumns(gridCols);
 					);
 				}
 
-				// Filter by level if specified
+				// Filter by level if specified (handle difficulty mapping for exams)
 				if (level && level !== 'all') {
 					filtered = filtered.filter(
-						(product) => product.level === level
+						(product) => {
+							// Handle both direct level match and mapped difficulty to level
+							return product.level === level;
+						}
 					);
 				}
 
@@ -324,6 +327,18 @@ const gridClass = getGridClassFromColumns(gridCols);
 							.toLowerCase()
 							.includes(normalizedSearchTerm)
 					);
+				}
+
+				 // Debug logs
+				console.log(`Filtered to ${filtered.length} products`);
+				console.log(`Resource type filter: ${resourceType}`);
+				if (resourceType !== 'any') {
+					const typeCounts = filtered.reduce((acc, product) => {
+						acc[product.productType] = (acc[product.productType] || 0) + 1;
+						return acc;
+					}, {} as Record<string, number>);
+					
+					console.log('Products by type:', typeCounts);
 				}
 
 				// Apply sorting
