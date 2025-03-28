@@ -2,7 +2,7 @@
 	"siteName": "FluentReads",
 	"siteURL": "https://fluentreads.devsolution.software",
 	"siteDescription": "La mejor tienda online para aprender inglés con libros digitales, packs de estudio y material para exámenes internacionales.",
-	"logo": "/images/logo.png",
+	"logo": "/favicon.webp",
 	"contact": {
 		"email": "contacto@fluentreads.com",
 		"phone": "+51 987 654 321",
@@ -59,13 +59,21 @@
 		"author": "FluentReads Team",
 		"geoRegion": "PE",
 		"geoPlacename": "Piura",
-		"defaultImage": "/images/default-og-image.jpg",
+		"defaultImage": "https://res.cloudinary.com/didokliuv/image/upload/f_auto,q_auto/v1743196081/default-og-image_uejs6g.png",
 		"twitterHandle": "@fluentreads",
 		"facebookAppID": "1234567890",
-		"twitterCard": "summary_large_image",
+		"twitterCard": "https://res.cloudinary.com/didokliuv/image/upload/f_auto,q_auto/v1743196081/default-og-image_uejs6g.png",
 		"twitterSite": "@fluentreads",
 		"twitterCreator": "@fluentreads",
 		"fbAppId": "1234567890",
+		"images": {
+			"home": "https://res.cloudinary.com/didokliuv/image/upload/f_auto,q_auto/v1743196081/default-og-image_uejs6g.png",
+			"catalog": "https://res.cloudinary.com/didokliuv/image/upload/f_auto,q_auto/v1743197372/catalog-og-image_ei8y2e.png",
+			"contact": "https://res.cloudinary.com/didokliuv/image/upload/f_auto,q_auto/v1743198398/contact-og-image_jx2htx.png",
+			"testimonials": "https://res.cloudinary.com/didokliuv/image/upload/f_auto,q_auto/v1743197532/testimonies-og-image_nnthqs.png",
+			"paymentMethods": "https://res.cloudinary.com/didokliuv/image/upload/f_auto,q_auto/v1743198650/paymentMethods-og-image_rj1oxs.png",
+			"blog": ""
+		},
 		"languageAlternates": [
 			{
 				"language": "es",
