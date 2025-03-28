@@ -22,6 +22,7 @@ export interface Exam {
 	discount?: number | 0;
 	coverImage: string;
 	images?: string[];
+	level?: ExamDifficulty | string;
 	video?: string;
 	rating?: Rating;
 	examType: ExamType | string;
