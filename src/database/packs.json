@@ -13,6 +13,11 @@
 		"detailsLink": "/packs/complete-english-pack",
 		"buyLink": "/checkout/english-complete-pack",
 		"includedItems": ["Audios adicionales", "Guía de estudio"],
-		"stock": 50
+		"stock": 50,
+		"level": "Beginner",
+		"rating": {
+			"score": 4.8,
+			"reviewCount": 124
+		}
 	}
 ]
