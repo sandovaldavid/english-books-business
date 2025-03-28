@@ -5,6 +5,9 @@ export enum ExamType {
 	TOEFL = 'TOEFL',
 	CAMBRIDGE = 'Cambridge',
 	SAT = 'SAT',
+	PTE = 'PTE',
+	CPE = 'CPE',
+	GRE = 'GRE',
 	OTHER = 'Other',
 }
 
