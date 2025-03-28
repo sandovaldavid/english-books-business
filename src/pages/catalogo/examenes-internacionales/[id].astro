@@ -2,18 +2,48 @@
 import Layout from '../../../layouts/Layout.astro';
 import ExamDetails from '../../../components/details/ExamDetails.astro';
 import Breadcrumb from '../../../components/Breadcrumb.astro';
-import examsData from '../../../database/exams.json';
-import siteInfo from '../../../database/pageInformation.json';
 import type { Exam } from '../../../types/exam';
+import { ExamType, ExamDifficulty } from '../../../types/exam';
 import { difficultyConfig } from '../../../utils/examTags';
+import { getProductsByType } from '../../../utils/listProducts';
+import siteInfo from '../../../database/pageInformation.json';
 
 export async function getStaticPaths() {
-	const examsArray = Array.isArray(examsData) ? examsData : [examsData];
+	const examProducts = getProductsByType('exam');
 
-	return examsArray.map((exam) => ({
-		params: { id: exam.id },
-		props: { exam },
-	}));
+	return examProducts.map((product) => {
+		// Convert general Product to Exam type with proper type safety
+		const exam: Exam = {
+			id: product.id,
+			title: product.title,
+			description: product.description || '',
+			price: product.price,
+			coverImage: product.coverImage,
+			examType: (product as any).examType || ExamType.OTHER,
+			difficulty:
+				(product.level as ExamDifficulty) ||
+				ExamDifficulty.INTERMEDIATE,
+			formatTags: product.formatTags || [],
+			popularityTags: product.popularityTags || [],
+			featured: product.featured || false,
+			buyLink: (product as any).buyLink || `/checkout/${product.id}`,
+			detailsLink:
+				product.detailsLink ||
+				`/catalogo/examenes-internacionales/${product.id}`,
+			includedItems: (product as any).includedItems || [],
+			requirements: (product as any).requirements || [],
+			altText: product.altText || `${product.title} - Exam cover`,
+			rating: product.rating || { score: 0, reviewCount: 0 },
+			discount: product.discount || 0,
+			images: (product as any).images || [],
+			video: (product as any).video || '',
+		};
+
+		return {
+			params: { id: exam.id },
+			props: { exam },
+		};
+	});
 }
 
 interface Props {
@@ -22,9 +52,9 @@ interface Props {
 
 const { exam } = Astro.props;
 
-// Find related exams if any (same exam type or difficulty)
-const examsArray = Array.isArray(examsData) ? examsData : [examsData];
-const relatedExams = examsArray
+// Find related exams - use utility function for better type safety and consistency
+const allExams = getProductsByType('exam') as unknown as Exam[];
+const relatedExams = allExams
 	.filter(
 		(item) =>
 			item.id !== exam.id &&
@@ -33,31 +63,39 @@ const relatedExams = examsArray
 	)
 	.slice(0, 4);
 
-// Calculate discounted price if there's a discount
+// Calculate discounted price
 const hasDiscount = exam.discount !== undefined && exam.discount > 0;
 const originalPrice = exam.price;
 const discountedPrice = hasDiscount
 	? exam.price * (1 - (exam.discount || 0) / 100)
 	: exam.price;
 
-// SEO metadata
-const examDifficulty = exam.difficulty
-	? difficultyConfig[exam.difficulty as keyof typeof difficultyConfig]?.label || exam.difficulty
+// Get proper difficulty label using utility
+const examDifficultyLabel = exam.difficulty
+	? difficultyConfig[exam.difficulty as keyof typeof difficultyConfig]
+			?.label || exam.difficulty
 	: '';
-const examType = exam.examType || '';
 
-// Improved title with keywords
+// Build optimized metadata
+const examType = exam.examType || '';
+const seoKeywords = `${examType}, ${examDifficultyLabel}, preparación, examen inglés`;
+
+// Title with optimized SEO format
 const title = `${exam.title} | Preparación para ${examType} | FluentReads`;
 
 // Enhanced description
-const description = exam.description?.length > 160
-	? `${exam.description.substring(0, 157)}...`
-	: exam.description ||
-	  `Material de preparación para el examen ${exam.title}. Ideal para certificar tu nivel de inglés.`;
+const description =
+	exam.description?.length > 160
+		? `${exam.description.substring(0, 157)}...`
+		: exam.description ||
+			`Material de preparación para el examen ${exam.title}. Ideal para certificar tu nivel de inglés.`;
 
 // Canonical URL
 const siteUrl = new URL(siteInfo.siteURL);
-const canonicalURL = new URL(`/catalogo/examenes-internacionales/${exam.id}`, siteUrl);
+const canonicalURL = new URL(
+	`/catalogo/examenes-internacionales/${exam.id}`,
+	siteUrl
+);
 
 // Structured data for rich snippets
 const structuredData = {
@@ -83,15 +121,17 @@ const structuredData = {
 		'@type': 'Brand',
 		name: siteInfo.siteName,
 	},
-	aggregateRating: exam.rating
-		? {
-				'@type': 'AggregateRating',
-				ratingValue: exam.rating.score,
-				reviewCount: exam.rating.reviewCount,
-				bestRating: '5',
-				worstRating: '1',
-			}
-		: undefined,
+	aggregateRating:
+		exam.rating && exam.rating.score && exam.rating.reviewCount
+			? {
+					'@type': 'AggregateRating',
+					ratingValue: exam.rating.score,
+					reviewCount: exam.rating.reviewCount,
+					bestRating: '5',
+					worstRating: '1',
+				}
+			: undefined,
+	keywords: seoKeywords,
 };
 
 // Breadcrumb structured data
@@ -115,7 +155,10 @@ const breadcrumbJsonLd = {
 			'@type': 'ListItem',
 			position: 3,
 			name: 'Exámenes Internacionales',
-			item: new URL('/catalogo/examenes-internacionales', siteUrl).toString(),
+			item: new URL(
+				'/catalogo/examenes-internacionales',
+				siteUrl
+			).toString(),
 		},
 		{
 			'@type': 'ListItem',
@@ -130,17 +173,28 @@ const breadcrumbJsonLd = {
 const breadcrumbItems = [
 	{ label: 'Inicio', url: '/' },
 	{ label: 'Catálogo', url: '/catalogo' },
-	{ label: 'Exámenes Internacionales', url: '/catalogo/examenes-internacionales' },
-	{ label: exam.title, url: `/catalogo/examenes-internacionales/${exam.id}`, active: true },
+	{
+		label: 'Exámenes Internacionales',
+		url: '/catalogo/examenes-internacionales',
+	},
+	{
+		label: exam.title,
+		url: `/catalogo/examenes-internacionales/${exam.id}`,
+		active: true,
+	},
 ];
+
+// Log some debugging information
+console.log(`Rendering exam details for: ${exam.id} (${exam.title})`);
+console.log(`Found ${relatedExams.length} related exams`);
 ---
 
 <Layout
 	title={title}
 	description={description}
-	productType="exam"
+	productType='exam'
 	price={discountedPrice}
-	currency="PEN"
+	currency='PEN'
 	image={exam.coverImage}
 	canonicalURL={canonicalURL}
 	ogTitle={title}
@@ -151,9 +205,8 @@ const breadcrumbItems = [
 	twitterImage={exam.coverImage}
 	structuredData={structuredData}
 	breadcrumbData={breadcrumbJsonLd}>
-	
 	<!-- Breadcrumb component for navigation -->
-	<div class="container mx-auto px-4 py-4">
+	<div class='container mx-auto px-4 py-4'>
 		<Breadcrumb items={breadcrumbItems} />
 	</div>
 
@@ -164,16 +217,52 @@ const breadcrumbItems = [
 	<script>
 		import { CartManager } from '../../../utils/cartManager';
 
-		// Initialize cart functionality
 		document.addEventListener('DOMContentLoaded', () => {
-			// Make sure cart is initialized
-			if (typeof window !== 'undefined') {
-				CartManager.initializeCart();
-			}
+			// Initialize cart
+			CartManager.initializeCart();
+
+			// Add event listeners for add-to-cart buttons
+			document
+				.querySelectorAll('[data-add-to-cart]')
+				.forEach((button) => {
+					button.addEventListener('click', () => {
+						const productId =
+							button.getAttribute('data-product-id');
+						const productType =
+							button.getAttribute('data-product-type');
+						const productTitle =
+							button.getAttribute('data-product-title');
+						const productPrice = parseFloat(
+							button.getAttribute('data-product-price') || '0'
+						);
+						const productImage =
+							button.getAttribute('data-product-image');
+
+						if (productId) {
+							const validType = ['book', 'exam', 'pack'].includes(
+								productType || ''
+							)
+								? (productType as 'book' | 'exam' | 'pack')
+								: 'exam';
+
+							CartManager.addItem({
+								id: productId,
+								type: validType,
+								title: productTitle || 'Exam',
+								price: productPrice,
+								image: productImage || '',
+							});
+						}
+					});
+				});
 
 			// Listen for cart updates to refresh indicators
 			window.addEventListener('cartUpdated', () => {
-				console.log('Cart updated');
+				const cartCount = CartManager.getItemCount();
+				document.querySelectorAll('.cart-count').forEach((element) => {
+					element.textContent = cartCount.toString();
+					element.classList.toggle('hidden', cartCount === 0);
+				});
 			});
 		});
 	</script>
